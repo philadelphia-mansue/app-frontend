@@ -1,0 +1,18 @@
+import 'package:dartz/dartz.dart';
+import '../../../../core/errors/failures.dart';
+import '../entities/user.dart';
+import '../entities/voter.dart';
+
+abstract class AuthRepository {
+  Future<Either<Failure, String>> sendOtp(String phoneNumber);
+  Future<Either<Failure, Voter>> verifyOtp(String verificationId, String otp);
+  Future<Either<Failure, User?>> getCurrentUser();
+  Future<Either<Failure, Voter>> getCurrentVoter();
+  Future<Either<Failure, void>> signOut();
+  Future<bool> isAuthenticated();
+
+  /// Stream of Firebase auth state changes.
+  /// Emits user ID when signed in, null when signed out.
+  /// Fires immediately with current state, then on every sign-in/sign-out.
+  Stream<String?> authStateChanges();
+}

@@ -1,0 +1,334 @@
+{
+  "@@locale": "en",
+  "appName": "Philadelphia Mansue",
+  "@appName": {
+    "description": "The name of the application"
+  },
+  "anonymousLabel": "Anonymous",
+  "@anonymousLabel": {
+    "description": "Label shown for anonymous users"
+  },
+  "welcome": "Welcome",
+  "@welcome": {
+    "description": "Welcome greeting"
+  },
+  "enterPhoneToVote": "Enter your phone number to vote anonymously",
+  "@enterPhoneToVote": {
+    "description": "Instruction for phone number entry"
+  },
+  "enterVerificationCode": "Enter the verification code",
+  "@enterVerificationCode": {
+    "description": "Instruction for verification code entry"
+  },
+  "phoneNumber": "Phone Number",
+  "@phoneNumber": {
+    "description": "Phone number field label"
+  },
+  "phoneNumberHint": "+1234567890",
+  "@phoneNumberHint": {
+    "description": "Phone number field hint"
+  },
+  "pleaseEnterPhoneNumber": "Please enter your phone number",
+  "@pleaseEnterPhoneNumber": {
+    "description": "Validation message for empty phone"
+  },
+  "pleaseEnterValidPhoneNumber": "Please enter a valid phone number",
+  "@pleaseEnterValidPhoneNumber": {
+    "description": "Validation message for invalid phone"
+  },
+  "sendCode": "Send Code",
+  "@sendCode": {
+    "description": "Button text to send verification code"
+  },
+  "codeSent": "Code Sent!",
+  "@codeSent": {
+    "description": "Confirmation that code was sent"
+  },
+  "enterCodeSentTo": "Enter the 6-digit code sent to {phoneNumber}",
+  "@enterCodeSentTo": {
+    "description": "Instruction showing where code was sent",
+    "placeholders": {
+      "phoneNumber": {
+        "type": "String",
+        "example": "+1234567890"
+      }
+    }
+  },
+  "verificationCode": "Verification Code",
+  "@verificationCode": {
+    "description": "Verification code field label"
+  },
+  "verificationCodeHint": "000000",
+  "@verificationCodeHint": {
+    "description": "Verification code field hint"
+  },
+  "pleaseEnterCode": "Please enter the 6-digit code",
+  "@pleaseEnterCode": {
+    "description": "Validation message for empty code"
+  },
+  "didntReceiveCode": "Didn't receive code? Resend",
+  "@didntReceiveCode": {
+    "description": "Link text to resend code"
+  },
+  "verify": "Verify",
+  "@verify": {
+    "description": "Button text to verify code"
+  },
+  "changePhoneNumber": "Change phone number",
+  "@changePhoneNumber": {
+    "description": "Link text to change phone number"
+  },
+  "skipDevOnly": "Skip (Dev Only)",
+  "@skipDevOnly": {
+    "description": "Development-only skip button"
+  },
+  "phoneAlreadyVoted": "This phone number has already voted.",
+  "@phoneAlreadyVoted": {
+    "description": "Error message when phone already voted"
+  },
+  "selectCandidates": "Select Candidates",
+  "@selectCandidates": {
+    "description": "Title for candidate selection screen"
+  },
+  "yourVoteIsAnonymous": "Your vote is anonymous",
+  "@yourVoteIsAnonymous": {
+    "description": "Anonymity notice"
+  },
+  "continueButton": "Continue",
+  "@continueButton": {
+    "description": "Continue button text"
+  },
+  "errorLoadingCandidates": "Error loading candidates",
+  "@errorLoadingCandidates": {
+    "description": "Error message when candidates fail to load"
+  },
+  "retry": "Retry",
+  "@retry": {
+    "description": "Retry button text"
+  },
+  "confirmYourVote": "Confirm Your Vote",
+  "@confirmYourVote": {
+    "description": "Title for confirmation screen"
+  },
+  "yourSelectedCandidates": "Your Selected Candidates",
+  "@yourSelectedCandidates": {
+    "description": "Section header for selected candidates"
+  },
+  "selectedCount": "{count} selected",
+  "@selectedCount": {
+    "description": "Counter showing number of selections",
+    "placeholders": {
+      "count": {
+        "type": "int",
+        "example": "3"
+      }
+    }
+  },
+  "submitting": "Submitting...",
+  "@submitting": {
+    "description": "Loading text during submission"
+  },
+  "confirmVote": "Confirm Vote",
+  "@confirmVote": {
+    "description": "Button text to confirm vote"
+  },
+  "goBack": "Go Back",
+  "@goBack": {
+    "description": "Button text to go back"
+  },
+  "voteSubmitted": "Vote Submitted!",
+  "@voteSubmitted": {
+    "description": "Success message title"
+  },
+  "thankYouForParticipating": "Thank you for participating in this election. Your vote has been recorded successfully.",
+  "@thankYouForParticipating": {
+    "description": "Success message body"
+  },
+  "voteAnonymousNotice": "Your vote is anonymous and cannot be traced back to you.",
+  "@voteAnonymousNotice": {
+    "description": "Anonymity confirmation notice"
+  },
+  "close": "Close",
+  "@close": {
+    "description": "Close button text"
+  },
+  "thankYou": "Thank You!",
+  "@thankYou": {
+    "description": "Thank you title"
+  },
+  "successfullyVoted": "You have successfully voted. This session is now complete.",
+  "@successfullyVoted": {
+    "description": "Final success message"
+  },
+  "ok": "OK",
+  "@ok": {
+    "description": "OK button text"
+  },
+  "errorSubmittingVote": "Error submitting vote",
+  "@errorSubmittingVote": {
+    "description": "Error message for vote submission failure"
+  },
+  "warning": "Warning",
+  "@warning": {
+    "description": "Warning title"
+  },
+  "voteIsFinalWarning": "This action cannot be undone. Your vote will be final and you cannot change your selection.",
+  "@voteIsFinalWarning": {
+    "description": "Warning message about vote being final"
+  },
+  "selectionCounter": "{count} / {max} selected",
+  "@selectionCounter": {
+    "description": "Counter showing current selection out of maximum",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      },
+      "max": {
+        "type": "int"
+      }
+    }
+  },
+  "ready": "Ready!",
+  "@ready": {
+    "description": "Ready state indicator"
+  },
+  "maxCandidatesSelected": "Maximum {max} candidates selected!",
+  "@maxCandidatesSelected": {
+    "description": "Message when maximum candidates are selected",
+    "placeholders": {
+      "max": {
+        "type": "int"
+      }
+    }
+  },
+  "maxCandidatesLimit": "You can only select {max} candidates",
+  "@maxCandidatesLimit": {
+    "description": "Message explaining the selection limit",
+    "placeholders": {
+      "max": {
+        "type": "int"
+      }
+    }
+  },
+  "selectionValidationError": "Please select exactly {max} candidates. You have selected {count}.",
+  "@selectionValidationError": {
+    "description": "Validation error for incorrect selection count",
+    "placeholders": {
+      "max": {
+        "type": "int"
+      },
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "duplicateCandidatesError": "Duplicate candidates detected",
+  "@duplicateCandidatesError": {
+    "description": "Error message for duplicate candidate selection"
+  },
+  "mustSelectExactCandidates": "Must select exactly {count} candidates",
+  "@mustSelectExactCandidates": {
+    "description": "Error message for exact selection requirement",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "serverError": "Server error occurred",
+  "@serverError": {
+    "description": "Generic server error message"
+  },
+  "cacheError": "Cache error occurred",
+  "@cacheError": {
+    "description": "Cache error message"
+  },
+  "networkError": "Network error occurred",
+  "@networkError": {
+    "description": "Network error message"
+  },
+  "validationError": "Validation error occurred",
+  "@validationError": {
+    "description": "Validation error message"
+  },
+  "authError": "Authentication error occurred",
+  "@authError": {
+    "description": "Authentication error message"
+  },
+  "verificationIdNotFound": "Verification ID not found",
+  "@verificationIdNotFound": {
+    "description": "Error message when verification ID is missing"
+  },
+  "phoneNotRegisteredAsVoter": "Phone number not registered as voter",
+  "@phoneNotRegisteredAsVoter": {
+    "description": "Error when phone number is not in voter registry"
+  },
+  "invalidFirebaseToken": "Invalid Firebase token",
+  "@invalidFirebaseToken": {
+    "description": "Error when Firebase token is invalid"
+  },
+  "sessionExpired": "Session expired",
+  "@sessionExpired": {
+    "description": "Error when user session has expired"
+  },
+  "backendAuthFailed": "Backend authentication failed",
+  "@backendAuthFailed": {
+    "description": "Error when backend authentication fails"
+  },
+  "validationFailed": "Validation failed",
+  "@validationFailed": {
+    "description": "Error when validation fails"
+  },
+  "noAuthenticatedUser": "No authenticated user",
+  "@noAuthenticatedUser": {
+    "description": "Error when no user is authenticated"
+  },
+  "failedToGetIdToken": "Failed to get ID token",
+  "@failedToGetIdToken": {
+    "description": "Error when unable to retrieve ID token"
+  },
+  "electionNotActive": "Election is not active",
+  "@electionNotActive": {
+    "description": "Error when election is not currently active"
+  },
+  "invalidCandidateCount": "Invalid number of candidates selected",
+  "@invalidCandidateCount": {
+    "description": "Error when wrong number of candidates are selected"
+  },
+  "duplicateCandidatesSelected": "Duplicate candidates selected",
+  "@duplicateCandidatesSelected": {
+    "description": "Error when same candidate is selected multiple times"
+  },
+  "noActiveElectionFound": "No active election found",
+  "@noActiveElectionFound": {
+    "description": "Error when no active election exists"
+  },
+  "authenticationRequired": "Authentication required",
+  "@authenticationRequired": {
+    "description": "Error when authentication is required but missing"
+  },
+  "serverErrorTryLater": "Server error. Please try again later.",
+  "@serverErrorTryLater": {
+    "description": "Generic server error with retry suggestion"
+  },
+  "connectionTimedOut": "Connection timed out",
+  "@connectionTimedOut": {
+    "description": "Error when connection times out"
+  },
+  "noInternetConnection": "No internet connection",
+  "@noInternetConnection": {
+    "description": "Error when there is no internet connectivity"
+  },
+  "noCandidatesSelected": "No candidates selected",
+  "@noCandidatesSelected": {
+    "description": "Error when no candidates have been selected"
+  },
+  "electionIdRequired": "Election ID is required",
+  "@electionIdRequired": {
+    "description": "Error when election ID is missing"
+  },
+  "duplicateCandidatesDetected": "Duplicate candidates detected",
+  "@duplicateCandidatesDetected": {
+    "description": "Error when duplicate candidates are found"
+  }
+}

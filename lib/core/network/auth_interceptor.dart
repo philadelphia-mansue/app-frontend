@@ -1,0 +1,41 @@
+import 'package:dio/dio.dart';
+import 'package:flutter/foundation.dart';
+import '../services/token_storage_service.dart';
+
+class AuthInterceptor extends Interceptor {
+  final TokenStorageService _tokenStorage;
+  final void Function()? onUnauthorized;
+
+  AuthInterceptor({
+    required TokenStorageService tokenStorage,
+    this.onUnauthorized,
+  }) : _tokenStorage = tokenStorage;
+
+  @override
+  Future<void> onRequest(
+    RequestOptions options,
+    RequestInterceptorHandler handler,
+  ) async {
+    // Skip auth header for login endpoint
+    if (options.path.contains('/voters/login')) {
+      return handler.next(options);
+    }
+
+    final token = await _tokenStorage.getToken();
+    if (token != null && token.isNotEmpty) {
+      options.headers['Authorization'] = 'Bearer $token';
+    }
+
+    debugPrint('[AuthInterceptor] Request: ${options.method} ${options.path}');
+    return handler.next(options);
+  }
+
+  @override
+  void onError(DioException err, ErrorInterceptorHandler handler) {
+    if (err.response?.statusCode == 401) {
+      debugPrint('[AuthInterceptor] Unauthorized - token may be expired');
+      onUnauthorized?.call();
+    }
+    return handler.next(err);
+  }
+}
