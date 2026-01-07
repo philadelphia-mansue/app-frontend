@@ -23,7 +23,7 @@ List<Voter> createTestVoters(int count) {
       id: 'voter-${i + 1}',
       firstName: 'Voter',
       lastName: '${i + 1}',
-      phone: '+123456789$i',
+      phone: '+1234567${i.toString().padLeft(3, '0')}',
     ),
   );
 }

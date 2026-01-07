@@ -8,6 +8,10 @@ import '../../../../helpers/fixtures/candidate_fixture.dart';
 
 void main() {
   group('CandidatesGrid', () {
+    // GridView.builder uses lazy rendering based on viewport size.
+    // For tests counting rendered items, we must set the physical view size
+    // to ensure all items are built. MediaQuery.size only affects widget
+    // layout decisions (like column count), not the render viewport bounds.
     testWidgets('renders correct number of candidate cards', (tester) async {
       tester.view.physicalSize = const Size(800, 1600);
       tester.view.devicePixelRatio = 1.0;
@@ -153,13 +157,6 @@ void main() {
     });
 
     testWidgets('renders empty grid when no candidates', (tester) async {
-      tester.view.physicalSize = const Size(800, 1600);
-      tester.view.devicePixelRatio = 1.0;
-      addTearDown(() {
-        tester.view.resetPhysicalSize();
-        tester.view.resetDevicePixelRatio();
-      });
-
       await tester.pumpWidget(
         wrapWidget(
           CandidatesGrid(
@@ -175,13 +172,6 @@ void main() {
     });
 
     testWidgets('grid has correct padding', (tester) async {
-      tester.view.physicalSize = const Size(800, 1600);
-      tester.view.devicePixelRatio = 1.0;
-      addTearDown(() {
-        tester.view.resetPhysicalSize();
-        tester.view.resetDevicePixelRatio();
-      });
-
       final candidates = createTestCandidates(2);
 
       await tester.pumpWidget(
@@ -200,13 +190,6 @@ void main() {
     });
 
     testWidgets('grid has correct aspect ratio', (tester) async {
-      tester.view.physicalSize = const Size(800, 1600);
-      tester.view.devicePixelRatio = 1.0;
-      addTearDown(() {
-        tester.view.resetPhysicalSize();
-        tester.view.resetDevicePixelRatio();
-      });
-
       final candidates = createTestCandidates(2);
 
       await tester.pumpWidget(

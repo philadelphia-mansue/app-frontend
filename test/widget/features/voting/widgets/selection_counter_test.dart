@@ -85,8 +85,8 @@ void main() {
       final incompleteContainer = tester.widget<Container>(
         find.descendant(
           of: find.byType(SelectionCounter),
-          matching: find.byType(Container).first,
-        ),
+          matching: find.byType(Container),
+        ).first,
       );
       final incompleteDecoration = incompleteContainer.decoration as BoxDecoration;
       expect(incompleteDecoration.color, Colors.grey.shade100);

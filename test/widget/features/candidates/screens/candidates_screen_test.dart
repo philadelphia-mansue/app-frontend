@@ -11,9 +11,39 @@ import 'package:philadelphia_mansue/features/voting/presentation/widgets/selecti
 import '../../../../helpers/test_wrapper.dart';
 import '../../../../helpers/fixtures/election_fixture.dart';
 
-// Note: LuckyButton third-party component causes overflow errors in tests.
-// We suppress these errors as they don't affect the actual test assertions.
 const _testScreenSize = Size(600, 1200);
+
+/// Safely consumes expected overflow errors from LuckyButton third-party component.
+/// Rethrows any unexpected exception types to avoid masking real bugs.
+///
+/// Handles both:
+/// - Direct FlutterError overflow exceptions
+/// - Meta "Multiple exceptions" messages from the test framework when multiple
+///   overflow errors occur (these are String type, not FlutterError)
+///
+/// Note: This test file specifically tests CandidatesScreen which uses LuckyButton,
+/// a third-party component known to cause layout overflow errors in test environments.
+/// The "Multiple exceptions" meta-message is allowed since it aggregates the expected
+/// overflow errors that occur during rendering.
+void consumeOverflowErrors(WidgetTester tester) {
+  dynamic exception = tester.takeException();
+  while (exception != null) {
+    final errorString = exception.toString().toLowerCase();
+    // Allow FlutterError overflow exceptions
+    final isOverflowError = exception is FlutterError &&
+        (errorString.contains('overflow') || errorString.contains('renderflex'));
+    // Allow the framework's "Multiple exceptions" meta-message, which aggregates
+    // overflow errors from LuckyButton during rendering. This is safe in this test
+    // file since we know LuckyButton causes these expected overflow errors.
+    final isMultipleExceptionsMessage =
+        exception is String && errorString.contains('multiple exceptions');
+    if (!isOverflowError && !isMultipleExceptionsMessage) {
+      // ignore: only_throw_errors
+      throw exception;
+    }
+    exception = tester.takeException();
+  }
+}
 
 void main() {
   group('CandidatesScreen', () {
@@ -38,8 +68,7 @@ void main() {
         ),
       );
       await tester.pump();
-      // Consume any overflow errors from LuckyButton (third-party component issue)
-      tester.takeException();
+      consumeOverflowErrors(tester);
 
       expect(find.byType(CircularProgressIndicator), findsOneWidget);
     });
@@ -70,7 +99,7 @@ void main() {
         ),
       );
       await tester.pumpAndSettle();
-      tester.takeException();
+      consumeOverflowErrors(tester);
 
       expect(find.byType(CandidatesGrid), findsOneWidget);
     });
@@ -102,7 +131,7 @@ void main() {
         ),
       );
       await tester.pumpAndSettle();
-      tester.takeException();
+      consumeOverflowErrors(tester);
 
       expect(find.byType(SelectionCounter), findsOneWidget);
     });
@@ -131,7 +160,7 @@ void main() {
         ),
       );
       await tester.pumpAndSettle();
-      tester.takeException();
+      consumeOverflowErrors(tester);
 
       expect(find.text('Failed to load election'), findsOneWidget);
     });
@@ -160,7 +189,7 @@ void main() {
         ),
       );
       await tester.pumpAndSettle();
-      tester.takeException();
+      consumeOverflowErrors(tester);
 
       expect(find.text('Retry'), findsOneWidget);
     });
@@ -186,7 +215,7 @@ void main() {
         ),
       );
       await tester.pumpAndSettle();
-      tester.takeException();
+      consumeOverflowErrors(tester);
 
       expect(find.text('No active election found'), findsOneWidget);
     });
@@ -212,7 +241,7 @@ void main() {
         ),
       );
       await tester.pumpAndSettle();
-      tester.takeException();
+      consumeOverflowErrors(tester);
 
       expect(find.byIcon(Icons.how_to_vote_outlined), findsOneWidget);
     });
@@ -243,7 +272,7 @@ void main() {
         ),
       );
       await tester.pumpAndSettle();
-      tester.takeException();
+      consumeOverflowErrors(tester);
 
       expect(find.text('Active Election'), findsOneWidget);
     });
@@ -274,7 +303,7 @@ void main() {
         ),
       );
       await tester.pumpAndSettle();
-      tester.takeException();
+      consumeOverflowErrors(tester);
 
       expect(find.text('Continue'), findsOneWidget);
     });
@@ -305,7 +334,7 @@ void main() {
         ),
       );
       await tester.pumpAndSettle();
-      tester.takeException();
+      consumeOverflowErrors(tester);
 
       // Find the LuckyButton and verify it's disabled
       final luckyButton = tester.widget<LuckyButton>(find.byType(LuckyButton));
@@ -338,7 +367,7 @@ void main() {
         ),
       );
       await tester.pumpAndSettle();
-      tester.takeException();
+      consumeOverflowErrors(tester);
 
       expect(find.byType(LuckyAppBar), findsOneWidget);
     });

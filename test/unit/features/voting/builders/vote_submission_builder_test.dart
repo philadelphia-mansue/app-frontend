@@ -44,8 +44,14 @@ void main() {
 
       test('setTimestamp should set timestamp', () {
         final timestamp = DateTime(2024, 1, 1, 12, 0);
-        builder.setTimestamp(timestamp);
-        // Timestamp is used in build(), not directly accessible
+        builder
+            .setSessionId('session-1')
+            .setElectionId('election-1')
+            .addCandidates(List.generate(10, (i) => 'candidate-$i'))
+            .setTimestamp(timestamp);
+
+        final vote = builder.build();
+        expect(vote.timestamp, equals(timestamp));
       });
     });
 
@@ -233,16 +239,16 @@ void main() {
 
         final vote1 = builder.build();
 
-        // Reset and rebuild
+        // Reset and rebuild with different session ID to guarantee unique IDs
+        // (ID format is 'vote_<timestamp>_<sessionId>', so different sessionId = different ID)
         builder.reset();
         builder
-            .setSessionId('session-1')
+            .setSessionId('session-2')
             .setElectionId('election-1')
             .addCandidates(List.generate(10, (i) => 'candidate-$i'));
 
         final vote2 = builder.build();
 
-        // IDs should be different (different timestamps)
         expect(vote1.id, isNot(equals(vote2.id)));
       });
     });

@@ -119,8 +119,8 @@ void main() {
       final container = tester.widget<Container>(
         find.descendant(
           of: find.byType(CandidateCard),
-          matching: find.byType(Container).first,
-        ),
+          matching: find.byType(Container),
+        ).first,
       );
 
       final decoration = container.decoration as BoxDecoration;
@@ -148,8 +148,8 @@ void main() {
       final container = tester.widget<Container>(
         find.descendant(
           of: find.byType(CandidateCard),
-          matching: find.byType(Container).first,
-        ),
+          matching: find.byType(Container),
+        ).first,
       );
 
       final decoration = container.decoration as BoxDecoration;

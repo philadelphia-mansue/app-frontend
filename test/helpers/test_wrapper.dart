@@ -23,23 +23,26 @@ class TestWrapper extends StatelessWidget {
   Widget build(BuildContext context) {
     return ProviderScope(
       overrides: overrides ?? [],
-      child: MediaQuery(
-        data: MediaQueryData(size: screenSize),
-        child: MaterialApp(
-          home: child,
-          localizationsDelegates: const [
-            AppLocalizations.delegate,
-            GlobalMaterialLocalizations.delegate,
-            GlobalWidgetsLocalizations.delegate,
-            GlobalCupertinoLocalizations.delegate,
-          ],
-          supportedLocales: const [
-            Locale('en'),
-            Locale('ro'),
-            Locale('it'),
-          ],
-          locale: locale,
-        ),
+      child: MaterialApp(
+        home: child,
+        localizationsDelegates: const [
+          AppLocalizations.delegate,
+          GlobalMaterialLocalizations.delegate,
+          GlobalWidgetsLocalizations.delegate,
+          GlobalCupertinoLocalizations.delegate,
+        ],
+        supportedLocales: const [
+          Locale('en'),
+          Locale('ro'),
+          Locale('it'),
+        ],
+        locale: locale,
+        builder: (context, child) {
+          return MediaQuery(
+            data: MediaQuery.of(context).copyWith(size: screenSize),
+            child: child!,
+          );
+        },
       ),
     );
   }

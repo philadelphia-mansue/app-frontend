@@ -82,7 +82,7 @@ void main() {
       result.fold(
         (failure) {
           expect(failure, isA<ValidationFailure>());
-          expect(failure.message, contains('0'));
+          expect(failure.message, contains('selected 0'));
         },
         (_) => fail('Should return Left'),
       );
@@ -148,7 +148,7 @@ void main() {
       // Assert
       expect(result.isLeft(), isTrue);
       result.fold(
-        (failure) => expect(failure.message, contains('1')),
+        (failure) => expect(failure.message, contains('selected 1')),
         (_) => fail('Should return Left'),
       );
     });
