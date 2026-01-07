@@ -47,7 +47,7 @@ final routerProvider = Provider<GoRouter>((ref) {
       final isElectionLoaded = electionState.status == ElectionLoadStatus.loaded ||
           electionState.status == ElectionLoadStatus.noElection ||
           electionState.status == ElectionLoadStatus.error;
-      final hasVoted = electionState.election?.hasVoted ?? false;
+      final hasVoted = ref.read(hasVotedProvider);
       final currentPath = state.matchedLocation;
 
       debugPrint('[Router] redirect: path=$currentPath, authStatus=${authState.status}, electionStatus=${electionState.status}, hasVoted=$hasVoted');

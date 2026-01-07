@@ -39,10 +39,6 @@ class ElectionState {
     this.errorMessage,
   });
 
-  int get requiredVotesCount => election?.requiredVotesCount ?? 10;
-  List<Candidate> get candidates => election?.candidates ?? [];
-  bool get hasActiveElection => election != null && election!.isActive;
-
   ElectionState copyWith({
     ElectionLoadStatus? status,
     Election? election,
@@ -115,15 +111,16 @@ final currentElectionIdProvider = Provider<String?>((ref) {
 });
 
 final requiredVotesCountProvider = Provider<int>((ref) {
-  return ref.watch(electionNotifierProvider).requiredVotesCount;
+  return ref.watch(electionNotifierProvider).election?.requiredVotesCount ?? 10;
 });
 
 final electionCandidatesProvider = Provider<List<Candidate>>((ref) {
-  return ref.watch(electionNotifierProvider).candidates;
+  return ref.watch(electionNotifierProvider).election?.candidates ?? [];
 });
 
 final hasActiveElectionProvider = Provider<bool>((ref) {
-  return ref.watch(electionNotifierProvider).hasActiveElection;
+  final state = ref.watch(electionNotifierProvider);
+  return state.election != null && state.election!.isActive;
 });
 
 final electionLoadingProvider = Provider<bool>((ref) {

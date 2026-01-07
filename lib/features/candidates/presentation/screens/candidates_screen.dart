@@ -154,7 +154,7 @@ class _CandidatesScreenState extends ConsumerState<CandidatesScreen> {
           child: ConstrainedBox(
             constraints: const BoxConstraints(maxWidth: 1200),
             child: CandidatesGrid(
-              candidates: state.candidates,
+              candidates: state.election?.candidates ?? [],
               selectedIds: selectedIds,
               onCandidateTap: _onCandidateTap,
             ),
