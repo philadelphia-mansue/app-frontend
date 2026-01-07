@@ -11,7 +11,10 @@ void main() {
     testWidgets('renders correct number of candidate cards', (tester) async {
       tester.view.physicalSize = const Size(800, 1600);
       tester.view.devicePixelRatio = 1.0;
-      addTearDown(() => tester.view.resetPhysicalSize());
+      addTearDown(() {
+        tester.view.resetPhysicalSize();
+        tester.view.resetDevicePixelRatio();
+      });
 
       final candidates = createTestCandidates(5);
 
@@ -32,7 +35,10 @@ void main() {
     testWidgets('displays candidate names', (tester) async {
       tester.view.physicalSize = const Size(800, 1600);
       tester.view.devicePixelRatio = 1.0;
-      addTearDown(() => tester.view.resetPhysicalSize());
+      addTearDown(() {
+        tester.view.resetPhysicalSize();
+        tester.view.resetDevicePixelRatio();
+      });
 
       final candidates = createTestCandidates(3);
 
@@ -55,7 +61,10 @@ void main() {
     testWidgets('marks selected candidates', (tester) async {
       tester.view.physicalSize = const Size(800, 1600);
       tester.view.devicePixelRatio = 1.0;
-      addTearDown(() => tester.view.resetPhysicalSize());
+      addTearDown(() {
+        tester.view.resetPhysicalSize();
+        tester.view.resetDevicePixelRatio();
+      });
 
       final candidates = createTestCandidates(3);
 
@@ -77,7 +86,10 @@ void main() {
     testWidgets('calls onCandidateTap with correct id when card is tapped', (tester) async {
       tester.view.physicalSize = const Size(800, 1600);
       tester.view.devicePixelRatio = 1.0;
-      addTearDown(() => tester.view.resetPhysicalSize());
+      addTearDown(() {
+        tester.view.resetPhysicalSize();
+        tester.view.resetDevicePixelRatio();
+      });
 
       final candidates = createTestCandidates(3);
       String? tappedId;
@@ -143,7 +155,10 @@ void main() {
     testWidgets('renders empty grid when no candidates', (tester) async {
       tester.view.physicalSize = const Size(800, 1600);
       tester.view.devicePixelRatio = 1.0;
-      addTearDown(() => tester.view.resetPhysicalSize());
+      addTearDown(() {
+        tester.view.resetPhysicalSize();
+        tester.view.resetDevicePixelRatio();
+      });
 
       await tester.pumpWidget(
         wrapWidget(
@@ -162,7 +177,10 @@ void main() {
     testWidgets('grid has correct padding', (tester) async {
       tester.view.physicalSize = const Size(800, 1600);
       tester.view.devicePixelRatio = 1.0;
-      addTearDown(() => tester.view.resetPhysicalSize());
+      addTearDown(() {
+        tester.view.resetPhysicalSize();
+        tester.view.resetDevicePixelRatio();
+      });
 
       final candidates = createTestCandidates(2);
 
@@ -184,7 +202,10 @@ void main() {
     testWidgets('grid has correct aspect ratio', (tester) async {
       tester.view.physicalSize = const Size(800, 1600);
       tester.view.devicePixelRatio = 1.0;
-      addTearDown(() => tester.view.resetPhysicalSize());
+      addTearDown(() {
+        tester.view.resetPhysicalSize();
+        tester.view.resetDevicePixelRatio();
+      });
 
       final candidates = createTestCandidates(2);
 

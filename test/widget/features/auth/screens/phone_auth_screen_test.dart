@@ -167,7 +167,19 @@ void main() {
         ),
       );
       await tester.pumpAndSettle();
-      tester.takeException();
+
+      // LuckyUI components (LuckyHeading) may throw overflow exceptions in test
+      // environments due to layout constraints. We intentionally consume these
+      // to prevent non-critical rendering issues from failing the test.
+      // If an exception occurs, verify it's the expected overflow type.
+      final exception = tester.takeException();
+      if (exception != null) {
+        expect(
+          exception.toString(),
+          contains('overflow'),
+          reason: 'Unexpected exception type: $exception',
+        );
+      }
 
       expect(find.byType(LuckyHeading), findsWidgets);
     });

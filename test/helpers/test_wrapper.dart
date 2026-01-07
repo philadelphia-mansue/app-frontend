@@ -75,25 +75,10 @@ Widget wrapScreen(
   Locale locale = const Locale('en'),
   Size screenSize = const Size(500, 900),
 }) {
-  return ProviderScope(
+  return TestWrapper(
     overrides: overrides,
-    child: MediaQuery(
-      data: MediaQueryData(size: screenSize),
-      child: MaterialApp(
-        home: screen,
-        localizationsDelegates: const [
-          AppLocalizations.delegate,
-          GlobalMaterialLocalizations.delegate,
-          GlobalWidgetsLocalizations.delegate,
-          GlobalCupertinoLocalizations.delegate,
-        ],
-        supportedLocales: const [
-          Locale('en'),
-          Locale('ro'),
-          Locale('it'),
-        ],
-        locale: locale,
-      ),
-    ),
+    locale: locale,
+    screenSize: screenSize,
+    child: screen,
   );
 }

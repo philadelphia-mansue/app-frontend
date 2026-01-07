@@ -68,8 +68,8 @@ void main() {
       expect(find.byIcon(Icons.how_to_vote), findsOneWidget);
     });
 
-    testWidgets('changes background color when selection is complete', (tester) async {
-      // First render incomplete state
+    testWidgets('uses grey background for incomplete state', (tester) async {
+      // Render incomplete state
       await tester.pumpWidget(
         wrapWidgetWithProviders(
           const SelectionCounter(),
@@ -104,10 +104,13 @@ void main() {
       );
       await tester.pumpAndSettle();
 
-      // The primaryContainer color should be used for complete state
-      // We verify this indirectly by checking the icon color
+      // Get the theme's primary color from the context
+      final context = tester.element(find.byType(SelectionCounter));
+      final expectedColor = Theme.of(context).colorScheme.primary;
+
+      // Verify the icon uses the theme's primary color
       final icon = tester.widget<Icon>(find.byIcon(Icons.check_circle));
-      expect(icon.color, isNotNull);
+      expect(icon.color, expectedColor);
     });
 
     testWidgets('works with custom required votes count', (tester) async {

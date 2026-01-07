@@ -85,6 +85,7 @@ void main() {
 
       final decoration = container.decoration as BoxDecoration;
       expect(decoration.border, isNotNull);
+      expect(decoration.border?.top.color, Colors.amber.shade300);
     });
 
     testWidgets('icon has correct size', (tester) async {
