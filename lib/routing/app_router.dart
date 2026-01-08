@@ -15,7 +15,13 @@ import 'splash_screen.dart';
 class RouterRefreshNotifier extends ChangeNotifier {
   RouterRefreshNotifier(Ref ref) {
     // Listen to auth changes
-    ref.listen(authNotifierProvider, (_, _) {
+    ref.listen(authNotifierProvider, (previous, next) {
+      // Reset election state when user becomes unauthenticated
+      // This ensures fresh election data is loaded for the next user
+      if (previous?.status == AuthStatus.authenticated &&
+          next.status == AuthStatus.unauthenticated) {
+        ref.read(electionNotifierProvider.notifier).reset();
+      }
       notifyListeners();
     });
     // Listen to election changes

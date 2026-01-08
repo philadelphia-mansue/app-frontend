@@ -71,5 +71,9 @@
   "noInternetConnection": "Nessuna connessione internet",
   "noCandidatesSelected": "Nessun candidato selezionato",
   "electionIdRequired": "ID elezione richiesto",
-  "duplicateCandidatesDetected": "Candidati duplicati rilevati"
+  "duplicateCandidatesDetected": "Candidati duplicati rilevati",
+  "reviewVotes": "Rivedi Voti",
+  "selectMoreCandidatesToProceed": "Seleziona ancora {remaining} candidato/i per procedere",
+  "candidatesSelectedProgress": "{count} di {max} candidati selezionati",
+  "selectMoreToContinue": "Seleziona altri {count} per continuare"
 }

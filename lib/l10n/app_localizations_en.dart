@@ -242,4 +242,22 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get duplicateCandidatesDetected => 'Duplicate candidates detected';
+
+  @override
+  String get reviewVotes => 'Review Votes';
+
+  @override
+  String selectMoreCandidatesToProceed(int remaining) {
+    return 'Select $remaining more candidate(s) to proceed';
+  }
+
+  @override
+  String candidatesSelectedProgress(int count, int max) {
+    return '$count of $max candidates selected';
+  }
+
+  @override
+  String selectMoreToContinue(int count) {
+    return 'Select $count more to continue';
+  }
 }

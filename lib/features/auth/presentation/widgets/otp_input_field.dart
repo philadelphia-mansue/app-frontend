@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:philadelphia_mansue/l10n/app_localizations.dart';
+import 'package:luckyui/luckyui.dart';
 
 class OtpInputField extends StatelessWidget {
   final TextEditingController controller;
@@ -16,33 +16,65 @@ class OtpInputField extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final l10n = AppLocalizations.of(context)!;
-    return TextField(
-      controller: controller,
-      keyboardType: TextInputType.number,
-      textAlign: TextAlign.center,
-      style: const TextStyle(
-        fontSize: 24,
-        letterSpacing: 16,
-        fontWeight: FontWeight.bold,
-      ),
-      inputFormatters: [
-        FilteringTextInputFormatter.digitsOnly,
-        LengthLimitingTextInputFormatter(6),
-      ],
-      decoration: InputDecoration(
-        labelText: l10n.verificationCode,
-        hintText: l10n.verificationCodeHint,
-        errorText: errorText,
-        border: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(12),
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Container(
+          decoration: BoxDecoration(
+            color: context.luckyColors.n100,
+            borderRadius: radiusXl,
+            border: Border.all(
+              color: errorText != null
+                  ? const Color(0xFFEC003F)
+                  : context.luckyColors.n200,
+              width: 1,
+            ),
+          ),
+          child: TextField(
+            controller: controller,
+            keyboardType: TextInputType.number,
+            textInputAction: TextInputAction.done,
+            maxLength: 6,
+            autofocus: true,
+            textAlign: TextAlign.center,
+            style: TextStyle(
+              fontSize: textXl.toDouble(),
+              color: context.luckyColors.onSurface,
+              fontWeight: boldFontWeight,
+              letterSpacing: 8,
+            ),
+            inputFormatters: [
+              FilteringTextInputFormatter.digitsOnly,
+            ],
+            decoration: InputDecoration(
+              hintText: '------',
+              hintStyle: TextStyle(
+                color: context.luckyColors.n500,
+                letterSpacing: 8,
+              ),
+              border: InputBorder.none,
+              contentPadding: const EdgeInsets.symmetric(
+                horizontal: spaceMd,
+                vertical: spaceMd,
+              ),
+              counterText: '',
+            ),
+            onChanged: (value) {
+              if (value.length == 6) {
+                onComplete?.call();
+              }
+            },
+            onSubmitted: (_) => onComplete?.call(),
+          ),
         ),
-      ),
-      onChanged: (value) {
-        if (value.length == 6) {
-          onComplete?.call();
-        }
-      },
+        if (errorText != null) ...[
+          const SizedBox(height: spaceXs),
+          LuckySmallBody(
+            text: errorText!,
+            color: const Color(0xFFEC003F),
+          ),
+        ],
+      ],
     );
   }
 }

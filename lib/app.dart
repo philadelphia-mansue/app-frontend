@@ -14,12 +14,31 @@ class App extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final router = ref.watch(routerProvider);
 
-    // Apply Inter font to the LuckyTheme
+    // Indigo color scheme for government app
+    const indigoPrimary = Colors.indigo;
+    final indigoLight = Colors.indigo.shade300;
+    final indigoMuted = Colors.indigo.shade600;
+
+    // Apply Inter font and indigo colors to the LuckyTheme
     final lightTheme = LuckyTheme.lightTheme.copyWith(
       textTheme: GoogleFonts.interTextTheme(LuckyTheme.lightTheme.textTheme),
+      extensions: [
+        LuckyColors.light.copyWith(
+          primaryColor: indigoPrimary,
+          primaryColor300: indigoLight,
+          primaryColor500: indigoMuted,
+        ),
+      ],
     );
     final darkTheme = LuckyTheme.darkTheme.copyWith(
       textTheme: GoogleFonts.interTextTheme(LuckyTheme.darkTheme.textTheme),
+      extensions: [
+        LuckyColors.dark.copyWith(
+          primaryColor: indigoPrimary,
+          primaryColor300: indigoLight,
+          primaryColor500: indigoMuted,
+        ),
+      ],
     );
 
     return MaterialApp.router(

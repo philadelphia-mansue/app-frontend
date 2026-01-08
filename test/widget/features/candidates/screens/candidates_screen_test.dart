@@ -133,7 +133,8 @@ void main() {
       await tester.pumpAndSettle();
       consumeOverflowErrors(tester);
 
-      expect(find.byType(SelectionCounter), findsOneWidget);
+      // Screen shows progress indicator with selection count
+      expect(find.text('0 of 10 candidates selected'), findsOneWidget);
     });
 
     testWidgets('shows error message when election fails to load', (tester) async {
@@ -277,7 +278,7 @@ void main() {
       expect(find.text('Active Election'), findsOneWidget);
     });
 
-    testWidgets('shows continue button', (tester) async {
+    testWidgets('shows review votes button', (tester) async {
       tester.view.physicalSize = const Size(800, 1600);
       tester.view.devicePixelRatio = 1.0;
       addTearDown(() => tester.view.resetPhysicalSize());
@@ -299,6 +300,7 @@ void main() {
             ),
             selectionNotifierProvider.overrideWith((ref) => SelectionNotifier(10)),
             requiredVotesCountProvider.overrideWith((ref) => 10),
+            selectionCountProvider.overrideWith((ref) => 0),
           ],
         ),
       );
@@ -308,7 +310,7 @@ void main() {
       expect(find.text('Continue'), findsOneWidget);
     });
 
-    testWidgets('continue button is disabled when selection incomplete', (tester) async {
+    testWidgets('shows select more text when selection incomplete', (tester) async {
       tester.view.physicalSize = const Size(800, 1600);
       tester.view.devicePixelRatio = 1.0;
       addTearDown(() => tester.view.resetPhysicalSize());
@@ -330,15 +332,15 @@ void main() {
             ),
             selectionNotifierProvider.overrideWith((ref) => SelectionNotifier(10)),
             requiredVotesCountProvider.overrideWith((ref) => 10),
+            selectionCountProvider.overrideWith((ref) => 3),
           ],
         ),
       );
       await tester.pumpAndSettle();
       consumeOverflowErrors(tester);
 
-      // Find the LuckyButton and verify it's disabled
-      final luckyButton = tester.widget<LuckyButton>(find.byType(LuckyButton));
-      expect(luckyButton.disabled, isTrue);
+      // SelectionNotifier(10) starts empty, so remaining is 10
+      expect(find.text('Select 10 more to continue'), findsOneWidget);
     });
 
     testWidgets('has LuckyAppBar', (tester) async {

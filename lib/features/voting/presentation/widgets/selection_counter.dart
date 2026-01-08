@@ -5,7 +5,14 @@ import '../../../elections/presentation/providers/election_providers.dart';
 import '../providers/selection_notifier.dart';
 
 class SelectionCounter extends ConsumerWidget {
-  const SelectionCounter({super.key});
+  const SelectionCounter({
+    super.key,
+    this.onReviewTap,
+  });
+
+  /// Callback when the review button is tapped.
+  /// If null, the button will appear disabled.
+  final VoidCallback? onReviewTap;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -13,38 +20,57 @@ class SelectionCounter extends ConsumerWidget {
     final selectionCount = ref.watch(selectionCountProvider);
     final requiredVotes = ref.watch(requiredVotesCountProvider);
     final isComplete = selectionCount == requiredVotes;
+    final remaining = requiredVotes - selectionCount;
 
-    return Container(
-      padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
-      decoration: BoxDecoration(
-        color: isComplete
-            ? Theme.of(context).colorScheme.primaryContainer
-            : Colors.grey.shade100,
-        border: Border(
-          bottom: BorderSide(color: Colors.grey.shade300),
+    return SafeArea(
+      top: false,
+      child: Container(
+        padding: const EdgeInsets.all(16),
+        decoration: BoxDecoration(
+          color: Colors.white,
+          border: Border(
+            top: BorderSide(color: Colors.grey.shade200),
+          ),
         ),
-      ),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Icon(
-            isComplete ? Icons.check_circle : Icons.how_to_vote,
-            color: isComplete
-                ? Theme.of(context).colorScheme.primary
-                : Colors.grey.shade600,
-          ),
-          const SizedBox(width: 8),
-          Text(
-            l10n.selectionCounter(selectionCount, requiredVotes),
-            style: TextStyle(
-              fontSize: 16,
-              fontWeight: FontWeight.w600,
-              color: isComplete
-                  ? Theme.of(context).colorScheme.primary
-                  : Colors.grey.shade700,
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            // Review Votes button in rounded container
+            GestureDetector(
+              onTap: onReviewTap,
+              child: Container(
+                width: double.infinity,
+                padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 24),
+                decoration: BoxDecoration(
+                  color: isComplete
+                      ? Theme.of(context).colorScheme.primary
+                      : Colors.grey.shade200,
+                  borderRadius: BorderRadius.circular(30),
+                ),
+                child: Text(
+                  l10n.reviewVotes,
+                  textAlign: TextAlign.center,
+                  style: TextStyle(
+                    fontSize: 20,
+                    fontWeight: FontWeight.w500,
+                    color: isComplete ? Colors.white : Colors.grey.shade600,
+                  ),
+                ),
+              ),
             ),
-          ),
-        ],
+            // Helper text below (only when incomplete)
+            if (!isComplete) ...[
+              const SizedBox(height: 12),
+              Text(
+                l10n.selectMoreCandidatesToProceed(remaining),
+                style: TextStyle(
+                  fontSize: 14,
+                  color: Colors.grey.shade600,
+                ),
+              ),
+            ],
+          ],
+        ),
       ),
     );
   }

@@ -6,7 +6,6 @@ import 'package:philadelphia_mansue/l10n/app_localizations.dart';
 import '../../../../routing/routes.dart';
 import '../../../elections/presentation/providers/election_providers.dart';
 import '../../../voting/presentation/providers/selection_notifier.dart';
-import '../../../voting/presentation/widgets/selection_counter.dart';
 import '../widgets/candidates_grid.dart';
 
 class CandidatesScreen extends ConsumerStatefulWidget {
@@ -63,6 +62,7 @@ class _CandidatesScreenState extends ConsumerState<CandidatesScreen> {
 
     // hasVoted redirect is handled by router
     final electionName = electionState.election?.name ?? l10n.selectCandidates;
+    final electionDescription = electionState.election?.description;
 
     return Scaffold(
       appBar: LuckyAppBar(
@@ -71,7 +71,19 @@ class _CandidatesScreenState extends ConsumerState<CandidatesScreen> {
       ),
       body: Column(
         children: [
-          const SelectionCounter(),
+          if (electionDescription != null && electionDescription.isNotEmpty)
+            Padding(
+              padding: const EdgeInsets.fromLTRB(16, 12, 16, 0),
+              child: Text(
+                electionDescription,
+                style: TextStyle(
+                  fontSize: 14,
+                  color: Colors.grey.shade600,
+                ),
+                textAlign: TextAlign.center,
+              ),
+            ),
+          _buildProgressIndicator(selectedIds.length, requiredVotes, l10n),
           Expanded(
             child: _buildContent(electionState, selectedIds, l10n),
           ),
@@ -101,6 +113,68 @@ class _CandidatesScreenState extends ConsumerState<CandidatesScreen> {
               ),
             ),
           ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildProgressIndicator(int count, int max, AppLocalizations l10n) {
+    final progress = max > 0 ? count / max : 0.0;
+    final percentage = (progress * 100).round();
+    final remaining = max - count;
+
+    return Container(
+      padding: const EdgeInsets.all(16),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Text(
+                l10n.candidatesSelectedProgress(count, max),
+                style: const TextStyle(
+                  fontSize: 18,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+              Container(
+                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                decoration: BoxDecoration(
+                  color: Colors.indigo,
+                  borderRadius: BorderRadius.circular(16),
+                ),
+                child: Text(
+                  '$percentage%',
+                  style: TextStyle(
+                    fontSize: 14,
+                    fontWeight: FontWeight.w600,
+                    color: Colors.white,
+                  ),
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 12),
+          ClipRRect(
+            borderRadius: BorderRadius.circular(8),
+            child: LinearProgressIndicator(
+              value: progress,
+              minHeight: 10,
+              backgroundColor: Colors.grey.shade200,
+              valueColor: AlwaysStoppedAnimation<Color>(Colors.indigo),
+            ),
+          ),
+          if (remaining > 0) ...[
+            const SizedBox(height: 12),
+            Text(
+              l10n.selectMoreToContinue(remaining),
+              style: TextStyle(
+                fontSize: 14,
+                color: Colors.indigo.shade700,
+              ),
+            ),
+          ],
         ],
       ),
     );

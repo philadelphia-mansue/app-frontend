@@ -71,5 +71,9 @@
   "noInternetConnection": "Fără conexiune la internet",
   "noCandidatesSelected": "Niciun candidat selectat",
   "electionIdRequired": "ID-ul alegerilor este necesar",
-  "duplicateCandidatesDetected": "Au fost detectați candidați duplicați"
+  "duplicateCandidatesDetected": "Au fost detectați candidați duplicați",
+  "reviewVotes": "Revizuiți Voturile",
+  "selectMoreCandidatesToProceed": "Selectați încă {remaining} candidat(i) pentru a continua",
+  "candidatesSelectedProgress": "{count} din {max} candidați selectați",
+  "selectMoreToContinue": "Selectați încă {count} pentru a continua"
 }
