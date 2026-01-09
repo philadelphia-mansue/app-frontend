@@ -55,6 +55,16 @@
 				<string>com.googleusercontent.apps.805720404160-ab5rl38c2fhjpqai454as2mtjmamh95u</string>
 			</array>
 		</dict>
+		<dict>
+			<key>CFBundleTypeRole</key>
+			<string>Editor</string>
+			<key>CFBundleURLName</key>
+			<string>com.example.philadelphiamansue</string>
+			<key>CFBundleURLSchemes</key>
+			<array>
+				<string>philadelphiamansue</string>
+			</array>
+		</dict>
 	</array>
 </dict>
 </plist>
