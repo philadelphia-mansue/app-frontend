@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 import '../../domain/entities/candidate.dart';
 
 class CandidateCard extends StatelessWidget {
@@ -24,6 +25,8 @@ class CandidateCard extends StatelessWidget {
   Widget build(BuildContext context) {
     debugPrint('CandidateCard: ${candidate.fullName} photoUrl: ${candidate.photoUrl}');
     final imageUrl = _getCorsProxyUrl(candidate.photoUrl);
+    const selectedColor = Colors.indigo;
+
     return GestureDetector(
       onTap: onTap,
       child: Container(
@@ -31,17 +34,17 @@ class CandidateCard extends StatelessWidget {
           borderRadius: BorderRadius.circular(12),
           border: Border.all(
             color: isSelected
-                ? Colors.green
+                ? selectedColor
                 : Colors.grey.shade300,
-            width: 2,
+            width: isSelected ? 2.5 : 1.5,
           ),
           color: isSelected
-              ? Colors.green.withValues(alpha: 0.1)
+              ? selectedColor.withValues(alpha: 0.08)
               : Colors.white,
           boxShadow: isSelected
               ? [
                   BoxShadow(
-                    color: Colors.green.withValues(alpha: 0.3),
+                    color: selectedColor.withValues(alpha: 0.25),
                     blurRadius: 8,
                     offset: const Offset(0, 2),
                   ),
@@ -87,33 +90,43 @@ class CandidateCard extends StatelessWidget {
                       },
                     ),
                   ),
-                  if (isSelected)
-                    Positioned(
-                      top: 8,
-                      right: 8,
-                      child: Container(
-                        padding: const EdgeInsets.all(4),
-                        decoration: const BoxDecoration(
-                          color: Colors.green,
-                          shape: BoxShape.circle,
-                        ),
-                        child: const Icon(
-                          Icons.check,
-                          size: 16,
-                          color: Colors.white,
-                        ),
+                  // Always show radio indicator
+                  Positioned(
+                    top: 8,
+                    right: 8,
+                    child: Container(
+                      width: 24,
+                      height: 24,
+                      decoration: BoxDecoration(
+                        color: isSelected ? selectedColor : Colors.white,
+                        shape: BoxShape.circle,
+                        border: isSelected
+                            ? null
+                            : Border.all(
+                                color: Colors.grey.shade400,
+                                width: 2,
+                              ),
                       ),
+                      child: isSelected
+                          ? const Icon(
+                              Icons.check,
+                              size: 16,
+                              color: Colors.white,
+                            )
+                          : null,
                     ),
+                  ),
                 ],
               ),
             ),
             Padding(
-              padding: const EdgeInsets.all(8.0),
+              padding: const EdgeInsets.fromLTRB(12, 12, 12, 16),
               child: Text(
-                candidate.fullName,
-                style: const TextStyle(
-                  fontWeight: FontWeight.bold,
+                candidate.fullName.toUpperCase(),
+                style: GoogleFonts.inter(
+                  fontWeight: FontWeight.w700,
                   fontSize: 14,
+                  color: Colors.black87,
                 ),
                 textAlign: TextAlign.center,
                 maxLines: 2,

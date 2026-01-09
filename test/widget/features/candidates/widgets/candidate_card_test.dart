@@ -28,7 +28,7 @@ void main() {
       );
       await tester.pumpAndSettle();
 
-      expect(find.text('John Doe'), findsOneWidget);
+      expect(find.text('JOHN DOE'), findsOneWidget);
     });
 
     testWidgets('calls onTap when tapped', (tester) async {
@@ -56,7 +56,7 @@ void main() {
       expect(tapped, isTrue);
     });
 
-    testWidgets('shows checkmark when selected', (tester) async {
+    testWidgets('shows checkmark in filled circle when selected', (tester) async {
       final candidate = createTestCandidate();
 
       await tester.pumpWidget(
@@ -74,10 +74,26 @@ void main() {
       );
       await tester.pumpAndSettle();
 
+      // Should show checkmark icon
       expect(find.byIcon(Icons.check), findsOneWidget);
+
+      // Should have filled indigo circle
+      final containers = find.byType(Container);
+      bool foundFilledCircle = false;
+      for (final element in containers.evaluate()) {
+        final container = element.widget as Container;
+        final decoration = container.decoration;
+        if (decoration is BoxDecoration &&
+            decoration.shape == BoxShape.circle &&
+            decoration.color == Colors.indigo) {
+          foundFilledCircle = true;
+          break;
+        }
+      }
+      expect(foundFilledCircle, isTrue);
     });
 
-    testWidgets('does not show checkmark when not selected', (tester) async {
+    testWidgets('shows empty circle indicator when not selected', (tester) async {
       final candidate = createTestCandidate();
 
       await tester.pumpWidget(
@@ -95,10 +111,15 @@ void main() {
       );
       await tester.pumpAndSettle();
 
+      // No checkmark when not selected
       expect(find.byIcon(Icons.check), findsNothing);
+
+      // Circle indicator should exist but not be filled blue
+      final positioned = find.byType(Positioned);
+      expect(positioned, findsOneWidget);
     });
 
-    testWidgets('has green border when selected', (tester) async {
+    testWidgets('has blue border when selected', (tester) async {
       final candidate = createTestCandidate();
 
       await tester.pumpWidget(
@@ -124,7 +145,7 @@ void main() {
       );
 
       final decoration = container.decoration as BoxDecoration;
-      expect(decoration.border?.top.color, Colors.green);
+      expect(decoration.border?.top.color, Colors.indigo);
     });
 
     testWidgets('has grey border when not selected', (tester) async {
@@ -201,8 +222,8 @@ void main() {
       );
       await tester.pumpAndSettle();
 
-      final text = tester.widget<Text>(find.text('Test Candidate'));
-      expect(text.style?.fontWeight, FontWeight.bold);
+      final text = tester.widget<Text>(find.text('TEST CANDIDATE'));
+      expect(text.style?.fontWeight, FontWeight.w700);
     });
 
     testWidgets('name text is center aligned', (tester) async {
@@ -226,7 +247,7 @@ void main() {
       );
       await tester.pumpAndSettle();
 
-      final text = tester.widget<Text>(find.text('Test Candidate'));
+      final text = tester.widget<Text>(find.text('TEST CANDIDATE'));
       expect(text.textAlign, TextAlign.center);
     });
   });

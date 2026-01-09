@@ -330,5 +330,39 @@
   "duplicateCandidatesDetected": "Duplicate candidates detected",
   "@duplicateCandidatesDetected": {
     "description": "Error when duplicate candidates are found"
+  },
+  "reviewVotes": "Review Votes",
+  "@reviewVotes": {
+    "description": "Header for review votes button"
+  },
+  "selectMoreCandidatesToProceed": "Select {remaining} more candidate(s) to proceed",
+  "@selectMoreCandidatesToProceed": {
+    "description": "Helper text showing how many more candidates need to be selected",
+    "placeholders": {
+      "remaining": {
+        "type": "int"
+      }
+    }
+  },
+  "candidatesSelectedProgress": "{count} of {max} candidates selected",
+  "@candidatesSelectedProgress": {
+    "description": "Progress header showing candidates selected",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      },
+      "max": {
+        "type": "int"
+      }
+    }
+  },
+  "selectMoreToContinue": "Select {count} more to continue",
+  "@selectMoreToContinue": {
+    "description": "Instruction showing how many more candidates to select",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
   }
 }

@@ -16,7 +16,7 @@ void main() {
       controller.dispose();
     });
 
-    testWidgets('renders with verification code label', (tester) async {
+    testWidgets('renders without floating label (lib2 style)', (tester) async {
       await tester.pumpWidget(
         wrapWidget(
           OtpInputField(controller: controller),
@@ -24,10 +24,12 @@ void main() {
       );
       await tester.pumpAndSettle();
 
-      expect(find.text('Verification Code'), findsOneWidget);
+      // Should have a TextField inside a Container, no floating label
+      expect(find.byType(TextField), findsOneWidget);
+      expect(find.byType(Container), findsWidgets);
     });
 
-    testWidgets('displays hint text', (tester) async {
+    testWidgets('displays hint text with dashes', (tester) async {
       await tester.pumpWidget(
         wrapWidget(
           OtpInputField(controller: controller),
@@ -35,7 +37,7 @@ void main() {
       );
       await tester.pumpAndSettle();
 
-      expect(find.text('000000'), findsOneWidget);
+      expect(find.text('------'), findsOneWidget);
     });
 
     testWidgets('accepts only digits', (tester) async {
@@ -176,7 +178,7 @@ void main() {
 
       final textField = tester.widget<TextField>(find.byType(TextField));
       expect(textField.style?.fontWeight, FontWeight.bold);
-      expect(textField.style?.letterSpacing, 16);
+      expect(textField.style?.letterSpacing, 8);
     });
   });
 }

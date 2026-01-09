@@ -531,6 +531,30 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Duplicate candidates detected'**
   String get duplicateCandidatesDetected;
+
+  /// Header for review votes button
+  ///
+  /// In en, this message translates to:
+  /// **'Review Votes'**
+  String get reviewVotes;
+
+  /// Helper text showing how many more candidates need to be selected
+  ///
+  /// In en, this message translates to:
+  /// **'Select {remaining} more candidate(s) to proceed'**
+  String selectMoreCandidatesToProceed(int remaining);
+
+  /// Progress header showing candidates selected
+  ///
+  /// In en, this message translates to:
+  /// **'{count} of {max} candidates selected'**
+  String candidatesSelectedProgress(int count, int max);
+
+  /// Instruction showing how many more candidates to select
+  ///
+  /// In en, this message translates to:
+  /// **'Select {count} more to continue'**
+  String selectMoreToContinue(int count);
 }
 
 class _AppLocalizationsDelegate

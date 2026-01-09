@@ -57,9 +57,9 @@ void main() {
       );
       await tester.pumpAndSettle();
 
-      expect(find.text('Candidate 1'), findsOneWidget);
-      expect(find.text('Candidate 2'), findsOneWidget);
-      expect(find.text('Candidate 3'), findsOneWidget);
+      expect(find.text('CANDIDATE 1'), findsOneWidget);
+      expect(find.text('CANDIDATE 2'), findsOneWidget);
+      expect(find.text('CANDIDATE 3'), findsOneWidget);
     });
 
     testWidgets('marks selected candidates', (tester) async {
@@ -110,7 +110,7 @@ void main() {
       await tester.pumpAndSettle();
 
       // Tap the first candidate card
-      await tester.tap(find.text('Candidate 1'));
+      await tester.tap(find.text('CANDIDATE 1'));
       await tester.pump();
 
       expect(tappedId, 'candidate-1');

@@ -248,4 +248,22 @@ class AppLocalizationsRo extends AppLocalizations {
   @override
   String get duplicateCandidatesDetected =>
       'Au fost detectați candidați duplicați';
+
+  @override
+  String get reviewVotes => 'Revizuiți Voturile';
+
+  @override
+  String selectMoreCandidatesToProceed(int remaining) {
+    return 'Selectați încă $remaining candidat(i) pentru a continua';
+  }
+
+  @override
+  String candidatesSelectedProgress(int count, int max) {
+    return '$count din $max candidați selectați';
+  }
+
+  @override
+  String selectMoreToContinue(int count) {
+    return 'Selectați încă $count pentru a continua';
+  }
 }
