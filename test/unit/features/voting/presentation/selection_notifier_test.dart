@@ -5,7 +5,7 @@ void main() {
   late SelectionNotifier notifier;
 
   setUp(() {
-    notifier = SelectionNotifier(10);
+    notifier = SelectionNotifier(10, null);
   });
 
   group('SelectionNotifier', () {
@@ -153,7 +153,7 @@ void main() {
 
     group('with custom maxVotes', () {
       test('should work with maxVotes of 5', () {
-        final smallNotifier = SelectionNotifier(5);
+        final smallNotifier = SelectionNotifier(5, null);
 
         for (var i = 1; i <= 5; i++) {
           smallNotifier.toggleSelection('candidate-$i');
