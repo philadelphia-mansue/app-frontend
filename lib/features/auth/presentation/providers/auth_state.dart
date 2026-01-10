@@ -3,6 +3,7 @@ import '../../domain/entities/voter.dart';
 enum AuthStatus {
   initial,
   loading,
+  impersonating,
   otpSent,
   authenticated,
   unauthenticated,
@@ -39,6 +40,9 @@ class AuthState {
   factory AuthState.initial() => const AuthState();
 
   factory AuthState.loading() => const AuthState(status: AuthStatus.loading);
+
+  factory AuthState.impersonating() =>
+      const AuthState(status: AuthStatus.impersonating);
 
   factory AuthState.otpSent(String verificationId) => AuthState(
         status: AuthStatus.otpSent,

@@ -7,7 +7,7 @@ class ApiConstants {
 
   // Auth endpoints
   static const String votersLogin = '/api/voters/login';
-  static const String votersImpersonate = '/api/voters/inpersonate';
+  static const String votersImpersonate = '/api/voters/impersonate';
   static const String votersMe = '/api/voters/me';
 
   // Elections endpoints

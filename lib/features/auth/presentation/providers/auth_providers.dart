@@ -248,10 +248,18 @@ class AuthNotifier extends StateNotifier<AuthState> {
     _safeSetState(AuthState.unauthenticated());
   }
 
+  /// Set impersonating state (called from router before debugImpersonate)
+  void setImpersonating() {
+    _safeSetState(AuthState.impersonating());
+  }
+
   /// Debug-only impersonate login (bypasses OTP flow)
   Future<void> debugImpersonate(String phone, String magicToken) async {
     debugPrint('[AuthNotifier] DEBUG: Attempting impersonate login for $phone');
-    _safeSetState(AuthState.loading());
+    // Only set loading if not already in impersonating state (from router)
+    if (state.status != AuthStatus.impersonating) {
+      _safeSetState(AuthState.loading());
+    }
 
     try {
       final authResponse = await _dataSource.impersonateUser(

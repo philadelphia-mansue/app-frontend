@@ -384,5 +384,8 @@ class _MockElectionNotifier extends StateNotifier<ElectionState>
   Future<void> loadOngoingElection() async {}
 
   @override
+  Future<void> loadElectionById(String id) async {}
+
+  @override
   void reset() {}
 }

@@ -7,4 +7,5 @@ class Routes {
   static const String confirmation = '/confirmation';
   static const String success = '/success';
   static const String impersonate = '/impersonate';
+  static const String notFound = '/not-found';
 }
