@@ -1,7 +1,7 @@
-// ignore_for_file: avoid_web_libraries_in_flutter
-import 'dart:html' as html;
+
 import 'dart:ui_web' as ui_web;
 import 'package:flutter/material.dart';
+import 'package:web/web.dart' as html;
 
 /// Web-specific image widget that uses HTML img elements.
 /// HTML img tags are not subject to CORS restrictions for simple image loading,
@@ -50,7 +50,7 @@ class _WebImageState extends State<WebImage> {
     ui_web.platformViewRegistry.registerViewFactory(
       _viewType,
       (int viewId) {
-        final img = html.ImageElement()
+        final img = html.HTMLImageElement()
           ..src = widget.imageUrl
           ..style.width = '100%'
           ..style.height = '100%'

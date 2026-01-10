@@ -29,7 +29,7 @@ class SelectedCandidatesList extends StatelessWidget {
                   ? CrossPlatformImage(
                       imageUrl: imageUrl,
                       fit: BoxFit.cover,
-                      errorBuilder: (_, __, ___) => CircleAvatar(
+                      errorBuilder: (context, error, stackTrace) => CircleAvatar(
                         child: Text(candidate.firstName.isNotEmpty
                             ? candidate.firstName[0]
                             : '?'),

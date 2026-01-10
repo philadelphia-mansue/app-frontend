@@ -1,5 +1,4 @@
-// ignore_for_file: avoid_web_libraries_in_flutter
-import 'dart:html' as html;
+import 'package:web/web.dart' as html;
 
 /// Parses browser URL query params.
 /// With hash routing, query params in the main URL (before #) are not
@@ -7,7 +6,7 @@ import 'dart:html' as html;
 Map<String, String> _getBrowserQueryParams() {
   try {
     final search = html.window.location.search;
-    if (search == null || search.isEmpty) return {};
+    if (search.isEmpty) return {};
 
     // Parse query string (remove leading ?)
     final queryString = search.startsWith('?') ? search.substring(1) : search;
