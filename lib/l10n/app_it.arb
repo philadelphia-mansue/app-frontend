@@ -75,5 +75,16 @@
   "reviewVotes": "Rivedi Voti",
   "selectMoreCandidatesToProceed": "Seleziona ancora {remaining} candidato/i per procedere",
   "candidatesSelectedProgress": "{count} di {max} candidati selezionati",
-  "selectMoreToContinue": "Seleziona altri {count} per continuare"
+  "selectMoreToContinue": "Seleziona altri {count} per continuare",
+  "invalidPhoneFormat": "Formato del numero di telefono non valido",
+  "tooManyAttempts": "Troppi tentativi. Riprova più tardi.",
+  "smsQuotaExceeded": "Quota SMS superata. Riprova più tardi.",
+  "failedToSignIn": "Accesso non riuscito",
+  "verificationExpired": "Sessione di verifica scaduta. Richiedi un nuovo codice.",
+  "failedToGetVoterProfile": "Impossibile recuperare il profilo dell'elettore",
+  "accessDenied": "Accesso negato",
+  "unexpectedResponse": "Risposta inattesa dal server",
+  "unknownError": "Si è verificato un errore sconosciuto",
+  "requestFailed": "Richiesta non riuscita",
+  "invalidOtp": "Codice di verifica non valido"
 }

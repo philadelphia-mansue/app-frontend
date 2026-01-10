@@ -14,17 +14,9 @@ class CandidateCard extends StatelessWidget {
     required this.onTap,
   });
 
-  String _getCorsProxyUrl(String url) {
-    // For development: use CORS proxy. Remove in production when server has proper CORS headers
-    if (url.isEmpty) return url;
-    // Using corsproxy.io as a temporary workaround
-    return 'https://corsproxy.io/?${Uri.encodeComponent(url)}';
-  }
-
   @override
   Widget build(BuildContext context) {
-    debugPrint('CandidateCard: ${candidate.fullName} photoUrl: ${candidate.photoUrl}');
-    final imageUrl = _getCorsProxyUrl(candidate.photoUrl);
+    final imageUrl = candidate.photoUrl;
     const selectedColor = Colors.indigo;
 
     return GestureDetector(

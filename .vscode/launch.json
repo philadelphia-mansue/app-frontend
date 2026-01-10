@@ -2,6 +2,23 @@
   "version": "0.2.0",
   "configurations": [
     {
+      "name": "Flutter Web HTTPS",
+      "type": "dart",
+      "request": "launch",
+      "program": "lib/main.dart",
+      "deviceId": "chrome",
+      "args": [
+        "--web-hostname",
+        "localhost",
+        "--web-port",
+        "8443",
+        "--web-tls-cert-path",
+        "localhost.pem",
+        "--web-tls-cert-key-path",
+        "localhost-key.pem"
+      ]
+    },
+    {
       "name": "Flutter Web (127.0.0.1)",
       "type": "dart",
       "request": "launch",

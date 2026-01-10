@@ -22,6 +22,12 @@ abstract class AuthRemoteDataSource {
   Future<AuthResponseModel> exchangeTokenWithBackend(String firebaseIdToken);
   Future<VoterModel> getCurrentVoter();
 
+  // Debug impersonate (debug mode only)
+  Future<AuthResponseModel> impersonateUser({
+    required String phone,
+    required String magicToken,
+  });
+
   /// Stream of Firebase auth state changes.
   /// Emits user ID when signed in, null when signed out.
   /// Fires immediately with current state, then on every sign-in/sign-out.
@@ -260,6 +266,44 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
         throw const AuthException(message: 'Session expired');
       }
       throw AuthException(message: e.message ?? 'Failed to get voter profile');
+    }
+  }
+
+  @override
+  Future<AuthResponseModel> impersonateUser({
+    required String phone,
+    required String magicToken,
+  }) async {
+    try {
+      debugPrint('[AuthDataSource] Impersonating user: $phone');
+
+      final response = await _apiClient.post(
+        ApiConstants.votersImpersonate,
+        data: {
+          'phone': phone,
+          'magic_token': magicToken,
+        },
+      );
+
+      final authResponse = AuthResponseModel.fromJson(response.data);
+
+      // Store the bearer token
+      await _tokenStorage.saveToken(authResponse.token);
+
+      debugPrint('[AuthDataSource] Impersonate successful, token stored');
+      return authResponse;
+    } on DioException catch (e) {
+      debugPrint('[AuthDataSource] Impersonate failed: ${e.message}');
+      if (e.response?.statusCode == 401) {
+        throw const AuthException(message: 'Invalid magic token');
+      }
+      if (e.response?.statusCode == 404) {
+        throw const AuthException(message: 'Phone number not found');
+      }
+      throw AuthException(message: e.message ?? 'Impersonate failed');
+    } catch (e) {
+      if (e is AuthException) rethrow;
+      throw AuthException(message: e.toString());
     }
   }
 

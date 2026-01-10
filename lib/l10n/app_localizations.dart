@@ -555,6 +555,72 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Select {count} more to continue'**
   String selectMoreToContinue(int count);
+
+  /// Error when phone number format is invalid
+  ///
+  /// In en, this message translates to:
+  /// **'Invalid phone number format'**
+  String get invalidPhoneFormat;
+
+  /// Error when too many verification attempts
+  ///
+  /// In en, this message translates to:
+  /// **'Too many attempts. Please try again later.'**
+  String get tooManyAttempts;
+
+  /// Error when SMS quota is exceeded
+  ///
+  /// In en, this message translates to:
+  /// **'SMS quota exceeded. Please try again later.'**
+  String get smsQuotaExceeded;
+
+  /// Error when sign in fails
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to sign in'**
+  String get failedToSignIn;
+
+  /// Error when verification session expires
+  ///
+  /// In en, this message translates to:
+  /// **'Verification session expired. Please request a new code.'**
+  String get verificationExpired;
+
+  /// Error when unable to retrieve voter profile
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to get voter profile'**
+  String get failedToGetVoterProfile;
+
+  /// Error when access is denied
+  ///
+  /// In en, this message translates to:
+  /// **'Access denied'**
+  String get accessDenied;
+
+  /// Error when server returns unexpected response
+  ///
+  /// In en, this message translates to:
+  /// **'Unexpected response from server'**
+  String get unexpectedResponse;
+
+  /// Generic unknown error message
+  ///
+  /// In en, this message translates to:
+  /// **'Unknown error occurred'**
+  String get unknownError;
+
+  /// Error when a request fails
+  ///
+  /// In en, this message translates to:
+  /// **'Request failed'**
+  String get requestFailed;
+
+  /// Error when OTP code is invalid
+  ///
+  /// In en, this message translates to:
+  /// **'Invalid verification code'**
+  String get invalidOtp;
 }
 
 class _AppLocalizationsDelegate

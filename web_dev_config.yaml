@@ -1,0 +1,6 @@
+server:
+  host: "localhost"
+  port: 8443
+  https:
+    cert-path: "localhost.pem"
+    cert-key-path: "localhost-key.pem"

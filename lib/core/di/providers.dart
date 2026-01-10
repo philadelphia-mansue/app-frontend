@@ -5,6 +5,7 @@ import '../network/api_client.dart';
 import '../network/auth_interceptor.dart';
 import '../network/network_info.dart';
 import '../services/token_storage_service.dart';
+import '../services/vote_cache_service.dart';
 import '../constants/api_constants.dart';
 
 // Secure Storage Provider
@@ -18,6 +19,11 @@ final secureStorageProvider = Provider<FlutterSecureStorage>((ref) {
 // Token Storage Service Provider
 final tokenStorageServiceProvider = Provider<TokenStorageService>((ref) {
   return TokenStorageServiceImpl(storage: ref.watch(secureStorageProvider));
+});
+
+// Vote Cache Service Provider
+final voteCacheServiceProvider = Provider<VoteCacheService>((ref) {
+  return VoteCacheServiceImpl(storage: ref.watch(secureStorageProvider));
 });
 
 // Callback for unauthorized responses (will be set by auth module)

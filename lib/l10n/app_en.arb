@@ -364,5 +364,49 @@
         "type": "int"
       }
     }
+  },
+  "invalidPhoneFormat": "Invalid phone number format",
+  "@invalidPhoneFormat": {
+    "description": "Error when phone number format is invalid"
+  },
+  "tooManyAttempts": "Too many attempts. Please try again later.",
+  "@tooManyAttempts": {
+    "description": "Error when too many verification attempts"
+  },
+  "smsQuotaExceeded": "SMS quota exceeded. Please try again later.",
+  "@smsQuotaExceeded": {
+    "description": "Error when SMS quota is exceeded"
+  },
+  "failedToSignIn": "Failed to sign in",
+  "@failedToSignIn": {
+    "description": "Error when sign in fails"
+  },
+  "verificationExpired": "Verification session expired. Please request a new code.",
+  "@verificationExpired": {
+    "description": "Error when verification session expires"
+  },
+  "failedToGetVoterProfile": "Failed to get voter profile",
+  "@failedToGetVoterProfile": {
+    "description": "Error when unable to retrieve voter profile"
+  },
+  "accessDenied": "Access denied",
+  "@accessDenied": {
+    "description": "Error when access is denied"
+  },
+  "unexpectedResponse": "Unexpected response from server",
+  "@unexpectedResponse": {
+    "description": "Error when server returns unexpected response"
+  },
+  "unknownError": "Unknown error occurred",
+  "@unknownError": {
+    "description": "Generic unknown error message"
+  },
+  "requestFailed": "Request failed",
+  "@requestFailed": {
+    "description": "Error when a request fails"
+  },
+  "invalidOtp": "Invalid verification code",
+  "@invalidOtp": {
+    "description": "Error when OTP code is invalid"
   }
 }

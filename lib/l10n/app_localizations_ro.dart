@@ -266,4 +266,41 @@ class AppLocalizationsRo extends AppLocalizations {
   String selectMoreToContinue(int count) {
     return 'Selectați încă $count pentru a continua';
   }
+
+  @override
+  String get invalidPhoneFormat => 'Format de număr de telefon invalid';
+
+  @override
+  String get tooManyAttempts =>
+      'Prea multe încercări. Vă rugăm să încercați mai târziu.';
+
+  @override
+  String get smsQuotaExceeded =>
+      'Cota de SMS depășită. Vă rugăm să încercați mai târziu.';
+
+  @override
+  String get failedToSignIn => 'Autentificarea a eșuat';
+
+  @override
+  String get verificationExpired =>
+      'Sesiunea de verificare a expirat. Vă rugăm să solicitați un nou cod.';
+
+  @override
+  String get failedToGetVoterProfile =>
+      'Nu s-a putut obține profilul alegătorului';
+
+  @override
+  String get accessDenied => 'Acces refuzat';
+
+  @override
+  String get unexpectedResponse => 'Răspuns neașteptat de la server';
+
+  @override
+  String get unknownError => 'A apărut o eroare necunoscută';
+
+  @override
+  String get requestFailed => 'Cererea a eșuat';
+
+  @override
+  String get invalidOtp => 'Cod de verificare invalid';
 }

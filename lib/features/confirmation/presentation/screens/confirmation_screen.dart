@@ -3,6 +3,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:luckyui/luckyui.dart';
 import 'package:philadelphia_mansue/l10n/app_localizations.dart';
+import '../../../../core/di/providers.dart';
+import '../../../../core/utils/error_localizer.dart';
 import '../../../../routing/routes.dart';
 import '../../../auth/presentation/providers/auth_providers.dart';
 import '../../../elections/presentation/providers/election_providers.dart';
@@ -28,13 +30,20 @@ class ConfirmationScreen extends ConsumerWidget {
         .toList();
 
     // Listen for voting success
-    ref.listen<VotingState>(votingNotifierProvider, (previous, next) {
+    ref.listen<VotingState>(votingNotifierProvider, (previous, next) async {
       if (next.status == VotingStatus.success) {
-        context.go(Routes.success);
+        // Save to local cache for faster UX on next app launch
+        final electionId = ref.read(currentElectionIdProvider);
+        if (electionId != null) {
+          await ref.read(voteCacheServiceProvider).markAsVoted(electionId);
+        }
+        if (context.mounted) {
+          context.go(Routes.success);
+        }
       } else if (next.status == VotingStatus.error) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text(next.errorMessage ?? l10n.errorSubmittingVote),
+            content: Text(ErrorLocalizer.localize(next.errorMessage, l10n)),
             backgroundColor: Colors.red,
           ),
         );

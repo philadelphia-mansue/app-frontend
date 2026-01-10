@@ -264,4 +264,39 @@ class AppLocalizationsIt extends AppLocalizations {
   String selectMoreToContinue(int count) {
     return 'Seleziona altri $count per continuare';
   }
+
+  @override
+  String get invalidPhoneFormat => 'Formato del numero di telefono non valido';
+
+  @override
+  String get tooManyAttempts => 'Troppi tentativi. Riprova più tardi.';
+
+  @override
+  String get smsQuotaExceeded => 'Quota SMS superata. Riprova più tardi.';
+
+  @override
+  String get failedToSignIn => 'Accesso non riuscito';
+
+  @override
+  String get verificationExpired =>
+      'Sessione di verifica scaduta. Richiedi un nuovo codice.';
+
+  @override
+  String get failedToGetVoterProfile =>
+      'Impossibile recuperare il profilo dell\'elettore';
+
+  @override
+  String get accessDenied => 'Accesso negato';
+
+  @override
+  String get unexpectedResponse => 'Risposta inattesa dal server';
+
+  @override
+  String get unknownError => 'Si è verificato un errore sconosciuto';
+
+  @override
+  String get requestFailed => 'Richiesta non riuscita';
+
+  @override
+  String get invalidOtp => 'Codice di verifica non valido';
 }

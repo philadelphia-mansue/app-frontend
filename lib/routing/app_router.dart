@@ -8,6 +8,7 @@ import '../features/candidates/presentation/screens/candidates_screen.dart';
 import '../features/confirmation/presentation/screens/confirmation_screen.dart';
 import '../features/elections/presentation/providers/election_providers.dart';
 import '../features/success/presentation/screens/success_screen.dart';
+import '../features/voting/presentation/providers/local_vote_providers.dart';
 import 'routes.dart';
 import 'splash_screen.dart';
 
@@ -26,6 +27,10 @@ class RouterRefreshNotifier extends ChangeNotifier {
     });
     // Listen to election changes
     ref.listen(electionNotifierProvider, (_, _) {
+      notifyListeners();
+    });
+    // Listen to local vote cache changes (for faster redirect after voting)
+    ref.listen(localHasVotedProvider, (_, _) {
       notifyListeners();
     });
   }
@@ -53,7 +58,7 @@ final routerProvider = Provider<GoRouter>((ref) {
       final isElectionLoaded = electionState.status == ElectionLoadStatus.loaded ||
           electionState.status == ElectionLoadStatus.noElection ||
           electionState.status == ElectionLoadStatus.error;
-      final hasVoted = ref.read(hasVotedProvider);
+      final hasVoted = ref.read(hasVotedCombinedProvider);
       final currentPath = state.matchedLocation;
 
       debugPrint('[Router] redirect: path=$currentPath, authStatus=${authState.status}, electionStatus=${electionState.status}, hasVoted=$hasVoted');

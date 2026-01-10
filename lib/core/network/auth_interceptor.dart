@@ -16,8 +16,9 @@ class AuthInterceptor extends Interceptor {
     RequestOptions options,
     RequestInterceptorHandler handler,
   ) async {
-    // Skip auth header for login endpoint
-    if (options.path.contains('/voters/login')) {
+    // Skip auth header for login and impersonate endpoints
+    if (options.path.contains('/voters/login') ||
+        options.path.contains('/voters/inpersonate')) {
       return handler.next(options);
     }
 

@@ -6,7 +6,6 @@ import 'package:philadelphia_mansue/features/candidates/presentation/screens/can
 import 'package:philadelphia_mansue/features/candidates/presentation/widgets/candidates_grid.dart';
 import 'package:philadelphia_mansue/features/elections/presentation/providers/election_providers.dart';
 import 'package:philadelphia_mansue/features/voting/presentation/providers/selection_notifier.dart';
-import 'package:philadelphia_mansue/features/voting/presentation/widgets/selection_counter.dart';
 
 import '../../../../helpers/test_wrapper.dart';
 import '../../../../helpers/fixtures/election_fixture.dart';

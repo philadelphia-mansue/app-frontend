@@ -260,4 +260,38 @@ class AppLocalizationsEn extends AppLocalizations {
   String selectMoreToContinue(int count) {
     return 'Select $count more to continue';
   }
+
+  @override
+  String get invalidPhoneFormat => 'Invalid phone number format';
+
+  @override
+  String get tooManyAttempts => 'Too many attempts. Please try again later.';
+
+  @override
+  String get smsQuotaExceeded => 'SMS quota exceeded. Please try again later.';
+
+  @override
+  String get failedToSignIn => 'Failed to sign in';
+
+  @override
+  String get verificationExpired =>
+      'Verification session expired. Please request a new code.';
+
+  @override
+  String get failedToGetVoterProfile => 'Failed to get voter profile';
+
+  @override
+  String get accessDenied => 'Access denied';
+
+  @override
+  String get unexpectedResponse => 'Unexpected response from server';
+
+  @override
+  String get unknownError => 'Unknown error occurred';
+
+  @override
+  String get requestFailed => 'Request failed';
+
+  @override
+  String get invalidOtp => 'Invalid verification code';
 }

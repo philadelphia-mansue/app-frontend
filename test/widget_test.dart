@@ -14,3 +14,6 @@
 ///
 /// Run all widget tests with: flutter test test/widget/
 library;
+
+/// Empty main - tests are in subdirectories
+void main() {}

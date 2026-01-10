@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:luckyui/luckyui.dart';
 import 'package:philadelphia_mansue/l10n/app_localizations.dart';
+import '../../../../core/utils/error_localizer.dart';
 import '../../../../routing/routes.dart';
 import '../../../elections/presentation/providers/election_providers.dart';
 import '../../../voting/presentation/providers/selection_notifier.dart';
@@ -191,7 +192,7 @@ class _CandidatesScreenState extends ConsumerState<CandidatesScreen> {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Text(state.errorMessage ?? l10n.errorLoadingCandidates),
+              Text(ErrorLocalizer.localize(state.errorMessage, l10n)),
               const SizedBox(height: 16),
               SizedBox(
                 height: 44,

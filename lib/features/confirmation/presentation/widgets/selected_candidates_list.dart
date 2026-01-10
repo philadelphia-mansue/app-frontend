@@ -9,11 +9,6 @@ class SelectedCandidatesList extends StatelessWidget {
     required this.candidates,
   });
 
-  String _getCorsProxyUrl(String url) {
-    if (url.isEmpty) return url;
-    return 'https://corsproxy.io/?${Uri.encodeComponent(url)}';
-  }
-
   @override
   Widget build(BuildContext context) {
     return ListView.separated(
@@ -23,7 +18,7 @@ class SelectedCandidatesList extends StatelessWidget {
       separatorBuilder: (_, _) => const Divider(height: 1),
       itemBuilder: (context, index) {
         final candidate = candidates[index];
-        final imageUrl = _getCorsProxyUrl(candidate.photoUrl);
+        final imageUrl = candidate.photoUrl;
         return ListTile(
           leading: CircleAvatar(
             backgroundImage: imageUrl.isNotEmpty ? NetworkImage(imageUrl) : null,

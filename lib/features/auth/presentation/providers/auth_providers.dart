@@ -248,6 +248,26 @@ class AuthNotifier extends StateNotifier<AuthState> {
     _safeSetState(AuthState.unauthenticated());
   }
 
+  /// Debug-only impersonate login (bypasses OTP flow)
+  Future<void> debugImpersonate(String phone, String magicToken) async {
+    debugPrint('[AuthNotifier] DEBUG: Attempting impersonate login for $phone');
+    _safeSetState(AuthState.loading());
+
+    try {
+      final authResponse = await _dataSource.impersonateUser(
+        phone: phone,
+        magicToken: magicToken,
+      );
+
+      final voter = authResponse.voter;
+      debugPrint('[AuthNotifier] DEBUG: Impersonate successful for: ${voter.phone}');
+      _safeSetState(AuthState.authenticated(voter));
+    } catch (e) {
+      debugPrint('[AuthNotifier] DEBUG: Impersonate failed: $e');
+      _safeSetState(AuthState.error(e.toString()));
+    }
+  }
+
   void reset() {
     _phoneNumber = null;
     _isRestoringSession = false;

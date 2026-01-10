@@ -75,5 +75,16 @@
   "reviewVotes": "Revizuiți Voturile",
   "selectMoreCandidatesToProceed": "Selectați încă {remaining} candidat(i) pentru a continua",
   "candidatesSelectedProgress": "{count} din {max} candidați selectați",
-  "selectMoreToContinue": "Selectați încă {count} pentru a continua"
+  "selectMoreToContinue": "Selectați încă {count} pentru a continua",
+  "invalidPhoneFormat": "Format de număr de telefon invalid",
+  "tooManyAttempts": "Prea multe încercări. Vă rugăm să încercați mai târziu.",
+  "smsQuotaExceeded": "Cota de SMS depășită. Vă rugăm să încercați mai târziu.",
+  "failedToSignIn": "Autentificarea a eșuat",
+  "verificationExpired": "Sesiunea de verificare a expirat. Vă rugăm să solicitați un nou cod.",
+  "failedToGetVoterProfile": "Nu s-a putut obține profilul alegătorului",
+  "accessDenied": "Acces refuzat",
+  "unexpectedResponse": "Răspuns neașteptat de la server",
+  "unknownError": "A apărut o eroare necunoscută",
+  "requestFailed": "Cererea a eșuat",
+  "invalidOtp": "Cod de verificare invalid"
 }
