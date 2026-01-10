@@ -123,6 +123,9 @@ class AuthNotifier extends StateNotifier<AuthState> {
         final success = result.fold(
           (failure) {
             debugPrint('[AuthNotifier] Stored token invalid: ${failure.message}');
+            // IMPORTANT: Delete the stale token to prevent issues on new login.
+            // This clears both secure storage and memory cache.
+            _dataSource.signOut();
             return false;
           },
           (voter) {

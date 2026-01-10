@@ -34,8 +34,20 @@ class AuthInterceptor extends Interceptor {
   @override
   void onError(DioException err, ErrorInterceptorHandler handler) {
     if (err.response?.statusCode == 401) {
-      debugPrint('[AuthInterceptor] Unauthorized - token may be expired');
-      onUnauthorized?.call();
+      // Don't trigger signout for:
+      // - login/impersonate endpoints (401 = invalid credentials, not session expired)
+      // - /voters/me endpoint (401 during session restore should not cause race condition)
+      final path = err.requestOptions.path;
+      final isAuthEndpoint = path.contains('/voters/login') ||
+          path.contains('/voters/inpersonate') ||
+          path.contains('/voters/me');
+
+      if (!isAuthEndpoint) {
+        debugPrint('[AuthInterceptor] Unauthorized - token may be expired');
+        onUnauthorized?.call();
+      } else {
+        debugPrint('[AuthInterceptor] Auth/validation endpoint 401 - handled by caller');
+      }
     }
     return handler.next(err);
   }

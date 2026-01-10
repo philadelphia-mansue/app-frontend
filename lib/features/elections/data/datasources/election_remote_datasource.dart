@@ -1,3 +1,4 @@
+import 'package:dio/dio.dart';
 import '../../../../core/errors/exceptions.dart';
 import '../../../../core/network/api_client.dart';
 import '../../../../core/constants/api_constants.dart';
@@ -46,6 +47,11 @@ class ElectionRemoteDataSourceImpl implements ElectionRemoteDataSource {
       // Get the first ongoing election's ID and fetch full details
       final electionId = electionsList.first['id'] as String;
       return await getElectionById(electionId);
+    } on DioException catch (e) {
+      if (e.response?.statusCode == 401) {
+        throw ServerException(message: 'Session expired. Please log in again.');
+      }
+      throw ServerException(message: e.message ?? 'Failed to load election');
     } catch (e) {
       throw ServerException(message: e.toString());
     }
@@ -56,6 +62,11 @@ class ElectionRemoteDataSourceImpl implements ElectionRemoteDataSource {
     try {
       final response = await apiClient.get('${ApiConstants.electionsEndpoint}/$id');
       return ElectionModel.fromJson(response.data);
+    } on DioException catch (e) {
+      if (e.response?.statusCode == 401) {
+        throw ServerException(message: 'Session expired. Please log in again.');
+      }
+      throw ServerException(message: e.message ?? 'Failed to load election');
     } catch (e) {
       throw ServerException(message: e.toString());
     }

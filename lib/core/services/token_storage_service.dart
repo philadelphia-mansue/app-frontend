@@ -12,6 +12,10 @@ class TokenStorageServiceImpl implements TokenStorageService {
 
   final FlutterSecureStorage _storage;
 
+  /// In-memory cache to avoid FlutterSecureStorage timing issues
+  /// where a just-saved token might not be immediately readable.
+  String? _cachedToken;
+
   TokenStorageServiceImpl({FlutterSecureStorage? storage})
       : _storage = storage ??
             const FlutterSecureStorage(
@@ -23,21 +27,27 @@ class TokenStorageServiceImpl implements TokenStorageService {
 
   @override
   Future<void> saveToken(String token) async {
+    _cachedToken = token; // Update cache immediately
     await _storage.write(key: _tokenKey, value: token);
   }
 
   @override
   Future<String?> getToken() async {
-    return await _storage.read(key: _tokenKey);
+    // Return cached token if available (faster, avoids timing issues)
+    if (_cachedToken != null) return _cachedToken;
+    _cachedToken = await _storage.read(key: _tokenKey);
+    return _cachedToken;
   }
 
   @override
   Future<void> deleteToken() async {
+    _cachedToken = null; // Clear cache
     await _storage.delete(key: _tokenKey);
   }
 
   @override
   Future<bool> hasToken() async {
+    if (_cachedToken != null) return true;
     final token = await getToken();
     return token != null && token.isNotEmpty;
   }
