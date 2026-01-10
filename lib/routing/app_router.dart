@@ -136,13 +136,8 @@ final routerProvider = Provider<GoRouter>((ref) {
           Future.microtask(() {
             ref.read(electionNotifierProvider.notifier).loadElectionById(storedElectionId);
           });
-        } else {
-          // No election_id provided - load ongoing election automatically
-          debugPrint('[Router] No election_id provided, loading ongoing election');
-          Future.microtask(() {
-            ref.read(electionNotifierProvider.notifier).loadOngoingElection();
-          });
         }
+        // No fallback to loadOngoingElection - election_id must be provided in URL
       }
 
       // Still loading auth (initial state) - go to splash and wait

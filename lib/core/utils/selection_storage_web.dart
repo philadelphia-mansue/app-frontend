@@ -1,6 +1,5 @@
-// ignore_for_file: avoid_web_libraries_in_flutter
 import 'dart:convert';
-import 'dart:html' as html;
+import 'package:web/web.dart' as html;
 
 const _keyPrefix = 'selections_';
 
@@ -8,7 +7,7 @@ const _keyPrefix = 'selections_';
 Set<String> getStoredSelections(String electionId) {
   try {
     final key = '$_keyPrefix$electionId';
-    final stored = html.window.sessionStorage[key];
+    final stored = html.window.sessionStorage.getItem(key);
     if (stored == null || stored.isEmpty) return {};
 
     final List<dynamic> decoded = jsonDecode(stored);
@@ -22,15 +21,15 @@ Set<String> getStoredSelections(String electionId) {
 void saveStoredSelections(String electionId, Set<String> selections) {
   final key = '$_keyPrefix$electionId';
   if (selections.isEmpty) {
-    html.window.sessionStorage.remove(key);
+    html.window.sessionStorage.removeItem(key);
   } else {
-    html.window.sessionStorage[key] = jsonEncode(selections.toList());
+    html.window.sessionStorage.setItem(key, jsonEncode(selections.toList()));
   }
 }
 
 /// Clears selections from sessionStorage.
 void clearStoredSelections(String electionId) {
-  html.window.sessionStorage.remove('$_keyPrefix$electionId');
+  html.window.sessionStorage.removeItem('$_keyPrefix$electionId');
 }
 
 const _orderKeyPrefix = 'candidate_order_';
@@ -39,7 +38,7 @@ const _orderKeyPrefix = 'candidate_order_';
 List<String>? getStoredCandidateOrder(String electionId) {
   try {
     final key = '$_orderKeyPrefix$electionId';
-    final stored = html.window.sessionStorage[key];
+    final stored = html.window.sessionStorage.getItem(key);
     if (stored == null || stored.isEmpty) return null;
 
     final List<dynamic> decoded = jsonDecode(stored);
@@ -52,5 +51,5 @@ List<String>? getStoredCandidateOrder(String electionId) {
 /// Saves candidate order to sessionStorage.
 void saveStoredCandidateOrder(String electionId, List<String> order) {
   final key = '$_orderKeyPrefix$electionId';
-  html.window.sessionStorage[key] = jsonEncode(order);
+  html.window.sessionStorage.setItem(key, jsonEncode(order));
 }

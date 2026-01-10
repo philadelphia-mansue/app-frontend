@@ -46,7 +46,11 @@ class _PhoneAuthScreenState extends ConsumerState<PhoneAuthScreen> {
     WidgetsBinding.instance.addPostFrameCallback((_) {
       final electionState = ref.read(electionNotifierProvider);
       if (electionState.status == ElectionLoadStatus.initial) {
-        ref.read(electionNotifierProvider.notifier).loadOngoingElection();
+        final storedElectionId = ref.read(urlElectionIdProvider);
+        if (storedElectionId != null && storedElectionId.isNotEmpty) {
+          ref.read(electionNotifierProvider.notifier).loadElectionById(storedElectionId);
+        }
+        // No fallback to loadOngoingElection - election_id must be in URL
       }
     });
   }

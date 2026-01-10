@@ -48,19 +48,13 @@ class SplashScreen extends ConsumerWidget {
                 ),
                 const SizedBox(height: 24),
                 FilledButton.icon(
-                  onPressed: () {
-                    // Retry loading election
-                    if (storedElectionId != null &&
-                        storedElectionId.isNotEmpty) {
-                      ref
-                          .read(electionNotifierProvider.notifier)
-                          .loadElectionById(storedElectionId);
-                    } else {
-                      ref
-                          .read(electionNotifierProvider.notifier)
-                          .loadOngoingElection();
-                    }
-                  },
+                  onPressed: (storedElectionId != null && storedElectionId.isNotEmpty)
+                      ? () {
+                          ref
+                              .read(electionNotifierProvider.notifier)
+                              .loadElectionById(storedElectionId);
+                        }
+                      : null, // Disabled if no election_id in URL
                   icon: const Icon(Icons.refresh),
                   label: const Text('Try Again'),
                 ),

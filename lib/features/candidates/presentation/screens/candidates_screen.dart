@@ -212,7 +212,11 @@ class _CandidatesScreenState extends ConsumerState<CandidatesScreen> {
                   text: l10n.retry,
                   height: 44,
                   onTap: () {
-                    ref.read(electionNotifierProvider.notifier).loadOngoingElection();
+                    final storedElectionId = ref.read(urlElectionIdProvider);
+                    if (storedElectionId != null && storedElectionId.isNotEmpty) {
+                      ref.read(electionNotifierProvider.notifier).loadElectionById(storedElectionId);
+                    }
+                    // No fallback - election_id must be in URL
                   },
                 ),
               ),

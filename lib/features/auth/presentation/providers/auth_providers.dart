@@ -120,12 +120,13 @@ class AuthNotifier extends StateNotifier<AuthState> {
       if (isAuthenticated) {
         debugPrint('[AuthNotifier] Found existing token, validating...');
         final result = await _repository.getCurrentVoter();
-        final success = result.fold(
+        final restored = result.fold(
           (failure) {
             debugPrint('[AuthNotifier] Stored token invalid: ${failure.message}');
-            // IMPORTANT: Delete the stale token to prevent issues on new login.
-            // This clears both secure storage and memory cache.
+            // IMPORTANT: Token is invalid - sign out completely and require OTP re-login.
+            // This prevents automatic re-authentication via Firebase token exchange.
             _dataSource.signOut();
+            _safeSetState(AuthState.unauthenticated());
             return false;
           },
           (voter) {
@@ -134,12 +135,16 @@ class AuthNotifier extends StateNotifier<AuthState> {
             return true;
           },
         );
-        if (success) return;
-        // If stored token was invalid, continue to exchange
+        // Stop here - either we're authenticated or we need OTP re-login
+        // Do NOT try to exchange Firebase token if backend token was invalid
+        if (restored) return;
+        debugPrint('[AuthNotifier] Token was invalid, user must re-login with OTP');
+        return;
       }
 
-      // No valid stored token - exchange Firebase token for new backend token
-      debugPrint('[AuthNotifier] Exchanging Firebase token for backend token...');
+      // No stored token at all - try to exchange Firebase token for new backend token
+      // This only happens on fresh login flow, not when backend invalidated a token
+      debugPrint('[AuthNotifier] No stored token, exchanging Firebase token...');
       final idToken = await _dataSource.getFirebaseIdToken();
       await _dataSource.exchangeTokenWithBackend(idToken);
       debugPrint('[AuthNotifier] Token exchanged successfully');

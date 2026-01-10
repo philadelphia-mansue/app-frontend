@@ -1,5 +1,6 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../../core/utils/selection_storage.dart';
+import '../../../auth/presentation/providers/auth_providers.dart';
 import '../../../elections/presentation/providers/election_providers.dart';
 
 enum SelectionResult {
@@ -12,14 +13,18 @@ enum SelectionResult {
 class SelectionNotifier extends StateNotifier<Set<String>> {
   final int _maxVotes;
   final String? _electionId;
+  final bool _isAuthenticated;
 
-  SelectionNotifier(this._maxVotes, this._electionId) : super({}) {
+  SelectionNotifier(this._maxVotes, this._electionId, this._isAuthenticated) : super({}) {
     _loadSelections();
   }
 
   /// Load selections from sessionStorage on web
+  /// Only loads if user is authenticated (token validated)
   void _loadSelections() {
     if (_electionId == null) return;
+    // Don't load cached data if not authenticated
+    if (!_isAuthenticated) return;
     final saved = getStoredSelections(_electionId);
     if (saved.isNotEmpty && mounted) {
       state = saved;
@@ -71,11 +76,13 @@ class SelectionNotifier extends StateNotifier<Set<String>> {
 }
 
 // Provider - uses dynamic maxVotes from election and electionId for storage
+// Only loads cached selections when user is authenticated (token validated)
 final selectionNotifierProvider =
     StateNotifierProvider<SelectionNotifier, Set<String>>((ref) {
   final maxVotes = ref.watch(requiredVotesCountProvider);
   final electionId = ref.watch(currentElectionIdProvider);
-  return SelectionNotifier(maxVotes, electionId);
+  final isAuthenticated = ref.watch(isAuthenticatedProvider);
+  return SelectionNotifier(maxVotes, electionId, isAuthenticated);
 });
 
 // Convenience selectors
