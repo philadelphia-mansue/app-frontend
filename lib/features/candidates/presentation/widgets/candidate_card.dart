@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import '../../../../core/widgets/cross_platform_image.dart';
 import '../../domain/entities/candidate.dart';
 
 class CandidateCard extends StatelessWidget {
@@ -19,16 +20,20 @@ class CandidateCard extends StatelessWidget {
     final imageUrl = candidate.photoUrl;
     const selectedColor = Colors.indigo;
 
+    final borderWidth = isSelected ? 2.5 : 1.5;
+    final innerRadius = 24 - borderWidth;
+
     return GestureDetector(
+      behavior: HitTestBehavior.opaque,
       onTap: onTap,
       child: Container(
         decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(12),
+          borderRadius: BorderRadius.circular(24),
           border: Border.all(
             color: isSelected
                 ? selectedColor
                 : Colors.grey.shade300,
-            width: isSelected ? 2.5 : 1.5,
+            width: borderWidth,
           ),
           color: isSelected
               ? selectedColor.withValues(alpha: 0.08)
@@ -52,23 +57,12 @@ class CandidateCard extends StatelessWidget {
                 fit: StackFit.expand,
                 children: [
                   ClipRRect(
-                    borderRadius: const BorderRadius.vertical(
-                      top: Radius.circular(11),
+                    borderRadius: BorderRadius.vertical(
+                      top: Radius.circular(innerRadius),
                     ),
-                    child: Image.network(
-                      imageUrl,
+                    child: CrossPlatformImage(
+                      imageUrl: imageUrl,
                       fit: BoxFit.cover,
-                      loadingBuilder: (context, child, loadingProgress) {
-                        if (loadingProgress == null) return child;
-                        return Center(
-                          child: CircularProgressIndicator(
-                            value: loadingProgress.expectedTotalBytes != null
-                                ? loadingProgress.cumulativeBytesLoaded /
-                                    loadingProgress.expectedTotalBytes!
-                                : null,
-                          ),
-                        );
-                      },
                       errorBuilder: (context, error, stackTrace) {
                         debugPrint('Image error for ${candidate.fullName}: $error');
                         return Container(

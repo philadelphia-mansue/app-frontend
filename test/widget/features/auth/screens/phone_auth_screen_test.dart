@@ -210,7 +210,7 @@ class _MockAuthNotifier extends StateNotifier<AuthState>
   Future<void> checkAuthStatus() async {}
 
   @override
-  void handleFirebaseSignOut() {}
+  Future<void> handleFirebaseSignOut() async {}
 
   @override
   Future<void> debugImpersonate(String phone, String magicToken) async {}

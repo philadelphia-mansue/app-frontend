@@ -1,6 +1,7 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import '../core/utils/url_params.dart';
 import '../features/auth/presentation/providers/auth_providers.dart';
 import '../features/auth/presentation/providers/auth_state.dart';
 import '../features/auth/presentation/screens/phone_auth_screen.dart';
@@ -18,13 +19,22 @@ class RouterRefreshNotifier extends ChangeNotifier {
   RouterRefreshNotifier(Ref ref) {
     // Listen to auth changes
     ref.listen(authNotifierProvider, (previous, next) {
-      // Reset election state and URL election ID when user becomes unauthenticated
+      // Reset election state when user becomes unauthenticated
       // This ensures fresh election data is loaded for the next user
+      // Note: We keep urlElectionIdProvider so next user can log into same election
       if (previous?.status == AuthStatus.authenticated &&
           next.status == AuthStatus.unauthenticated) {
         ref.read(electionNotifierProvider.notifier).reset();
-        ref.read(urlElectionIdProvider.notifier).state = null;
+        // Keep election ID - don't clear urlElectionIdProvider
       }
+
+      // Reset election if user just authenticated and election is in error state
+      // This allows the router to trigger a fresh election load after re-login
+      if (next.status == AuthStatus.authenticated &&
+          ref.read(electionNotifierProvider).status == ElectionLoadStatus.error) {
+        ref.read(electionNotifierProvider.notifier).reset();
+      }
+
       notifyListeners();
     });
     // Listen to election changes
@@ -58,14 +68,23 @@ final routerProvider = Provider<GoRouter>((ref) {
           authState.status == AuthStatus.impersonating;
       final isInAuthFlow = authState.status == AuthStatus.loading ||
           authState.status == AuthStatus.otpSent;
+      // Note: error state is NOT considered "loaded" - user stays on splash with error UI
       final isElectionLoaded = electionState.status == ElectionLoadStatus.loaded ||
-          electionState.status == ElectionLoadStatus.noElection ||
-          electionState.status == ElectionLoadStatus.error;
+          electionState.status == ElectionLoadStatus.noElection;
       final hasVoted = ref.read(hasVotedCombinedProvider);
+      // Check if local vote cache has finished loading (to avoid race condition)
+      final localVoteCacheLoaded = ref.read(localHasVotedProvider).hasValue;
       final currentPath = state.matchedLocation;
 
       // Extract election_id from URL (only store if election not yet loaded)
-      final urlElectionId = state.uri.queryParameters['election_id'];
+      // With hash routing, query params in main URL aren't in GoRouter's state,
+      // so we also check the browser URL directly on web
+      final goRouterElectionId = state.uri.queryParameters['election_id'];
+      final browserElectionId = getBrowserElectionId();
+      final urlElectionId = (goRouterElectionId != null && goRouterElectionId.isNotEmpty)
+          ? goRouterElectionId
+          : browserElectionId;
+
       if (urlElectionId != null && urlElectionId.isNotEmpty) {
         if (electionState.status == ElectionLoadStatus.initial) {
           final currentStoredId = ref.read(urlElectionIdProvider);
@@ -87,8 +106,16 @@ final routerProvider = Provider<GoRouter>((ref) {
       }
 
       // Handle impersonation via query params (works on any route)
-      final phone = state.uri.queryParameters['phone'];
-      final magicToken = state.uri.queryParameters['magic_token'];
+      // Check both GoRouter params (hash fragment) and browser URL params (main URL)
+      final goRouterPhone = state.uri.queryParameters['phone'];
+      final goRouterMagicToken = state.uri.queryParameters['magic_token'];
+      final phone = (goRouterPhone != null && goRouterPhone.isNotEmpty)
+          ? goRouterPhone
+          : getBrowserPhone();
+      final magicToken = (goRouterMagicToken != null && goRouterMagicToken.isNotEmpty)
+          ? goRouterMagicToken
+          : getBrowserMagicToken();
+
       if (phone != null && magicToken != null && !isInAuthFlow && !isAuthenticated) {
         debugPrint('[Router] Impersonate request: phone=$phone');
         // Mark pending impersonation (doesn't modify state, prevents Firebase signout)
@@ -100,10 +127,10 @@ final routerProvider = Provider<GoRouter>((ref) {
         return Routes.splash;
       }
 
-      // Load election when authenticated and not yet loaded (or failed previously)
+      // Load election when authenticated and not yet loaded
+      // Note: error state requires manual retry from splash screen (no auto-retry)
       if (isAuthenticated &&
-          (electionState.status == ElectionLoadStatus.initial ||
-           electionState.status == ElectionLoadStatus.error)) {
+          electionState.status == ElectionLoadStatus.initial) {
         if (storedElectionId != null && storedElectionId.isNotEmpty) {
           debugPrint('[Router] Loading election by ID: $storedElectionId');
           Future.microtask(() {
@@ -142,8 +169,9 @@ final routerProvider = Provider<GoRouter>((ref) {
         return hasElectionId ? Routes.phoneInput : Routes.notFound;
       }
 
-      // Authenticated but election not loaded yet - stay on/go to splash
-      if (!isElectionLoaded) {
+      // Authenticated but election not loaded yet OR local vote cache still loading
+      // Wait for both before routing to ensure hasVoted is accurate
+      if (!isElectionLoaded || !localVoteCacheLoaded) {
         return currentPath == Routes.splash ? null : Routes.splash;
       }
 

@@ -106,10 +106,23 @@ class ConfirmationScreen extends ConsumerWidget {
                       child: LuckyButton(
                         text: isSubmitting ? l10n.submitting : l10n.confirmVote,
                         onTap: () async {
-                          final confirmed = await LuckyModal.showConfirmation<bool>(
+                          final materialL10n = MaterialLocalizations.of(context);
+                          final confirmed = await showDialog<bool>(
                             context: context,
-                            title: l10n.confirmYourVote,
-                            body: l10n.voteIsFinalWarning,
+                            builder: (context) => AlertDialog(
+                              title: Text(l10n.confirmYourVote),
+                              content: Text(l10n.voteIsFinalWarning),
+                              actions: [
+                                TextButton(
+                                  onPressed: () => Navigator.pop(context, false),
+                                  child: Text(materialL10n.cancelButtonLabel),
+                                ),
+                                TextButton(
+                                  onPressed: () => Navigator.pop(context, true),
+                                  child: Text(l10n.confirmVote),
+                                ),
+                              ],
+                            ),
                           );
                           if (confirmed == true) {
                             final voterId = authState.voter?.id ?? 'anonymous';

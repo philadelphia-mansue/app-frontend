@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../../../core/widgets/cross_platform_image.dart';
 import '../../../candidates/domain/entities/candidate.dart';
 
 class SelectedCandidatesList extends StatelessWidget {
@@ -20,12 +21,26 @@ class SelectedCandidatesList extends StatelessWidget {
         final candidate = candidates[index];
         final imageUrl = candidate.photoUrl;
         return ListTile(
-          leading: CircleAvatar(
-            backgroundImage: imageUrl.isNotEmpty ? NetworkImage(imageUrl) : null,
-            onBackgroundImageError: (_, _) {},
-            child: imageUrl.isEmpty
-                ? Text(candidate.firstName[0])
-                : null,
+          leading: SizedBox(
+            width: 40,
+            height: 40,
+            child: ClipOval(
+              child: imageUrl.isNotEmpty
+                  ? CrossPlatformImage(
+                      imageUrl: imageUrl,
+                      fit: BoxFit.cover,
+                      errorBuilder: (_, __, ___) => CircleAvatar(
+                        child: Text(candidate.firstName.isNotEmpty
+                            ? candidate.firstName[0]
+                            : '?'),
+                      ),
+                    )
+                  : CircleAvatar(
+                      child: Text(candidate.firstName.isNotEmpty
+                          ? candidate.firstName[0]
+                          : '?'),
+                    ),
+            ),
           ),
           title: Text(
             candidate.fullName,

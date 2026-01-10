@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart' show kDebugMode;
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -5,6 +6,7 @@ import 'package:luckyui/luckyui.dart';
 import 'package:philadelphia_mansue/l10n/app_localizations.dart';
 import '../../../../core/utils/error_localizer.dart';
 import '../../../../routing/routes.dart';
+import '../../../auth/presentation/providers/auth_providers.dart';
 import '../../../elections/presentation/providers/election_providers.dart';
 import '../../../voting/presentation/providers/selection_notifier.dart';
 import '../widgets/candidates_grid.dart';
@@ -69,6 +71,15 @@ class _CandidatesScreenState extends ConsumerState<CandidatesScreen> {
       appBar: LuckyAppBar(
         title: electionName,
         automaticallyImplyLeading: false,
+        actions: kDebugMode
+            ? [
+                IconButton(
+                  icon: const Icon(Icons.logout),
+                  tooltip: 'DEBUG: Logout',
+                  onPressed: () => ref.read(authNotifierProvider.notifier).signOut(),
+                ),
+              ]
+            : null,
       ),
       body: Column(
         children: [

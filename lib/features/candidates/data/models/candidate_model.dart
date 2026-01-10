@@ -41,11 +41,15 @@ class CandidateModel extends Candidate {
   /// Creates a CandidateModel from Election API JSON response
   /// Election API format: { id, first_name, last_name, photo_url }
   factory CandidateModel.fromElectionJson(Map<String, dynamic> json) {
+    final rawPhotoUrl = json['photo_url'] as String? ?? '';
+    // Sanitize URL: fix double slashes in path (keep :// for protocol)
+    final sanitizedPhotoUrl = rawPhotoUrl.replaceAll(RegExp(r'(?<!:)//+'), '/');
+
     return CandidateModel(
       id: json['id'] as String,
       firstName: json['first_name'] as String? ?? '',
       lastName: json['last_name'] as String? ?? '',
-      photoUrl: json['photo_url'] as String? ?? '',
+      photoUrl: sanitizedPhotoUrl,
     );
   }
 }
