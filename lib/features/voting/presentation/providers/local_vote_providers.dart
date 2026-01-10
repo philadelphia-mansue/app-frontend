@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart' show debugPrint;
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../../core/di/providers.dart';
 import '../../../elections/presentation/providers/election_providers.dart';
@@ -13,24 +14,55 @@ final localHasVotedProvider = FutureProvider<bool>((ref) async {
 });
 
 /// Combined provider that checks BOTH local cache and API response.
-/// Returns true if either source says the user has voted.
+/// The API is the SOURCE OF TRUTH - when loaded, it overrides local cache.
 ///
-/// This provides faster UX: local cache is checked first (instant),
-/// and API response updates it when available.
+/// Logic:
+/// - If election is loaded: trust API (even if local cache says voted)
+/// - If election not loaded yet: use local cache for fast UX
 ///
-/// Security note: The server is the source of truth. This is only
-/// for UX optimization, not security enforcement.
+/// This handles the case where backend deletes a vote:
+/// - Local cache says "voted" but API says "not voted"
+/// - We trust the API and clear the stale local cache
 final hasVotedCombinedProvider = Provider<bool>((ref) {
-  // Check local cache (async, may not be ready yet)
+  // Check if election data is loaded from API
+  final electionState = ref.watch(electionNotifierProvider);
+  final isElectionLoaded = electionState.status == ElectionLoadStatus.loaded;
+
+  // Get API response (source of truth when available)
+  final apiVoted = ref.watch(hasVotedProvider);
+
+  // If election is loaded, API is the source of truth
+  if (isElectionLoaded) {
+    // Check local cache for mismatch detection
+    final localVotedAsync = ref.watch(localHasVotedProvider);
+    final localVoted = localVotedAsync.maybeWhen(
+      data: (hasVoted) => hasVoted,
+      orElse: () => false,
+    );
+
+    // If API says not voted but local says voted, we have stale cache
+    // Clear it asynchronously (fire and forget)
+    if (!apiVoted && localVoted) {
+      debugPrint('[VoteCache] API says not voted but local cache says voted - clearing stale cache');
+      final electionId = ref.read(currentElectionIdProvider);
+      if (electionId != null) {
+        ref.read(voteCacheServiceProvider).hasVotedInElection(electionId).then((_) {
+          // Clear the specific election from cache
+          ref.read(voteCacheServiceProvider).clearCache();
+          // Invalidate the local provider to refresh
+          ref.invalidate(localHasVotedProvider);
+        });
+      }
+    }
+
+    // Trust API when election is loaded
+    return apiVoted;
+  }
+
+  // Election not loaded yet - use local cache for fast UX
   final localVotedAsync = ref.watch(localHasVotedProvider);
-  final localVoted = localVotedAsync.maybeWhen(
+  return localVotedAsync.maybeWhen(
     data: (hasVoted) => hasVoted,
     orElse: () => false,
   );
-
-  // Check API response
-  final apiVoted = ref.watch(hasVotedProvider);
-
-  // Return true if EITHER says voted
-  return localVoted || apiVoted;
 });
