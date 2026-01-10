@@ -3,7 +3,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_app_check/firebase_app_check.dart';
-import 'package:flutter_web_plugins/url_strategy.dart';
 import 'firebase_options.dart';
 import 'app.dart';
 import 'core/env/env.dart';
@@ -11,9 +10,6 @@ import 'core/utils/appcheck.dart'
     if (dart.library.html) 'core/utils/web_appcheck.dart';
 
 Future<void> main() async {
-  // Use path URL strategy (removes # from URLs for proper routing)
-  usePathUrlStrategy();
-
   WidgetsFlutterBinding.ensureInitialized();
 
   await Firebase.initializeApp(
