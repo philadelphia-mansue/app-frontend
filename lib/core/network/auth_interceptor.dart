@@ -18,7 +18,7 @@ class AuthInterceptor extends Interceptor {
   ) async {
     // Skip auth header for login and impersonate endpoints
     if (options.path.contains('/voters/login') ||
-        options.path.contains('/voters/impersonate')) {
+        options.path.contains('/voters/inpersonate')) {
       return handler.next(options);
     }
 

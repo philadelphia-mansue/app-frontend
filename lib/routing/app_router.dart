@@ -92,38 +92,34 @@ final routerProvider = Provider<GoRouter>((ref) {
         final magicToken = state.uri.queryParameters['magic_token'];
 
         if (phone != null && magicToken != null && !isInAuthFlow) {
-          // Check if election_id is provided
-          if (urlElectionId == null || urlElectionId.isEmpty) {
-            debugPrint('[Router] Impersonate missing election_id');
-            return Routes.notFound;
-          }
-          debugPrint('[Router] Impersonate request: phone=$phone, election_id=$urlElectionId');
-          // Set impersonating state to prevent redirect to login
-          ref.read(authNotifierProvider.notifier).setImpersonating();
+          debugPrint('[Router] Impersonate request: phone=$phone');
+          // Mark pending impersonation (doesn't modify state, prevents Firebase signout)
+          ref.read(authNotifierProvider.notifier).markPendingImpersonation();
           // Trigger impersonate (async) and redirect to splash while loading
           Future.microtask(() {
             ref.read(authNotifierProvider.notifier).debugImpersonate(phone, magicToken);
           });
           return Routes.splash;
         }
-        // Missing params or already in auth flow - go to not found (no election_id) or login
-        if (urlElectionId == null || urlElectionId.isEmpty) {
-          return Routes.notFound;
-        }
+        // Missing params - go to login
         return Routes.phoneInput;
       }
 
-      // Load election when authenticated and not yet loaded
-      if (isAuthenticated && electionState.status == ElectionLoadStatus.initial) {
+      // Load election when authenticated and not yet loaded (or failed previously)
+      if (isAuthenticated &&
+          (electionState.status == ElectionLoadStatus.initial ||
+           electionState.status == ElectionLoadStatus.error)) {
         if (storedElectionId != null && storedElectionId.isNotEmpty) {
           debugPrint('[Router] Loading election by ID: $storedElectionId');
           Future.microtask(() {
             ref.read(electionNotifierProvider.notifier).loadElectionById(storedElectionId);
           });
         } else {
-          // No election_id provided - redirect to not found
-          debugPrint('[Router] No election_id provided, redirecting to not-found');
-          return Routes.notFound;
+          // No election_id provided - load ongoing election automatically
+          debugPrint('[Router] No election_id provided, loading ongoing election');
+          Future.microtask(() {
+            ref.read(electionNotifierProvider.notifier).loadOngoingElection();
+          });
         }
       }
 

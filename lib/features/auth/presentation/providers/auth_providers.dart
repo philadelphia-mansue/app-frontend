@@ -65,6 +65,8 @@ class AuthNotifier extends StateNotifier<AuthState> {
   final AuthRemoteDataSource _dataSource;
   String? _phoneNumber;
   bool _isRestoringSession = false;
+  bool _isImpersonated = false;
+  bool _pendingImpersonation = false;
 
   AuthNotifier({
     required SendOtp sendOtp,
@@ -162,8 +164,22 @@ class AuthNotifier extends StateNotifier<AuthState> {
     }
   }
 
+  /// Mark that impersonation is about to happen (called from router, doesn't modify state)
+  void markPendingImpersonation() {
+    _pendingImpersonation = true;
+  }
+
   /// Handle Firebase user signed out or no user on startup
   void handleFirebaseSignOut() {
+    // Don't override if impersonation is pending or already done
+    if (_pendingImpersonation) {
+      debugPrint('[AuthNotifier] Skipping Firebase sign out - impersonation pending');
+      return;
+    }
+    if (_isImpersonated) {
+      debugPrint('[AuthNotifier] Skipping Firebase sign out - user is impersonated');
+      return;
+    }
     if (state.status == AuthStatus.authenticated || state.status == AuthStatus.initial) {
       debugPrint('[AuthNotifier] No Firebase user, setting unauthenticated');
       _safeSetState(AuthState.unauthenticated());
@@ -243,6 +259,7 @@ class AuthNotifier extends StateNotifier<AuthState> {
   Future<void> signOut() async {
     await _repository.signOut();
     _phoneNumber = null;
+    _isImpersonated = false;
     // NOTE: Don't need to set state here - the authStateChanges stream
     // will naturally emit null after sign out, which triggers handleFirebaseSignOut
     _safeSetState(AuthState.unauthenticated());
@@ -255,11 +272,13 @@ class AuthNotifier extends StateNotifier<AuthState> {
 
   /// Debug-only impersonate login (bypasses OTP flow)
   Future<void> debugImpersonate(String phone, String magicToken) async {
-    debugPrint('[AuthNotifier] DEBUG: Attempting impersonate login for $phone');
-    // Only set loading if not already in impersonating state (from router)
-    if (state.status != AuthStatus.impersonating) {
-      _safeSetState(AuthState.loading());
+    // Prevent duplicate impersonation attempts
+    if (state.status == AuthStatus.loading || state.status == AuthStatus.authenticated) {
+      debugPrint('[AuthNotifier] DEBUG: Impersonate already in progress or done, skipping');
+      return;
     }
+    debugPrint('[AuthNotifier] DEBUG: Attempting impersonate login for $phone');
+    _safeSetState(AuthState.loading());
 
     try {
       final authResponse = await _dataSource.impersonateUser(
@@ -269,9 +288,12 @@ class AuthNotifier extends StateNotifier<AuthState> {
 
       final voter = authResponse.voter;
       debugPrint('[AuthNotifier] DEBUG: Impersonate successful for: ${voter.phone}');
+      _isImpersonated = true;
+      _pendingImpersonation = false;
       _safeSetState(AuthState.authenticated(voter));
     } catch (e) {
       debugPrint('[AuthNotifier] DEBUG: Impersonate failed: $e');
+      _pendingImpersonation = false;
       _safeSetState(AuthState.error(e.toString()));
     }
   }
@@ -279,6 +301,8 @@ class AuthNotifier extends StateNotifier<AuthState> {
   void reset() {
     _phoneNumber = null;
     _isRestoringSession = false;
+    _isImpersonated = false;
+    _pendingImpersonation = false;
     // Use unauthenticated instead of initial to avoid redirect to splash
     _safeSetState(AuthState.unauthenticated());
   }

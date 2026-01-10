@@ -222,5 +222,8 @@ class _MockAuthNotifier extends StateNotifier<AuthState>
   void setImpersonating() {}
 
   @override
+  void markPendingImpersonation() {}
+
+  @override
   Future<void> tryRestoreSession(String userId) async {}
 }
