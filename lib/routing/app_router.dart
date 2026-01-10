@@ -86,23 +86,18 @@ final routerProvider = Provider<GoRouter>((ref) {
         return null;
       }
 
-      // Handle /impersonate route with query params
-      if (currentPath == Routes.impersonate) {
-        final phone = state.uri.queryParameters['phone'];
-        final magicToken = state.uri.queryParameters['magic_token'];
-
-        if (phone != null && magicToken != null && !isInAuthFlow) {
-          debugPrint('[Router] Impersonate request: phone=$phone');
-          // Mark pending impersonation (doesn't modify state, prevents Firebase signout)
-          ref.read(authNotifierProvider.notifier).markPendingImpersonation();
-          // Trigger impersonate (async) and redirect to splash while loading
-          Future.microtask(() {
-            ref.read(authNotifierProvider.notifier).debugImpersonate(phone, magicToken);
-          });
-          return Routes.splash;
-        }
-        // Missing params - go to login
-        return Routes.phoneInput;
+      // Handle impersonation via query params (works on any route)
+      final phone = state.uri.queryParameters['phone'];
+      final magicToken = state.uri.queryParameters['magic_token'];
+      if (phone != null && magicToken != null && !isInAuthFlow && !isAuthenticated) {
+        debugPrint('[Router] Impersonate request: phone=$phone');
+        // Mark pending impersonation (doesn't modify state, prevents Firebase signout)
+        ref.read(authNotifierProvider.notifier).markPendingImpersonation();
+        // Trigger impersonate (async) and redirect to splash while loading
+        Future.microtask(() {
+          ref.read(authNotifierProvider.notifier).debugImpersonate(phone, magicToken);
+        });
+        return Routes.splash;
       }
 
       // Load election when authenticated and not yet loaded (or failed previously)

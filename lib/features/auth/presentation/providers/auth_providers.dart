@@ -170,7 +170,7 @@ class AuthNotifier extends StateNotifier<AuthState> {
   }
 
   /// Handle Firebase user signed out or no user on startup
-  void handleFirebaseSignOut() {
+  Future<void> handleFirebaseSignOut() async {
     // Don't override if impersonation is pending or already done
     if (_pendingImpersonation) {
       debugPrint('[AuthNotifier] Skipping Firebase sign out - impersonation pending');
@@ -181,6 +181,24 @@ class AuthNotifier extends StateNotifier<AuthState> {
       return;
     }
     if (state.status == AuthStatus.authenticated || state.status == AuthStatus.initial) {
+      // Check if there's a stored token (from impersonation) before setting unauthenticated
+      final hasToken = await _repository.isAuthenticated();
+      if (hasToken) {
+        debugPrint('[AuthNotifier] No Firebase user but found stored token, restoring session');
+        final result = await _repository.getCurrentVoter();
+        result.fold(
+          (failure) {
+            debugPrint('[AuthNotifier] Token invalid: ${failure.message}');
+            _safeSetState(AuthState.unauthenticated());
+          },
+          (voter) {
+            debugPrint('[AuthNotifier] Session restored from stored token');
+            _isImpersonated = true;
+            _safeSetState(AuthState.authenticated(voter));
+          },
+        );
+        return;
+      }
       debugPrint('[AuthNotifier] No Firebase user, setting unauthenticated');
       _safeSetState(AuthState.unauthenticated());
     }

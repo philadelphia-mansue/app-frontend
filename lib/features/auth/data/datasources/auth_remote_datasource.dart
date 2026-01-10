@@ -275,6 +275,8 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
     required String magicToken,
   }) async {
     try {
+      // Clear any existing token to prevent race conditions
+      await _tokenStorage.deleteToken();
       debugPrint('[AuthDataSource] Impersonating user: $phone');
 
       final response = await _apiClient.post(
