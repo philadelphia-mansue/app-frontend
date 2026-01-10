@@ -63,6 +63,23 @@ final routerProvider = Provider<GoRouter>((ref) {
 
       debugPrint('[Router] redirect: path=$currentPath, authStatus=${authState.status}, electionStatus=${electionState.status}, hasVoted=$hasVoted');
 
+      // Handle /impersonate route with query params
+      if (currentPath == Routes.impersonate) {
+        final phone = state.uri.queryParameters['phone'];
+        final magicToken = state.uri.queryParameters['magic_token'];
+
+        if (phone != null && magicToken != null && !isInAuthFlow) {
+          debugPrint('[Router] Impersonate request: phone=$phone');
+          // Trigger impersonate (async) and redirect to splash while loading
+          Future.microtask(() {
+            ref.read(authNotifierProvider.notifier).debugImpersonate(phone, magicToken);
+          });
+          return Routes.splash;
+        }
+        // Missing params or already in auth flow - go to login
+        return Routes.phoneInput;
+      }
+
       // Load election when authenticated and not yet loaded
       if (isAuthenticated && electionState.status == ElectionLoadStatus.initial) {
         Future.microtask(() {
@@ -127,6 +144,11 @@ final routerProvider = Provider<GoRouter>((ref) {
       GoRoute(
         path: Routes.success,
         builder: (context, state) => const SuccessScreen(),
+      ),
+      // Impersonate route - handled by redirect, shows splash while processing
+      GoRoute(
+        path: Routes.impersonate,
+        builder: (context, state) => const SplashScreen(),
       ),
     ],
   );
