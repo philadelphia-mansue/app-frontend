@@ -41,6 +41,9 @@ class RouterRefreshNotifier extends ChangeNotifier {
     ref.listen(electionNotifierProvider, (_, _) {
       notifyListeners();
     });
+    // Watch voteDeletedDetectorProvider to detect vote deletion across page refresh
+    // This compares local cache vs API to detect if vote was deleted
+    ref.watch(voteDeletedDetectorProvider);
   }
 }
 
@@ -172,6 +175,13 @@ final routerProvider = Provider<GoRouter>((ref) {
         return hasElectionId
             ? _buildRedirectWithElectionId(Routes.phoneInput, effectiveElectionId)
             : Routes.notFound;
+      }
+
+      // Authenticated but no election_id - cannot proceed without an election
+      final hasElectionId = effectiveElectionId != null && effectiveElectionId.isNotEmpty;
+      if (!hasElectionId) {
+        debugPrint('[Router] Authenticated but no election_id - redirecting to not-found');
+        return Routes.notFound;
       }
 
       // Authenticated but election not loaded yet - wait on splash

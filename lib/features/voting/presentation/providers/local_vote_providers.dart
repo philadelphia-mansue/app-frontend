@@ -1,5 +1,7 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../../core/di/providers.dart';
+import '../../../auth/presentation/providers/auth_providers.dart';
 import '../../../elections/presentation/providers/election_providers.dart';
 
 /// Checks local cache to see if user has voted in the current election.
@@ -34,4 +36,26 @@ final hasVotedCombinedProvider = Provider<bool>((ref) {
   // Election not loaded yet - return false (we don't know, so don't redirect to success)
   // The router will keep user on splash until election loads anyway
   return false;
+});
+
+/// Detects if a vote was deleted from the backend by comparing local cache vs API.
+/// If local cache says voted=true but API says hasVoted=false, the vote was deleted.
+/// This provider triggers sign out when vote deletion is detected.
+final voteDeletedDetectorProvider = Provider<void>((ref) {
+  final electionState = ref.watch(electionNotifierProvider);
+  final isElectionLoaded = electionState.status == ElectionLoadStatus.loaded;
+
+  if (!isElectionLoaded) return;
+
+  final apiHasVoted = ref.watch(hasVotedProvider);
+  final localCacheAsync = ref.watch(localHasVotedProvider);
+
+  localCacheAsync.whenData((localHasVoted) {
+    // Vote was deleted: local cache says voted, but API says not voted
+    if (localHasVoted && !apiHasVoted) {
+      debugPrint('[VoteDetector] Vote was deleted from backend - local cache: $localHasVoted, API: $apiHasVoted');
+      // Sign out user but keep election ID so they can re-login
+      ref.read(authNotifierProvider.notifier).signOut();
+    }
+  });
 });
