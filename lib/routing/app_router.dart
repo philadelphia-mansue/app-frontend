@@ -46,6 +46,14 @@ class RouterRefreshNotifier extends ChangeNotifier {
 
 final _routerRefreshProvider = Provider((ref) => RouterRefreshNotifier(ref));
 
+/// Build redirect path with election_id query parameter if available
+String _buildRedirectWithElectionId(String basePath, String? electionId) {
+  if (electionId != null && electionId.isNotEmpty) {
+    return '$basePath?election_id=$electionId';
+  }
+  return basePath;
+}
+
 final routerProvider = Provider<GoRouter>((ref) {
   final refreshNotifier = ref.watch(_routerRefreshProvider);
 
@@ -92,7 +100,14 @@ final routerProvider = Provider<GoRouter>((ref) {
       }
 
       final storedElectionId = ref.read(urlElectionIdProvider);
-      debugPrint('[Router] redirect: path=$currentPath, authStatus=${authState.status}, electionStatus=${electionState.status}, hasVoted=$hasVoted, electionId=$storedElectionId');
+      // Effective election ID for use in redirects - prefer URL, fallback to stored, fallback to loaded election
+      final loadedElectionId = electionState.election?.id;
+      final effectiveElectionId = (urlElectionId != null && urlElectionId.isNotEmpty)
+          ? urlElectionId
+          : (storedElectionId != null && storedElectionId.isNotEmpty)
+              ? storedElectionId
+              : loadedElectionId;
+      debugPrint('[Router] redirect: path=$currentPath, authStatus=${authState.status}, electionStatus=${electionState.status}, hasVoted=$hasVoted, electionId=$effectiveElectionId');
 
       // Allow not-found page to be shown
       if (currentPath == Routes.notFound) {
@@ -147,33 +162,39 @@ final routerProvider = Provider<GoRouter>((ref) {
       // Not authenticated
       if (!isAuthenticated) {
         // Check if we have an election_id (from URL or stored)
-        final hasElectionId = (urlElectionId != null && urlElectionId.isNotEmpty) ||
-            (storedElectionId != null && storedElectionId.isNotEmpty);
+        final hasElectionId = effectiveElectionId != null && effectiveElectionId.isNotEmpty;
 
         // Allow login page if we have an election_id
         if (currentPath == Routes.phoneInput) {
           return hasElectionId ? null : Routes.notFound;
         }
-        // Redirect to login if we have election_id, otherwise to not-found
-        return hasElectionId ? Routes.phoneInput : Routes.notFound;
+        // Redirect to login with election_id preserved, otherwise to not-found
+        return hasElectionId
+            ? _buildRedirectWithElectionId(Routes.phoneInput, effectiveElectionId)
+            : Routes.notFound;
       }
 
       // Authenticated but election not loaded yet - wait on splash
       // hasVoted is only accurate after election loads from API
       if (!isElectionLoaded) {
-        return currentPath == Routes.splash ? null : Routes.splash;
+        return currentPath == Routes.splash
+            ? null
+            : _buildRedirectWithElectionId(Routes.splash, effectiveElectionId);
       }
 
       // Authenticated and election loaded - apply routing rules
+      debugPrint('[Router] hasVoted check: electionLoaded=$isElectionLoaded, hasVoted=$hasVoted');
 
       // User has voted - only allow success screen
       if (hasVoted) {
-        return currentPath == Routes.success ? null : Routes.success;
+        return currentPath == Routes.success
+            ? null
+            : _buildRedirectWithElectionId(Routes.success, effectiveElectionId);
       }
 
       // User hasn't voted - allow candidates, confirmation, but not login or splash
       if (currentPath == Routes.phoneInput || currentPath == Routes.splash) {
-        return Routes.candidates;
+        return _buildRedirectWithElectionId(Routes.candidates, effectiveElectionId);
       }
 
       return null; // No redirect needed

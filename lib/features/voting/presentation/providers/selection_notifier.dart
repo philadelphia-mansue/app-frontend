@@ -82,7 +82,17 @@ final selectionNotifierProvider =
   final maxVotes = ref.watch(requiredVotesCountProvider);
   final electionId = ref.watch(currentElectionIdProvider);
   final isAuthenticated = ref.watch(isAuthenticatedProvider);
-  return SelectionNotifier(maxVotes, electionId, isAuthenticated);
+  final notifier = SelectionNotifier(maxVotes, electionId, isAuthenticated);
+
+  // Listen for hasVoted changes - clear selections when vote is deleted from backend
+  ref.listen<bool>(hasVotedProvider, (previous, next) {
+    // If hasVoted changed from true to false, vote was deleted - clear selections
+    if (previous == true && next == false) {
+      notifier.clearSelections();
+    }
+  });
+
+  return notifier;
 });
 
 // Convenience selectors

@@ -13,3 +13,6 @@ List<String>? getStoredCandidateOrder(String electionId) => null;
 
 /// Saves candidate order to sessionStorage.
 void saveStoredCandidateOrder(String electionId, List<String> order) {}
+
+/// Clears all stored selections and candidate order.
+void clearAllStoredSelectionData() {}

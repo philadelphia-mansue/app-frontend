@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../../core/di/providers.dart';
 import '../../../../core/usecases/usecase.dart';
@@ -116,6 +117,7 @@ class ElectionNotifier extends StateNotifier<ElectionState> {
         errorMessage: failure.message,
       ),
       (election) {
+        debugPrint('[Election] Loaded election: id=${election.id}, hasVoted=${election.hasVoted}');
         // Use stored order if available, otherwise shuffle and save
         final orderedCandidates = _getOrderedCandidates(
           election.id,

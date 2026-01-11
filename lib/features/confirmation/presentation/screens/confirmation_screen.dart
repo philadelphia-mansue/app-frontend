@@ -38,7 +38,11 @@ class ConfirmationScreen extends ConsumerWidget {
           await ref.read(voteCacheServiceProvider).markAsVoted(electionId);
         }
         if (context.mounted) {
-          context.go(Routes.success);
+          // Include election_id in URL so it persists across page refresh
+          final successPath = electionId != null
+              ? '${Routes.success}?election_id=$electionId'
+              : Routes.success;
+          context.go(successPath);
         }
       } else if (next.status == VotingStatus.error) {
         ScaffoldMessenger.of(context).showSnackBar(

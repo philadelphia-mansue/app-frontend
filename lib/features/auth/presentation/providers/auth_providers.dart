@@ -1,6 +1,8 @@
 import 'package:flutter/foundation.dart' show debugPrint;
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../../core/di/providers.dart';
+import '../../../../core/services/vote_cache_service.dart';
+import '../../../../core/utils/selection_storage.dart';
 import '../../data/datasources/auth_remote_datasource.dart';
 import '../../data/repositories/auth_repository_impl.dart';
 import '../../domain/entities/voter.dart';
@@ -63,6 +65,7 @@ class AuthNotifier extends StateNotifier<AuthState> {
   final VerifyOtp _verifyOtp;
   final AuthRepository _repository;
   final AuthRemoteDataSource _dataSource;
+  final VoteCacheService _voteCache;
   String? _phoneNumber;
   bool _isRestoringSession = false;
   bool _isImpersonated = false;
@@ -73,10 +76,12 @@ class AuthNotifier extends StateNotifier<AuthState> {
     required VerifyOtp verifyOtp,
     required AuthRepository repository,
     required AuthRemoteDataSource dataSource,
+    required VoteCacheService voteCache,
   })  : _sendOtp = sendOtp,
         _verifyOtp = verifyOtp,
         _repository = repository,
         _dataSource = dataSource,
+        _voteCache = voteCache,
         super(AuthState.initial());
 
   String? get phoneNumber => _phoneNumber;
@@ -286,6 +291,12 @@ class AuthNotifier extends StateNotifier<AuthState> {
     await _repository.signOut();
     _phoneNumber = null;
     _isImpersonated = false;
+
+    // Clear all cached data to prevent data leakage between users
+    await _voteCache.clearCache();
+    clearAllStoredSelectionData();
+    debugPrint('[AuthNotifier] Cleared vote cache and selection storage on logout');
+
     // NOTE: Don't need to set state here - the authStateChanges stream
     // will naturally emit null after sign out, which triggers handleFirebaseSignOut
     _safeSetState(AuthState.unauthenticated());
@@ -341,6 +352,7 @@ final authNotifierProvider = StateNotifierProvider<AuthNotifier, AuthState>((ref
     verifyOtp: ref.read(verifyOtpUseCaseProvider),
     repository: ref.read(authRepositoryProvider),
     dataSource: ref.read(authRemoteDataSourceProvider),
+    voteCache: ref.read(voteCacheServiceProvider),
   );
 
   // Set up unauthorized callback to trigger logout on 401 responses

@@ -53,3 +53,23 @@ void saveStoredCandidateOrder(String electionId, List<String> order) {
   final key = '$_orderKeyPrefix$electionId';
   html.window.sessionStorage.setItem(key, jsonEncode(order));
 }
+
+/// Clears all stored selections and candidate order from sessionStorage.
+/// Called on logout to prevent data leakage between users.
+void clearAllStoredSelectionData() {
+  final storage = html.window.sessionStorage;
+  final keysToRemove = <String>[];
+
+  // Find all keys with our prefixes
+  for (var i = 0; i < storage.length; i++) {
+    final key = storage.key(i);
+    if (key != null && (key.startsWith(_keyPrefix) || key.startsWith(_orderKeyPrefix))) {
+      keysToRemove.add(key);
+    }
+  }
+
+  // Remove them
+  for (final key in keysToRemove) {
+    storage.removeItem(key);
+  }
+}
