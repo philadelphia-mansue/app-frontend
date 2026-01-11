@@ -41,10 +41,6 @@ class RouterRefreshNotifier extends ChangeNotifier {
     ref.listen(electionNotifierProvider, (_, _) {
       notifyListeners();
     });
-    // Listen to local vote cache changes (for faster redirect after voting)
-    ref.listen(localHasVotedProvider, (_, _) {
-      notifyListeners();
-    });
   }
 }
 
@@ -72,8 +68,6 @@ final routerProvider = Provider<GoRouter>((ref) {
       final isElectionLoaded = electionState.status == ElectionLoadStatus.loaded ||
           electionState.status == ElectionLoadStatus.noElection;
       final hasVoted = ref.read(hasVotedCombinedProvider);
-      // Check if local vote cache has finished loading (to avoid race condition)
-      final localVoteCacheLoaded = ref.read(localHasVotedProvider).hasValue;
       final currentPath = state.matchedLocation;
 
       // Extract election_id from URL (only store if election not yet loaded)
@@ -164,9 +158,9 @@ final routerProvider = Provider<GoRouter>((ref) {
         return hasElectionId ? Routes.phoneInput : Routes.notFound;
       }
 
-      // Authenticated but election not loaded yet OR local vote cache still loading
-      // Wait for both before routing to ensure hasVoted is accurate
-      if (!isElectionLoaded || !localVoteCacheLoaded) {
+      // Authenticated but election not loaded yet - wait on splash
+      // hasVoted is only accurate after election loads from API
+      if (!isElectionLoaded) {
         return currentPath == Routes.splash ? null : Routes.splash;
       }
 
