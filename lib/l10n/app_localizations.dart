@@ -621,6 +621,126 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Invalid verification code'**
   String get invalidOtp;
+
+  /// Application title shown in app bar
+  ///
+  /// In en, this message translates to:
+  /// **'Conferinta Europeana'**
+  String get appTitle;
+
+  /// Logout button tooltip
+  ///
+  /// In en, this message translates to:
+  /// **'Logout'**
+  String get logout;
+
+  /// Welcome message with user name
+  ///
+  /// In en, this message translates to:
+  /// **'Welcome, {name}'**
+  String welcomeUser(String name);
+
+  /// Button text for prevalidation feature
+  ///
+  /// In en, this message translates to:
+  /// **'Prevalidation'**
+  String get prevalidation;
+
+  /// Button text for QR scanner to vote
+  ///
+  /// In en, this message translates to:
+  /// **'Scan to Vote'**
+  String get scanToVote;
+
+  /// Instructions shown on prevalidation screen
+  ///
+  /// In en, this message translates to:
+  /// **'Show this QR code to staff for verification'**
+  String get prevalidationInstructions;
+
+  /// Instructions shown on scanner screen
+  ///
+  /// In en, this message translates to:
+  /// **'Point your camera at the election QR code'**
+  String get scanInstructions;
+
+  /// Error message for invalid QR code
+  ///
+  /// In en, this message translates to:
+  /// **'Invalid QR code. Please scan a valid election link.'**
+  String get invalidQrCode;
+
+  /// Error when election is not found
+  ///
+  /// In en, this message translates to:
+  /// **'Election not found'**
+  String get electionNotFound;
+
+  /// Title for already voted dialog
+  ///
+  /// In en, this message translates to:
+  /// **'Already Voted'**
+  String get alreadyVotedTitle;
+
+  /// Message shown when user already voted in election
+  ///
+  /// In en, this message translates to:
+  /// **'You have already voted in this election. Please scan a different election QR code.'**
+  String get alreadyVotedMessage;
+
+  /// Button text to vote in another election
+  ///
+  /// In en, this message translates to:
+  /// **'Vote Another Election'**
+  String get voteAnotherElection;
+
+  /// Button text to start voting
+  ///
+  /// In en, this message translates to:
+  /// **'Vote Now'**
+  String get voteNow;
+
+  /// Instructions on the start voting screen
+  ///
+  /// In en, this message translates to:
+  /// **'When you\'re ready, tap the button below to start voting'**
+  String get startVotingInstructions;
+
+  /// Message when voting is not active
+  ///
+  /// In en, this message translates to:
+  /// **'Voting is not currently active. Please try again later.'**
+  String get votingNotActive;
+
+  /// Message when voting hasn't started yet
+  ///
+  /// In en, this message translates to:
+  /// **'Please wait for the vote to begin.'**
+  String get noOngoingElection;
+
+  /// Button text to continue from QR code to voting
+  ///
+  /// In en, this message translates to:
+  /// **'Continue'**
+  String get continueToVoting;
+
+  /// Title shown when voting period has ended
+  ///
+  /// In en, this message translates to:
+  /// **'Voting has ended'**
+  String get voteEndedTitle;
+
+  /// Message shown when voting period has ended
+  ///
+  /// In en, this message translates to:
+  /// **'Thank you for your participation. Voting is no longer active.'**
+  String get voteEndedMessage;
+
+  /// Message shown when user tries to vote without being prevalidated
+  ///
+  /// In en, this message translates to:
+  /// **'You must be prevalidated by staff before voting.'**
+  String get notPrevalidated;
 }
 
 class _AppLocalizationsDelegate

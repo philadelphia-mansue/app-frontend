@@ -1,11 +1,12 @@
 import 'package:dartz/dartz.dart';
 import '../../../../core/errors/failures.dart';
+import '../entities/auth_result.dart';
 import '../entities/user.dart';
 import '../entities/voter.dart';
 
 abstract class AuthRepository {
   Future<Either<Failure, String>> sendOtp(String phoneNumber);
-  Future<Either<Failure, Voter>> verifyOtp(String verificationId, String otp);
+  Future<Either<Failure, AuthResult>> verifyOtp(String verificationId, String otp);
   Future<Either<Failure, User?>> getCurrentUser();
   Future<Either<Failure, Voter>> getCurrentVoter();
   Future<Either<Failure, void>> signOut();

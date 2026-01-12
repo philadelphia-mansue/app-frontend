@@ -18,11 +18,11 @@ void main() {
   group('VerifyOtp UseCase', () {
     const testVerificationId = 'verification-123';
     const testOtp = '123456';
-    final testVoter = createTestVoter();
+    final testAuthResult = createTestAuthResult();
 
-    test('should return Right(Voter) on success', () async {
+    test('should return Right(AuthResult) on success', () async {
       // Arrange
-      mockVerifyOtpSuccess(mockRepository, testVoter);
+      mockVerifyOtpSuccess(mockRepository, testAuthResult);
 
       // Act
       final result = await useCase(
@@ -33,7 +33,7 @@ void main() {
       );
 
       // Assert
-      expect(result, equals(Right(testVoter)));
+      expect(result, equals(Right(testAuthResult)));
     });
 
     test('should return Left(AuthFailure) on invalid OTP', () async {
@@ -116,15 +116,16 @@ void main() {
       );
     });
 
-    test('should return voter with correct properties', () async {
+    test('should return auth result with correct properties', () async {
       // Arrange
-      final customVoter = createTestVoter(
+      final customAuthResult = createTestAuthResult(
         id: 'custom-voter-id',
         firstName: 'Jane',
         lastName: 'Doe',
         phone: '+9876543210',
+        qrCode: 'encrypted-qr-code',
       );
-      mockVerifyOtpSuccess(mockRepository, customVoter);
+      mockVerifyOtpSuccess(mockRepository, customAuthResult);
 
       // Act
       final result = await useCase(
@@ -138,18 +139,19 @@ void main() {
       expect(result.isRight(), isTrue);
       result.fold(
         (_) => fail('Should return Right'),
-        (voter) {
-          expect(voter.id, equals('custom-voter-id'));
-          expect(voter.firstName, equals('Jane'));
-          expect(voter.lastName, equals('Doe'));
-          expect(voter.phone, equals('+9876543210'));
+        (authResult) {
+          expect(authResult.voter.id, equals('custom-voter-id'));
+          expect(authResult.voter.firstName, equals('Jane'));
+          expect(authResult.voter.lastName, equals('Doe'));
+          expect(authResult.voter.phone, equals('+9876543210'));
+          expect(authResult.voter.qrCode, equals('encrypted-qr-code'));
         },
       );
     });
 
     test('should successfully call with custom parameters', () async {
       // Arrange
-      mockVerifyOtpSuccess(mockRepository, testVoter);
+      mockVerifyOtpSuccess(mockRepository, testAuthResult);
 
       // Act
       final result = await useCase(

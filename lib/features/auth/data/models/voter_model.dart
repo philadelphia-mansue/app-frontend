@@ -6,6 +6,7 @@ class VoterModel extends Voter {
     required super.firstName,
     required super.lastName,
     required super.phone,
+    super.qrCode,
   });
 
   factory VoterModel.fromJson(Map<String, dynamic> json) {
@@ -14,6 +15,7 @@ class VoterModel extends Voter {
       firstName: json['first_name'] as String? ?? '',
       lastName: json['last_name'] as String? ?? '',
       phone: json['phone'] as String? ?? '',
+      qrCode: json['qr_code'] as String?,
     );
   }
 
@@ -23,6 +25,7 @@ class VoterModel extends Voter {
       'first_name': firstName,
       'last_name': lastName,
       'phone': phone,
+      'qr_code': qrCode,
     };
   }
 
@@ -32,6 +35,7 @@ class VoterModel extends Voter {
       firstName: voter.firstName,
       lastName: voter.lastName,
       phone: voter.phone,
+      qrCode: voter.qrCode,
     );
   }
 }

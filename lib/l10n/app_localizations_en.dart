@@ -294,4 +294,73 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get invalidOtp => 'Invalid verification code';
+
+  @override
+  String get appTitle => 'Conferinta Europeana';
+
+  @override
+  String get logout => 'Logout';
+
+  @override
+  String welcomeUser(String name) {
+    return 'Welcome, $name';
+  }
+
+  @override
+  String get prevalidation => 'Prevalidation';
+
+  @override
+  String get scanToVote => 'Scan to Vote';
+
+  @override
+  String get prevalidationInstructions =>
+      'Show this QR code to staff for verification';
+
+  @override
+  String get scanInstructions => 'Point your camera at the election QR code';
+
+  @override
+  String get invalidQrCode =>
+      'Invalid QR code. Please scan a valid election link.';
+
+  @override
+  String get electionNotFound => 'Election not found';
+
+  @override
+  String get alreadyVotedTitle => 'Already Voted';
+
+  @override
+  String get alreadyVotedMessage =>
+      'You have already voted in this election. Please scan a different election QR code.';
+
+  @override
+  String get voteAnotherElection => 'Vote Another Election';
+
+  @override
+  String get voteNow => 'Vote Now';
+
+  @override
+  String get startVotingInstructions =>
+      'When you\'re ready, tap the button below to start voting';
+
+  @override
+  String get votingNotActive =>
+      'Voting is not currently active. Please try again later.';
+
+  @override
+  String get noOngoingElection => 'Please wait for the vote to begin.';
+
+  @override
+  String get continueToVoting => 'Continue';
+
+  @override
+  String get voteEndedTitle => 'Voting has ended';
+
+  @override
+  String get voteEndedMessage =>
+      'Thank you for your participation. Voting is no longer active.';
+
+  @override
+  String get notPrevalidated =>
+      'You must be prevalidated by staff before voting.';
 }

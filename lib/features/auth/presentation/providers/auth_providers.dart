@@ -283,7 +283,7 @@ class AuthNotifier extends StateNotifier<AuthState> {
 
     result.fold(
       (failure) => _safeSetState(AuthState.error(failure.message)),
-      (voter) => _safeSetState(AuthState.authenticated(voter)),
+      (authResult) => _safeSetState(AuthState.authenticated(authResult.voter)),
     );
   }
 

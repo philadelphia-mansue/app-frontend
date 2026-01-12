@@ -7,6 +7,7 @@ import 'package:philadelphia_mansue/l10n/app_localizations.dart';
 import '../../../../core/utils/error_localizer.dart';
 import '../../../../routing/routes.dart';
 import '../../../auth/presentation/providers/auth_providers.dart';
+import '../../../auth/presentation/providers/auth_state.dart';
 import '../../../elections/presentation/providers/election_providers.dart';
 import '../../../voting/presentation/providers/selection_notifier.dart';
 import '../widgets/candidates_grid.dart';
@@ -19,7 +20,31 @@ class CandidatesScreen extends ConsumerStatefulWidget {
 }
 
 class _CandidatesScreenState extends ConsumerState<CandidatesScreen> {
-  // Election is loaded by router when authenticated
+  @override
+  void initState() {
+    super.initState();
+    // After page refresh, election state is initial - trigger load when auth is ready
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _tryLoadElection();
+      // Also listen for auth changes to trigger load when auth completes
+      ref.listenManual(authNotifierProvider, (_, next) {
+        if (next.status == AuthStatus.authenticated) {
+          _tryLoadElection();
+        }
+      });
+    });
+  }
+
+  void _tryLoadElection() {
+    final authState = ref.read(authNotifierProvider);
+    final electionState = ref.read(electionNotifierProvider);
+
+    // Only load if authenticated and election not yet loaded
+    if (authState.status == AuthStatus.authenticated &&
+        electionState.status == ElectionLoadStatus.initial) {
+      ref.read(electionNotifierProvider.notifier).loadOngoingElection();
+    }
+  }
 
   void _onSubmit() {
     final l10n = AppLocalizations.of(context)!;
@@ -225,22 +250,17 @@ class _CandidatesScreenState extends ConsumerState<CandidatesScreen> {
         );
 
       case ElectionLoadStatus.noElection:
-        return Center(
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              const Icon(Icons.how_to_vote_outlined, size: 64, color: Colors.grey),
-              const SizedBox(height: 16),
-              Text(
-                l10n.noActiveElectionFound,
-                style: Theme.of(context).textTheme.titleMedium,
-              ),
-            ],
-          ),
-        );
+        // Router will redirect to vote-ended, show loading briefly
+        WidgetsBinding.instance.addPostFrameCallback((_) {
+          if (mounted) {
+            context.go(Routes.voteEnded);
+          }
+        });
+        return const Center(child: CircularProgressIndicator());
 
       case ElectionLoadStatus.loaded:
-        return Center(
+        return Align(
+          alignment: Alignment.topCenter,
           child: ConstrainedBox(
             constraints: const BoxConstraints(maxWidth: 1200),
             child: CandidatesGrid(

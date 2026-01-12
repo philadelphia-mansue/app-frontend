@@ -408,5 +408,91 @@
   "invalidOtp": "Invalid verification code",
   "@invalidOtp": {
     "description": "Error when OTP code is invalid"
+  },
+  "appTitle": "Conferinta Europeana",
+  "@appTitle": {
+    "description": "Application title shown in app bar"
+  },
+  "logout": "Logout",
+  "@logout": {
+    "description": "Logout button tooltip"
+  },
+  "welcomeUser": "Welcome, {name}",
+  "@welcomeUser": {
+    "description": "Welcome message with user name",
+    "placeholders": {
+      "name": {
+        "type": "String",
+        "example": "John"
+      }
+    }
+  },
+  "prevalidation": "Prevalidation",
+  "@prevalidation": {
+    "description": "Button text for prevalidation feature"
+  },
+  "scanToVote": "Scan to Vote",
+  "@scanToVote": {
+    "description": "Button text for QR scanner to vote"
+  },
+  "prevalidationInstructions": "Show this QR code to staff for verification",
+  "@prevalidationInstructions": {
+    "description": "Instructions shown on prevalidation screen"
+  },
+  "scanInstructions": "Point your camera at the election QR code",
+  "@scanInstructions": {
+    "description": "Instructions shown on scanner screen"
+  },
+  "invalidQrCode": "Invalid QR code. Please scan a valid election link.",
+  "@invalidQrCode": {
+    "description": "Error message for invalid QR code"
+  },
+  "electionNotFound": "Election not found",
+  "@electionNotFound": {
+    "description": "Error when election is not found"
+  },
+  "alreadyVotedTitle": "Already Voted",
+  "@alreadyVotedTitle": {
+    "description": "Title for already voted dialog"
+  },
+  "alreadyVotedMessage": "You have already voted in this election. Please scan a different election QR code.",
+  "@alreadyVotedMessage": {
+    "description": "Message shown when user already voted in election"
+  },
+  "voteAnotherElection": "Vote Another Election",
+  "@voteAnotherElection": {
+    "description": "Button text to vote in another election"
+  },
+  "voteNow": "Vote Now",
+  "@voteNow": {
+    "description": "Button text to start voting"
+  },
+  "startVotingInstructions": "When you're ready, tap the button below to start voting",
+  "@startVotingInstructions": {
+    "description": "Instructions on the start voting screen"
+  },
+  "votingNotActive": "Voting is not currently active. Please try again later.",
+  "@votingNotActive": {
+    "description": "Message when voting is not active"
+  },
+  "noOngoingElection": "Please wait for the vote to begin.",
+  "@noOngoingElection": {
+    "description": "Message when voting hasn't started yet"
+  },
+  "continueToVoting": "Continue",
+  "@continueToVoting": {
+    "description": "Button text to continue from QR code to voting"
+  },
+  "voteEndedTitle": "Voting has ended",
+  "@voteEndedTitle": {
+    "description": "Title shown when voting period has ended"
+  },
+  "voteEndedMessage": "Thank you for your participation. Voting is no longer active.",
+  "@voteEndedMessage": {
+    "description": "Message shown when voting period has ended"
+  },
+  "notPrevalidated": "You must be prevalidated by staff before voting.",
+  "@notPrevalidated": {
+    "description": "Message shown when user tries to vote without being prevalidated"
   }
 }

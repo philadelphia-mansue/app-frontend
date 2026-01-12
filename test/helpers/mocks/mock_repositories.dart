@@ -1,6 +1,7 @@
 import 'package:dartz/dartz.dart';
 import 'package:mockito/mockito.dart';
 import 'package:philadelphia_mansue/core/errors/failures.dart';
+import 'package:philadelphia_mansue/features/auth/domain/entities/auth_result.dart';
 import 'package:philadelphia_mansue/features/auth/domain/entities/user.dart';
 import 'package:philadelphia_mansue/features/auth/domain/entities/voter.dart';
 import 'package:philadelphia_mansue/features/auth/domain/repositories/auth_repository.dart';
@@ -17,7 +18,7 @@ import 'package:philadelphia_mansue/features/voting/domain/repositories/vote_rep
 
 class MockAuthRepository extends Mock implements AuthRepository {
   Either<Failure, String>? sendOtpResult;
-  Either<Failure, Voter>? verifyOtpResult;
+  Either<Failure, AuthResult>? verifyOtpResult;
   Either<Failure, User?>? getCurrentUserResult;
   Either<Failure, Voter>? getCurrentVoterResult;
   Either<Failure, void>? signOutResult;
@@ -30,8 +31,10 @@ class MockAuthRepository extends Mock implements AuthRepository {
   }
 
   @override
-  Future<Either<Failure, Voter>> verifyOtp(String verificationId, String otp) async {
-    return verifyOtpResult ?? Right(const Voter(id: 'id', firstName: 'First', lastName: 'Last', phone: '+1234567890'));
+  Future<Either<Failure, AuthResult>> verifyOtp(String verificationId, String otp) async {
+    return verifyOtpResult ?? Right(const AuthResult(
+      voter: Voter(id: 'id', firstName: 'First', lastName: 'Last', phone: '+1234567890'),
+    ));
   }
 
   @override
@@ -105,8 +108,8 @@ void mockSendOtpFailure(MockAuthRepository mock, Failure failure) {
   mock.sendOtpResult = Left(failure);
 }
 
-void mockVerifyOtpSuccess(MockAuthRepository mock, Voter voter) {
-  mock.verifyOtpResult = Right(voter);
+void mockVerifyOtpSuccess(MockAuthRepository mock, AuthResult authResult) {
+  mock.verifyOtpResult = Right(authResult);
 }
 
 void mockVerifyOtpFailure(MockAuthRepository mock, Failure failure) {

@@ -8,8 +8,11 @@ import '../features/auth/presentation/screens/phone_auth_screen.dart';
 import '../features/candidates/presentation/screens/candidates_screen.dart';
 import '../features/confirmation/presentation/screens/confirmation_screen.dart';
 import '../features/elections/presentation/providers/election_providers.dart';
+import '../features/prevalidation/presentation/screens/prevalidation_screen.dart';
 import '../features/success/presentation/screens/success_screen.dart';
 import '../features/voting/presentation/providers/local_vote_providers.dart';
+import '../features/voting/presentation/screens/start_voting_screen.dart';
+import '../features/voting/presentation/screens/vote_ended_screen.dart';
 import 'not_found_screen.dart';
 import 'routes.dart';
 import 'splash_screen.dart';
@@ -21,11 +24,10 @@ class RouterRefreshNotifier extends ChangeNotifier {
     ref.listen(authNotifierProvider, (previous, next) {
       // Reset election state when user becomes unauthenticated
       // This ensures fresh election data is loaded for the next user
-      // Note: We keep urlElectionIdProvider so next user can log into same election
       if (previous?.status == AuthStatus.authenticated &&
           next.status == AuthStatus.unauthenticated) {
         ref.read(electionNotifierProvider.notifier).reset();
-        // Keep election ID - don't clear urlElectionIdProvider
+        ref.read(urlElectionIdProvider.notifier).state = null;
       }
 
       // Reset election if user just authenticated and election is in error state
@@ -81,35 +83,13 @@ final routerProvider = Provider<GoRouter>((ref) {
       final hasVoted = ref.read(hasVotedCombinedProvider);
       final currentPath = state.matchedLocation;
 
-      // Extract election_id from URL (only store if election not yet loaded)
-      // With hash routing, query params in main URL aren't in GoRouter's state,
-      // so we also check the browser URL directly on web
-      final goRouterElectionId = state.uri.queryParameters['election_id'];
-      final browserElectionId = getBrowserElectionId();
-      final urlElectionId = (goRouterElectionId != null && goRouterElectionId.isNotEmpty)
-          ? goRouterElectionId
-          : browserElectionId;
-
-      if (urlElectionId != null && urlElectionId.isNotEmpty) {
-        if (electionState.status == ElectionLoadStatus.initial) {
-          final currentStoredId = ref.read(urlElectionIdProvider);
-          if (currentStoredId != urlElectionId) {
-            debugPrint('[Router] Storing URL election_id: $urlElectionId');
-            Future.microtask(() {
-              ref.read(urlElectionIdProvider.notifier).state = urlElectionId;
-            });
-          }
-        }
-      }
-
+      // Get stored election ID (from backend auth response)
       final storedElectionId = ref.read(urlElectionIdProvider);
-      // Effective election ID for use in redirects - prefer URL, fallback to stored, fallback to loaded election
       final loadedElectionId = electionState.election?.id;
-      final effectiveElectionId = (urlElectionId != null && urlElectionId.isNotEmpty)
-          ? urlElectionId
-          : (storedElectionId != null && storedElectionId.isNotEmpty)
-              ? storedElectionId
-              : loadedElectionId;
+      final effectiveElectionId = (storedElectionId != null && storedElectionId.isNotEmpty)
+          ? storedElectionId
+          : loadedElectionId;
+
       debugPrint('[Router] redirect: path=$currentPath, authStatus=${authState.status}, electionStatus=${electionState.status}, hasVoted=$hasVoted, electionId=$effectiveElectionId');
 
       // Allow not-found page to be shown
@@ -139,22 +119,19 @@ final routerProvider = Provider<GoRouter>((ref) {
         return Routes.splash;
       }
 
-      // Load election when authenticated and not yet loaded
-      // Note: error state requires manual retry from splash screen (no auto-retry)
-      if (isAuthenticated &&
-          electionState.status == ElectionLoadStatus.initial) {
-        if (storedElectionId != null && storedElectionId.isNotEmpty) {
-          debugPrint('[Router] Loading election by ID: $storedElectionId');
-          Future.microtask(() {
-            ref.read(electionNotifierProvider.notifier).loadElectionById(storedElectionId);
-          });
-        }
-        // No fallback to loadOngoingElection - election_id must be provided in URL
-      }
-
       // Still loading auth (initial state) - go to splash and wait
+      // But allow all app pages to stay - preserves URL on page refresh
       if (isAuthLoading) {
-        return currentPath == Routes.splash ? null : Routes.splash;
+        if (currentPath == Routes.prevalidation ||
+            currentPath == Routes.startVoting ||
+            currentPath == Routes.candidates ||
+            currentPath == Routes.confirmation ||
+            currentPath == Routes.success ||
+            currentPath == Routes.voteEnded ||
+            currentPath == Routes.splash) {
+          return null;
+        }
+        return Routes.splash;
       }
 
       // In the middle of auth flow (sending OTP, verifying) - stay on login
@@ -162,49 +139,59 @@ final routerProvider = Provider<GoRouter>((ref) {
         return currentPath == Routes.phoneInput ? null : Routes.phoneInput;
       }
 
-      // Not authenticated
+      // Not authenticated - redirect to login
       if (!isAuthenticated) {
-        // Check if we have an election_id (from URL or stored)
-        final hasElectionId = effectiveElectionId != null && effectiveElectionId.isNotEmpty;
-
-        // Allow login page if we have an election_id
         if (currentPath == Routes.phoneInput) {
-          return hasElectionId ? null : Routes.notFound;
+          return null;
         }
-        // Redirect to login with election_id preserved, otherwise to not-found
-        return hasElectionId
-            ? _buildRedirectWithElectionId(Routes.phoneInput, effectiveElectionId)
-            : Routes.notFound;
+        return Routes.phoneInput;
       }
 
-      // Authenticated but no election_id - cannot proceed without an election
-      final hasElectionId = effectiveElectionId != null && effectiveElectionId.isNotEmpty;
-      if (!hasElectionId) {
-        debugPrint('[Router] Authenticated but no election_id - redirecting to not-found');
-        return Routes.notFound;
+      // ===== AUTHENTICATED USER LOGIC =====
+
+      // Flow: prevalidation → start-voting → (load election) → candidates → confirmation → success
+
+      // If no election (vote ended) - redirect to vote-ended page
+      if (electionState.status == ElectionLoadStatus.noElection) {
+        if (currentPath == Routes.voteEnded) {
+          return null;
+        }
+        // Only redirect from voting flow pages, not from pre-election flow
+        if (currentPath == Routes.candidates ||
+            currentPath == Routes.confirmation) {
+          return Routes.voteEnded;
+        }
       }
 
-      // Authenticated but election not loaded yet - wait on splash
-      // hasVoted is only accurate after election loads from API
-      if (!isElectionLoaded) {
-        return currentPath == Routes.splash
-            ? null
-            : _buildRedirectWithElectionId(Routes.splash, effectiveElectionId);
+      // If election is loaded and user has voted - go to success
+      if (isElectionLoaded && hasVoted) {
+        if (currentPath == Routes.success) {
+          return null;
+        }
+        return _buildRedirectWithElectionId(Routes.success, effectiveElectionId);
       }
 
-      // Authenticated and election loaded - apply routing rules
-      debugPrint('[Router] hasVoted check: electionLoaded=$isElectionLoaded, hasVoted=$hasVoted');
-
-      // User has voted - only allow success screen
-      if (hasVoted) {
-        return currentPath == Routes.success
-            ? null
-            : _buildRedirectWithElectionId(Routes.success, effectiveElectionId);
+      // If election is loaded and user hasn't voted - allow voting flow
+      if (electionState.status == ElectionLoadStatus.loaded && !hasVoted) {
+        if (currentPath == Routes.candidates ||
+            currentPath == Routes.confirmation) {
+          return null;
+        }
+        // If on other pages, redirect to candidates
+        if (currentPath != Routes.prevalidation && currentPath != Routes.startVoting) {
+          return _buildRedirectWithElectionId(Routes.candidates, effectiveElectionId);
+        }
       }
 
-      // User hasn't voted - allow candidates, confirmation, but not login or splash
-      if (currentPath == Routes.phoneInput || currentPath == Routes.splash) {
-        return _buildRedirectWithElectionId(Routes.candidates, effectiveElectionId);
+      // Allow prevalidation and start-voting screens (pre-election flow)
+      if (currentPath == Routes.prevalidation ||
+          currentPath == Routes.startVoting) {
+        return null;
+      }
+
+      // Default: authenticated user without election loaded goes to prevalidation
+      if (currentPath == Routes.splash || currentPath == Routes.phoneInput) {
+        return Routes.prevalidation;
       }
 
       return null; // No redirect needed
@@ -219,6 +206,14 @@ final routerProvider = Provider<GoRouter>((ref) {
         builder: (context, state) => const PhoneAuthScreen(),
       ),
       GoRoute(
+        path: Routes.prevalidation,
+        builder: (context, state) => const PrevalidationScreen(),
+      ),
+      GoRoute(
+        path: Routes.startVoting,
+        builder: (context, state) => const StartVotingScreen(),
+      ),
+      GoRoute(
         path: Routes.candidates,
         builder: (context, state) => const CandidatesScreen(),
       ),
@@ -230,12 +225,16 @@ final routerProvider = Provider<GoRouter>((ref) {
         path: Routes.success,
         builder: (context, state) => const SuccessScreen(),
       ),
+      GoRoute(
+        path: Routes.voteEnded,
+        builder: (context, state) => const VoteEndedScreen(),
+      ),
       // Impersonate route - handled by redirect, shows splash while processing
       GoRoute(
         path: Routes.impersonate,
         builder: (context, state) => const SplashScreen(),
       ),
-      // Not found route - shown when no election_id provided
+      // Not found route
       GoRoute(
         path: Routes.notFound,
         builder: (context, state) => const NotFoundScreen(),

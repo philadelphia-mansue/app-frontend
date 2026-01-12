@@ -47,6 +47,8 @@ class ElectionRemoteDataSourceImpl implements ElectionRemoteDataSource {
       // Get the first ongoing election's ID and fetch full details
       final electionId = electionsList.first['id'] as String;
       return await getElectionById(electionId);
+    } on ServerException {
+      rethrow;
     } on DioException catch (e) {
       if (e.response?.statusCode == 401) {
         throw ServerException(message: 'Session expired. Please log in again.');
@@ -65,6 +67,9 @@ class ElectionRemoteDataSourceImpl implements ElectionRemoteDataSource {
     } on DioException catch (e) {
       if (e.response?.statusCode == 401) {
         throw ServerException(message: 'Session expired. Please log in again.');
+      }
+      if (e.response?.statusCode == 403) {
+        throw ServerException(message: 'NOT_PREVALIDATED');
       }
       throw ServerException(message: e.message ?? 'Failed to load election');
     } catch (e) {
