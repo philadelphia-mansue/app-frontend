@@ -2,7 +2,7 @@ import 'package:flutter/widgets.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../features/auth/presentation/providers/auth_providers.dart';
 
-/// A widget that observes app lifecycle changes and calls ping on resume.
+/// A widget that observes app lifecycle changes and refreshes the token on resume.
 /// This ensures the user's authentication is still valid when returning to the app.
 class AppLifecycleObserver extends ConsumerStatefulWidget {
   final Widget child;
@@ -41,8 +41,8 @@ class _AppLifecycleObserverState extends ConsumerState<AppLifecycleObserver>
   }
 
   void _onAppResumed() {
-    debugPrint('[AppLifecycleObserver] App resumed - calling ping');
-    ref.read(authNotifierProvider.notifier).ping();
+    debugPrint('[AppLifecycleObserver] App resumed - refreshing token');
+    ref.read(authNotifierProvider.notifier).refreshToken();
   }
 
   @override

@@ -168,13 +168,11 @@ final routerProvider = Provider<GoRouter>((ref) {
       final isCheckingPrevalidation =
           availableElectionsState.status == AvailableElectionsStatus.initial ||
           availableElectionsState.status == AvailableElectionsStatus.loading;
-      // User is prevalidated if:
-      // - API returned elections (loaded with non-empty list), OR
-      // - API confirmed prevalidation but no active elections exist (noElections)
+      // User is prevalidated only if API returned actual elections.
+      // Empty list (noElections) does NOT mean prevalidated - user must show QR to officials first.
       final hasPrevalidatedElections =
-          (availableElectionsState.status == AvailableElectionsStatus.loaded &&
-              availableElectionsState.elections.isNotEmpty) ||
-          availableElectionsState.status == AvailableElectionsStatus.noElections;
+          availableElectionsState.status == AvailableElectionsStatus.loaded &&
+              availableElectionsState.elections.isNotEmpty;
 
       debugPrint('[Router] availableElections: status=${availableElectionsState.status}, count=${availableElectionsState.elections.length}, hasPrevalidated=$hasPrevalidatedElections');
 

@@ -5,7 +5,9 @@ import 'package:luckyui/luckyui.dart';
 import 'package:philadelphia_mansue/core/utils/error_localizer.dart';
 import 'package:philadelphia_mansue/l10n/app_localizations.dart';
 import 'package:philadelphia_mansue/routing/routes.dart';
+import 'package:flutter/foundation.dart' show debugPrint;
 import '../../../auth/presentation/providers/auth_providers.dart';
+import '../../../auth/presentation/providers/auth_state.dart';
 import '../../../elections/domain/entities/election.dart';
 import '../../../elections/presentation/providers/election_providers.dart';
 
@@ -26,6 +28,12 @@ class _StartVotingScreenState extends ConsumerState<StartVotingScreen> {
   }
 
   Future<void> _loadElections() async {
+    // Don't load elections if auth is still being restored
+    final authStatus = ref.read(authNotifierProvider).status;
+    if (authStatus != AuthStatus.authenticated) {
+      debugPrint('[StartVotingScreen] Skipping election load - auth status: $authStatus');
+      return;
+    }
     await ref.read(availableElectionsNotifierProvider.notifier).loadAll();
   }
 
@@ -60,7 +68,7 @@ class _StartVotingScreenState extends ConsumerState<StartVotingScreen> {
 
     final electionState = ref.read(electionNotifierProvider);
     if (electionState.status == ElectionLoadStatus.loaded) {
-      context.go(Routes.candidates);
+      context.go('${Routes.candidates}?election_id=${election.id}');
     } else if (electionState.status == ElectionLoadStatus.error) {
       LuckyToastMessenger.showToast(
         ErrorLocalizer.localize(electionState.errorMessage, l10n),

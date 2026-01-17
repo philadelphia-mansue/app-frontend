@@ -584,5 +584,13 @@
   "countryRomania": "Romania",
   "@countryRomania": {
     "description": "Country name for Romania"
+  },
+  "connecting": "Connecting...",
+  "@connecting": {
+    "description": "Status text while connecting to server"
+  },
+  "waitingForValidation": "Waiting for validation...",
+  "@waitingForValidation": {
+    "description": "Status text while waiting for staff to validate the voter"
   }
 }
