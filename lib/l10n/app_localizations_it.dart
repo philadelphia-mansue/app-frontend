@@ -437,4 +437,10 @@ class AppLocalizationsIt extends AppLocalizations {
 
   @override
   String get countryRomania => 'Romania';
+
+  @override
+  String get connecting => 'Connessione in corso...';
+
+  @override
+  String get waitingForValidation => 'In attesa di convalida...';
 }

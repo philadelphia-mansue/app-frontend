@@ -32,38 +32,16 @@ void clearStoredSelections(String electionId) {
   html.window.sessionStorage.removeItem('$_keyPrefix$electionId');
 }
 
-const _orderKeyPrefix = 'candidate_order_';
-
-/// Gets stored candidate order from sessionStorage.
-List<String>? getStoredCandidateOrder(String electionId) {
-  try {
-    final key = '$_orderKeyPrefix$electionId';
-    final stored = html.window.sessionStorage.getItem(key);
-    if (stored == null || stored.isEmpty) return null;
-
-    final List<dynamic> decoded = jsonDecode(stored);
-    return decoded.cast<String>();
-  } catch (_) {
-    return null;
-  }
-}
-
-/// Saves candidate order to sessionStorage.
-void saveStoredCandidateOrder(String electionId, List<String> order) {
-  final key = '$_orderKeyPrefix$electionId';
-  html.window.sessionStorage.setItem(key, jsonEncode(order));
-}
-
-/// Clears all stored selections and candidate order from sessionStorage.
+/// Clears all stored selections from sessionStorage.
 /// Called on logout to prevent data leakage between users.
 void clearAllStoredSelectionData() {
   final storage = html.window.sessionStorage;
   final keysToRemove = <String>[];
 
-  // Find all keys with our prefixes
+  // Find all keys with our prefix
   for (var i = 0; i < storage.length; i++) {
     final key = storage.key(i);
-    if (key != null && (key.startsWith(_keyPrefix) || key.startsWith(_orderKeyPrefix))) {
+    if (key != null && key.startsWith(_keyPrefix)) {
       keysToRemove.add(key);
     }
   }

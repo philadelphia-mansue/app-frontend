@@ -188,8 +188,25 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
         phoneNumber: user.phoneNumber ?? '',
       );
     } on firebase.FirebaseAuthException catch (e) {
-      throw AuthException(message: e.message ?? 'Invalid OTP');
+      debugPrint('[AuthDataSource] FirebaseAuthException during OTP verify: ${e.code} - ${e.message}');
+      String message;
+      switch (e.code) {
+        case 'invalid-verification-code':
+          message = 'Invalid OTP code. Please check and try again.';
+          break;
+        case 'session-expired':
+        case 'code-expired':
+          message = 'Verification session expired. Please request a new code.';
+          break;
+        case 'missing-verification-id':
+          message = 'Verification ID not found. Please request a new code.';
+          break;
+        default:
+          message = e.message ?? 'Invalid OTP';
+      }
+      throw AuthException(message: message);
     } catch (e) {
+      debugPrint('[AuthDataSource] Unexpected error during OTP verify: $e');
       if (e is AuthException) rethrow;
       throw AuthException(message: e.toString());
     }

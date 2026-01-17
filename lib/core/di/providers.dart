@@ -1,4 +1,4 @@
-import 'package:flutter/foundation.dart' show kDebugMode;
+import 'package:flutter/foundation.dart' show debugPrint, kDebugMode;
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:dio/dio.dart';
@@ -7,6 +7,8 @@ import '../network/auth_interceptor.dart';
 import '../network/network_info.dart';
 import '../services/token_storage_service.dart';
 import '../services/vote_cache_service.dart';
+import '../services/reverb_service.dart';
+import '../events/voter_enabled_event.dart';
 import '../constants/api_constants.dart';
 
 // Secure Storage Provider
@@ -75,4 +77,39 @@ final apiClientProvider = Provider<ApiClient>((ref) {
 // Network Info Provider
 final networkInfoProvider = Provider<NetworkInfo>((ref) {
   return NetworkInfoImpl();
+});
+
+// Reverb WebSocket Service Provider
+// Uses a separate Dio instance to avoid auth interceptor conflicts during channel auth
+final reverbServiceProvider = Provider<ReverbService>((ref) {
+  final tokenStorage = ref.watch(tokenStorageServiceProvider);
+  final dio = Dio(
+    BaseOptions(
+      baseUrl: ApiConstants.baseUrl,
+      connectTimeout: ApiConstants.connectTimeout,
+      receiveTimeout: ApiConstants.receiveTimeout,
+      headers: {
+        'Content-Type': 'application/json',
+        'Accept': 'application/json',
+      },
+    ),
+  );
+  final service = ReverbServiceImpl(
+    dio: dio,
+    tokenStorage: tokenStorage,
+  );
+
+  ref.onDispose(() {
+    debugPrint('[Provider] Disposing ReverbService');
+    service.dispose();
+  });
+
+  return service;
+});
+
+// Voter Enabled Stream Provider
+// Provides a stream of voter.enabled events for the prevalidation screen
+final voterEnabledStreamProvider = StreamProvider.autoDispose<VoterEnabledEvent>((ref) {
+  final reverb = ref.watch(reverbServiceProvider);
+  return reverb.voterEnabledStream;
 });

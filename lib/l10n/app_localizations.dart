@@ -867,6 +867,18 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Romania'**
   String get countryRomania;
+
+  /// Status text while connecting to server
+  ///
+  /// In en, this message translates to:
+  /// **'Connecting...'**
+  String get connecting;
+
+  /// Status text while waiting for staff to validate the voter
+  ///
+  /// In en, this message translates to:
+  /// **'Waiting for validation...'**
+  String get waitingForValidation;
 }
 
 class _AppLocalizationsDelegate

@@ -1,7 +1,7 @@
 import 'package:flutter/foundation.dart' show debugPrint;
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../../core/di/providers.dart';
-import '../../../../core/errors/failures.dart';
+import '../../../../core/errors/exceptions.dart';
 import '../../../../core/services/vote_cache_service.dart';
 import '../../../../core/utils/selection_storage.dart';
 import '../../data/datasources/auth_remote_datasource.dart';
@@ -129,10 +129,7 @@ class AuthNotifier extends StateNotifier<AuthState> {
         final restored = result.fold(
           (failure) {
             debugPrint('[AuthNotifier] Stored token invalid: ${failure.message}');
-            // IMPORTANT: Token is invalid - sign out completely and require OTP re-login.
-            // This prevents automatic re-authentication via Firebase token exchange.
-            _dataSource.signOut();
-            _safeSetState(AuthState.unauthenticated());
+            // Don't sign out yet - will try Firebase token exchange below
             return false;
           },
           (voter) {
@@ -141,16 +138,13 @@ class AuthNotifier extends StateNotifier<AuthState> {
             return true;
           },
         );
-        // Stop here - either we're authenticated or we need OTP re-login
-        // Do NOT try to exchange Firebase token if backend token was invalid
         if (restored) return;
-        debugPrint('[AuthNotifier] Token was invalid, user must re-login with OTP');
-        return;
+        // Backend token was invalid - fall through to try Firebase token exchange
       }
 
-      // No stored token at all - try to exchange Firebase token for new backend token
-      // This only happens on fresh login flow, not when backend invalidated a token
-      debugPrint('[AuthNotifier] No stored token, exchanging Firebase token...');
+      // Try to exchange Firebase token for new backend token
+      // This handles both: (1) no stored token, and (2) stored token was invalid
+      debugPrint('[AuthNotifier] Attempting Firebase token exchange...');
       final idToken = await _dataSource.getFirebaseIdToken();
       await _dataSource.exchangeTokenWithBackend(idToken);
       debugPrint('[AuthNotifier] Token exchanged successfully');
@@ -194,7 +188,10 @@ class AuthNotifier extends StateNotifier<AuthState> {
       debugPrint('[AuthNotifier] Skipping Firebase sign out - user is impersonated');
       return;
     }
-    if (state.status == AuthStatus.authenticated || state.status == AuthStatus.initial) {
+    // Handle auth, initial, AND error states - error state should also reset on sign out
+    if (state.status == AuthStatus.authenticated ||
+        state.status == AuthStatus.initial ||
+        state.status == AuthStatus.error) {
       // Check if there's a stored token (from impersonation) before setting unauthenticated
       final hasToken = await _repository.isAuthenticated();
       if (hasToken) {
@@ -345,32 +342,33 @@ class AuthNotifier extends StateNotifier<AuthState> {
     _safeSetState(AuthState.unauthenticated());
   }
 
-  /// Ping the server to verify authentication is still valid.
-  /// If ping fails with 401, signs out the user.
-  Future<void> ping() async {
+  /// Refresh the backend token using the existing Firebase session.
+  /// This replaces the old ping() approach - instead of checking if the token
+  /// is valid and logging out if not, we simply get a fresh token.
+  Future<void> refreshToken() async {
     if (state.status != AuthStatus.authenticated) {
-      debugPrint('[AuthNotifier] Ping skipped - not authenticated');
+      debugPrint('[AuthNotifier] Token refresh skipped - not authenticated');
       return;
     }
 
-    debugPrint('[AuthNotifier] Pinging server to verify authentication...');
-    final result = await _repository.ping();
-    result.fold(
-      (failure) {
-        debugPrint('[AuthNotifier] Ping failed: ${failure.message}');
-        // Only sign out on authentication failures (e.g., 401 session expired)
-        // Network/server errors should not log out the user
-        if (failure is AuthFailure) {
-          debugPrint('[AuthNotifier] Auth failure detected - signing out');
-          signOut();
-        } else {
-          debugPrint('[AuthNotifier] Non-auth failure (${failure.runtimeType}) - keeping session');
-        }
-      },
-      (success) {
-        debugPrint('[AuthNotifier] Ping successful - user is still authenticated');
-      },
-    );
+    debugPrint('[AuthNotifier] Refreshing backend token...');
+    try {
+      // Get fresh Firebase ID token
+      final firebaseIdToken = await _dataSource.getFirebaseIdToken();
+
+      // Exchange for new backend token (also stores the new token)
+      final authResponse = await _dataSource.exchangeTokenWithBackend(firebaseIdToken);
+
+      // Update state with fresh voter data (VoterModel extends Voter)
+      _safeSetState(AuthState.authenticated(authResponse.voter));
+      debugPrint('[AuthNotifier] Token refresh successful');
+    } on AuthException catch (e) {
+      debugPrint('[AuthNotifier] Token refresh failed: ${e.message} - signing out');
+      signOut();
+    } catch (e) {
+      // Network errors - keep session, user is still "authenticated" locally
+      debugPrint('[AuthNotifier] Token refresh network error: $e - keeping session');
+    }
   }
 }
 
@@ -384,10 +382,11 @@ final authNotifierProvider = StateNotifierProvider<AuthNotifier, AuthState>((ref
     voteCache: ref.read(voteCacheServiceProvider),
   );
 
-  // Set up unauthorized callback to trigger logout on 401 responses
+  // Set up unauthorized callback to attempt token refresh on 401 responses.
+  // If refresh fails (Firebase session invalid), refreshToken will call signOut.
   Future.microtask(() {
     ref.read(onUnauthorizedCallbackProvider.notifier).state = () {
-      notifier.signOut();
+      notifier.refreshToken();
     };
   });
 

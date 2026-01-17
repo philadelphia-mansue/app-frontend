@@ -47,13 +47,18 @@ class ConfirmationScreen extends ConsumerWidget {
         // 1. Optimistic update - enables immediate navigation
         ref.read(electionNotifierProvider.notifier).markAsVoted();
 
-        // 2. Save to local cache for faster UX on next app launch
+        // 2. Also mark as voted in available elections list (for success screen count)
         final electionId = ref.read(currentElectionIdProvider);
+        if (electionId != null) {
+          ref.read(availableElectionsNotifierProvider.notifier).markElectionAsVoted(electionId);
+        }
+
+        // 3. Save to local cache for faster UX on next app launch
         if (electionId != null) {
           await ref.read(voteCacheServiceProvider).markAsVoted(electionId);
         }
 
-        // 3. Navigate immediately (user sees success)
+        // 4. Navigate immediately (user sees success)
         if (context.mounted) {
           // Include election_id in URL so it persists across page refresh
           final successPath = electionId != null
@@ -62,7 +67,7 @@ class ConfirmationScreen extends ConsumerWidget {
           context.go(successPath);
         }
 
-        // 4. Re-fetch from backend in background (confirms state)
+        // 5. Re-fetch from backend in background (confirms state)
         // This ensures hasVoted is verified from the authoritative backend
         if (electionId != null) {
           ref.read(electionNotifierProvider.notifier).loadElectionById(electionId);

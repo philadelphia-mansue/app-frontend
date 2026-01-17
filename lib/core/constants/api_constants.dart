@@ -25,4 +25,14 @@ class ApiConstants {
 
   static const Duration connectTimeout = Duration(seconds: 30);
   static const Duration receiveTimeout = Duration(seconds: 30);
+
+  // WebSocket / Laravel Reverb
+  static const String reverbHost = 'api.justapage.link';
+  static const int reverbPort = 443;
+  static const String reverbAppKey = 'if9kan27vmteqnevnb2o';
+  static const String broadcastingAuthEndpoint = '/api/broadcasting/auth';
+
+  /// WebSocket URL for Laravel Reverb connection
+  static String get reverbWebSocketUrl =>
+      'wss://$reverbHost:$reverbPort/app/$reverbAppKey';
 }

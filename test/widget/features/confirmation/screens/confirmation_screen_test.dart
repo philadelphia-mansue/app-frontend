@@ -530,7 +530,7 @@ class _MockAuthNotifier extends StateNotifier<AuthState>
   Future<void> tryRestoreSession(String userId) async {}
 
   @override
-  Future<void> ping() async {}
+  Future<void> refreshToken() async {}
 }
 
 // Mock election notifier

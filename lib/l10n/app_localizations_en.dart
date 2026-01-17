@@ -430,4 +430,10 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get countryRomania => 'Romania';
+
+  @override
+  String get connecting => 'Connecting...';
+
+  @override
+  String get waitingForValidation => 'Waiting for validation...';
 }
