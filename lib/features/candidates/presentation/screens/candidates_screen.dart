@@ -113,6 +113,13 @@ class _CandidatesScreenState extends ConsumerState<CandidatesScreen> {
         context.go(Routes.voteEnded);
       }
     });
+
+    // Also check current state immediately (ref.listen doesn't fire for existing state)
+    if (electionState.status == ElectionLoadStatus.noElection) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (mounted) context.go(Routes.voteEnded);
+      });
+    }
     final selectedIds = ref.watch(selectionNotifierProvider);
     final requiredVotes = ref.watch(requiredVotesCountProvider);
     final canSubmit = selectedIds.length == requiredVotes;
