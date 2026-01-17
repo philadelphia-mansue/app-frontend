@@ -280,6 +280,13 @@ class ReverbServiceImpl implements ReverbService {
   void _handleError(Object error) {
     debugPrint('[ReverbService] WebSocket error: $error');
     _isConnected = false;
+
+    // Complete the connection completer with error so callers fail fast
+    // instead of waiting for the full timeout
+    if (_connectionCompleter != null && !_connectionCompleter!.isCompleted) {
+      _connectionCompleter!.completeError(error);
+    }
+
     _handleReconnect();
   }
 

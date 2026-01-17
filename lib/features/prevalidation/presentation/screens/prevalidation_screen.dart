@@ -38,6 +38,8 @@ class _PrevalidationScreenState extends ConsumerState<PrevalidationScreen> {
       return;
     }
 
+    if (!mounted) return;
+
     setState(() {
       _isConnecting = true;
     });
@@ -48,9 +50,11 @@ class _PrevalidationScreenState extends ConsumerState<PrevalidationScreen> {
 
       if (token == null) {
         debugPrint('[PrevalidationScreen] No auth token, skipping WebSocket connection');
-        setState(() {
-          _isConnecting = false;
-        });
+        if (mounted) {
+          setState(() {
+            _isConnecting = false;
+          });
+        }
         return;
       }
 
