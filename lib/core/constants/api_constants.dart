@@ -9,9 +9,12 @@ class ApiConstants {
   static const String votersLogin = '/api/voters/login';
   static const String votersImpersonate = '/api/voters/inpersonate'; // Note: backend typo
   static const String votersMe = '/api/voters/me';
+  static const String checkPhone = '/api/voters/check-phone';
+  static const String ping = '/api/ping';
 
   // Elections endpoints
   static const String electionsEndpoint = '/api/elections';
+  static const String electionsActive = '/api/elections/active';
 
   // Voting endpoints
   static const String voteEndpoint = '/api/votes';

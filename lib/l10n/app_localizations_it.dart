@@ -299,4 +299,142 @@ class AppLocalizationsIt extends AppLocalizations {
 
   @override
   String get invalidOtp => 'Codice di verifica non valido';
+
+  @override
+  String get appTitle => 'Conferenza Europea';
+
+  @override
+  String get logout => 'Esci';
+
+  @override
+  String welcomeUser(String name) {
+    return 'Benvenuto, $name';
+  }
+
+  @override
+  String get prevalidation => 'Prevalidazione';
+
+  @override
+  String get scanToVote => 'Scansiona per Votare';
+
+  @override
+  String get prevalidationInstructions =>
+      'Mostra questo codice QR allo staff per la verifica';
+
+  @override
+  String get scanInstructions =>
+      'Punta la fotocamera sul codice QR dell\'elezione';
+
+  @override
+  String get invalidQrCode =>
+      'Codice QR non valido. Scansiona un link elettorale valido.';
+
+  @override
+  String get electionNotFound => 'Elezione non trovata';
+
+  @override
+  String get alreadyVotedTitle => 'Già Votato';
+
+  @override
+  String get alreadyVotedMessage =>
+      'Hai già votato in questa elezione. Scansiona un altro codice QR elettorale.';
+
+  @override
+  String get voteAnotherElection => 'Vota un\'altra Elezione';
+
+  @override
+  String get voteNow => 'Vota Ora';
+
+  @override
+  String get startVotingInstructions =>
+      'Quando sei pronto, tocca il pulsante qui sotto per iniziare a votare';
+
+  @override
+  String get votingNotActive =>
+      'La votazione non è attualmente attiva. Riprova più tardi.';
+
+  @override
+  String get noOngoingElection => 'Attendere l\'inizio del voto.';
+
+  @override
+  String get continueToVoting => 'Continua';
+
+  @override
+  String get voteEndedTitle => 'Il voto è terminato';
+
+  @override
+  String get voteEndedMessage =>
+      'Grazie per la partecipazione. Il voto non è più attivo.';
+
+  @override
+  String get notPrevalidated =>
+      'Devi essere prevalidato dallo staff prima di votare.';
+
+  @override
+  String get noActiveElections => 'Nessuna elezione attiva al momento';
+
+  @override
+  String get phoneNotRegistered => 'Questo numero di telefono non è registrato';
+
+  @override
+  String get availableElections => 'Elezioni Disponibili';
+
+  @override
+  String get completedElections => 'Elezioni Completate';
+
+  @override
+  String get voted => 'Votato';
+
+  @override
+  String get notYetOpen => 'Non ancora aperto';
+
+  @override
+  String get ended => 'Terminato';
+
+  @override
+  String moreElectionsAvailable(int count) {
+    return 'Hai ancora $count elezione/i in cui votare';
+  }
+
+  @override
+  String get voteNextElection => 'Vota nella Prossima Elezione';
+
+  @override
+  String get doneForNow => 'Ho finito per ora';
+
+  @override
+  String get done => 'Fatto';
+
+  @override
+  String get selectAnElection => 'Seleziona un\'elezione per votare';
+
+  @override
+  String get backToElections => 'Torna alle Elezioni';
+
+  @override
+  String get failedToLoadElection => 'Impossibile caricare l\'elezione';
+
+  @override
+  String get electionLoadError =>
+      'Si è verificato un errore durante il caricamento dei dati dell\'elezione.';
+
+  @override
+  String get persistentErrorHelp =>
+      'Se il problema persiste, verifichi la connessione internet o contatti l\'amministratore dell\'elezione.';
+
+  @override
+  String get loading => 'Caricamento...';
+
+  @override
+  String get failedToLoadElections => 'Impossibile caricare le elezioni';
+
+  @override
+  String get failedToCheckElections =>
+      'Impossibile verificare le elezioni attive';
+
+  @override
+  String get countryItaly => 'Italia';
+
+  @override
+  String get countryRomania => 'Romania';
 }

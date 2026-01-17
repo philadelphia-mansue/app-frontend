@@ -2,6 +2,7 @@ import 'package:dartz/dartz.dart';
 import '../../../../core/errors/exceptions.dart';
 import '../../../../core/errors/failures.dart';
 import '../../../../core/services/token_storage_service.dart';
+import '../../domain/entities/auth_result.dart';
 import '../../domain/entities/user.dart';
 import '../../domain/entities/voter.dart';
 import '../../domain/repositories/auth_repository.dart';
@@ -29,7 +30,7 @@ class AuthRepositoryImpl implements AuthRepository {
   }
 
   @override
-  Future<Either<Failure, Voter>> verifyOtp(String verificationId, String otp) async {
+  Future<Either<Failure, AuthResult>> verifyOtp(String verificationId, String otp) async {
     try {
       // Step 1: Verify OTP with Firebase
       await remoteDataSource.verifyOtp(verificationId, otp);
@@ -40,8 +41,10 @@ class AuthRepositoryImpl implements AuthRepository {
       // Step 3: Exchange with backend for Bearer token
       final authResponse = await remoteDataSource.exchangeTokenWithBackend(firebaseIdToken);
 
-      // Return the voter from backend response
-      return Right(authResponse.voter);
+      // Return auth result with voter
+      return Right(AuthResult(
+        voter: authResponse.voter,
+      ));
     } on AuthException catch (e) {
       return Left(AuthFailure(e.message));
     } catch (e) {
@@ -90,4 +93,28 @@ class AuthRepositoryImpl implements AuthRepository {
 
   @override
   Stream<String?> authStateChanges() => remoteDataSource.authStateChanges();
+
+  @override
+  Future<Either<Failure, bool>> ping() async {
+    try {
+      final result = await remoteDataSource.ping();
+      return Right(result);
+    } on AuthException catch (e) {
+      return Left(AuthFailure(e.message));
+    } catch (e) {
+      return Left(ServerFailure(e.toString()));
+    }
+  }
+
+  @override
+  Future<Either<Failure, bool>> checkPhone(String phone) async {
+    try {
+      final exists = await remoteDataSource.checkPhone(phone);
+      return Right(exists);
+    } on AuthException catch (e) {
+      return Left(AuthFailure(e.message));
+    } catch (e) {
+      return Left(ServerFailure(e.toString()));
+    }
+  }
 }

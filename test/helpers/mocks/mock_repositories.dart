@@ -1,6 +1,7 @@
 import 'package:dartz/dartz.dart';
 import 'package:mockito/mockito.dart';
 import 'package:philadelphia_mansue/core/errors/failures.dart';
+import 'package:philadelphia_mansue/features/auth/domain/entities/auth_result.dart';
 import 'package:philadelphia_mansue/features/auth/domain/entities/user.dart';
 import 'package:philadelphia_mansue/features/auth/domain/entities/voter.dart';
 import 'package:philadelphia_mansue/features/auth/domain/repositories/auth_repository.dart';
@@ -17,12 +18,14 @@ import 'package:philadelphia_mansue/features/voting/domain/repositories/vote_rep
 
 class MockAuthRepository extends Mock implements AuthRepository {
   Either<Failure, String>? sendOtpResult;
-  Either<Failure, Voter>? verifyOtpResult;
+  Either<Failure, AuthResult>? verifyOtpResult;
   Either<Failure, User?>? getCurrentUserResult;
   Either<Failure, Voter>? getCurrentVoterResult;
   Either<Failure, void>? signOutResult;
   bool isAuthenticatedResult = false;
   String? authStateChangesResult;
+  Either<Failure, bool>? pingResult;
+  Either<Failure, bool>? checkPhoneResult;
 
   @override
   Future<Either<Failure, String>> sendOtp(String phoneNumber) async {
@@ -30,8 +33,10 @@ class MockAuthRepository extends Mock implements AuthRepository {
   }
 
   @override
-  Future<Either<Failure, Voter>> verifyOtp(String verificationId, String otp) async {
-    return verifyOtpResult ?? Right(const Voter(id: 'id', firstName: 'First', lastName: 'Last', phone: '+1234567890'));
+  Future<Either<Failure, AuthResult>> verifyOtp(String verificationId, String otp) async {
+    return verifyOtpResult ?? Right(const AuthResult(
+      voter: Voter(id: 'id', firstName: 'First', lastName: 'Last', phone: '+1234567890'),
+    ));
   }
 
   @override
@@ -58,6 +63,16 @@ class MockAuthRepository extends Mock implements AuthRepository {
   Stream<String?> authStateChanges() {
     return Stream.value(authStateChangesResult);
   }
+
+  @override
+  Future<Either<Failure, bool>> ping() async {
+    return pingResult ?? const Right(true);
+  }
+
+  @override
+  Future<Either<Failure, bool>> checkPhone(String phone) async {
+    return checkPhoneResult ?? const Right(false);
+  }
 }
 
 class MockCandidateRepository extends Mock implements CandidateRepository {
@@ -72,6 +87,8 @@ class MockCandidateRepository extends Mock implements CandidateRepository {
 class MockElectionRepository extends Mock implements ElectionRepository {
   Either<Failure, Election?>? getOngoingElectionResult;
   Either<Failure, Election>? getElectionByIdResult;
+  Either<Failure, bool>? hasActiveElectionResult;
+  Either<Failure, List<Election>>? getAllOngoingElectionsResult;
 
   @override
   Future<Either<Failure, Election?>> getOngoingElection() async {
@@ -81,6 +98,16 @@ class MockElectionRepository extends Mock implements ElectionRepository {
   @override
   Future<Either<Failure, Election>> getElectionById(String id) async {
     return getElectionByIdResult ?? Left(const ServerFailure('Not found'));
+  }
+
+  @override
+  Future<Either<Failure, bool>> hasActiveElection() async {
+    return hasActiveElectionResult ?? const Right(false);
+  }
+
+  @override
+  Future<Either<Failure, List<Election>>> getAllOngoingElections() async {
+    return getAllOngoingElectionsResult ?? const Right([]);
   }
 }
 
@@ -105,8 +132,8 @@ void mockSendOtpFailure(MockAuthRepository mock, Failure failure) {
   mock.sendOtpResult = Left(failure);
 }
 
-void mockVerifyOtpSuccess(MockAuthRepository mock, Voter voter) {
-  mock.verifyOtpResult = Right(voter);
+void mockVerifyOtpSuccess(MockAuthRepository mock, AuthResult authResult) {
+  mock.verifyOtpResult = Right(authResult);
 }
 
 void mockVerifyOtpFailure(MockAuthRepository mock, Failure failure) {
@@ -141,6 +168,22 @@ void mockAuthStateChanges(MockAuthRepository mock, String? userId) {
   mock.authStateChangesResult = userId;
 }
 
+void mockPingSuccess(MockAuthRepository mock, bool value) {
+  mock.pingResult = Right(value);
+}
+
+void mockPingFailure(MockAuthRepository mock, Failure failure) {
+  mock.pingResult = Left(failure);
+}
+
+void mockCheckPhoneSuccess(MockAuthRepository mock, bool exists) {
+  mock.checkPhoneResult = Right(exists);
+}
+
+void mockCheckPhoneFailure(MockAuthRepository mock, Failure failure) {
+  mock.checkPhoneResult = Left(failure);
+}
+
 // =============================================================================
 // CANDIDATE REPOSITORY MOCK HELPERS
 // =============================================================================
@@ -171,6 +214,14 @@ void mockGetElectionByIdSuccess(MockElectionRepository mock, Election election) 
 
 void mockGetElectionByIdFailure(MockElectionRepository mock, Failure failure) {
   mock.getElectionByIdResult = Left(failure);
+}
+
+void mockHasActiveElectionSuccess(MockElectionRepository mock, bool hasActive) {
+  mock.hasActiveElectionResult = Right(hasActive);
+}
+
+void mockHasActiveElectionFailure(MockElectionRepository mock, Failure failure) {
+  mock.hasActiveElectionResult = Left(failure);
 }
 
 // =============================================================================

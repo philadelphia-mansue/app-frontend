@@ -1,6 +1,7 @@
 import 'package:flutter/foundation.dart' show debugPrint;
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../../core/di/providers.dart';
+import '../../../../core/errors/failures.dart';
 import '../../../../core/services/vote_cache_service.dart';
 import '../../../../core/utils/selection_storage.dart';
 import '../../data/datasources/auth_remote_datasource.dart';
@@ -135,7 +136,7 @@ class AuthNotifier extends StateNotifier<AuthState> {
             return false;
           },
           (voter) {
-            debugPrint('[AuthNotifier] Restored with existing token for: ${voter.phone}');
+            debugPrint('[AuthNotifier] Restored with existing token');
             _safeSetState(AuthState.authenticated(voter));
             return true;
           },
@@ -162,7 +163,7 @@ class AuthNotifier extends StateNotifier<AuthState> {
           _safeSetState(AuthState.unauthenticated());
         },
         (voter) {
-          debugPrint('[AuthNotifier] Session restored for voter: ${voter.phone}');
+          debugPrint('[AuthNotifier] Session restored for voter');
           _safeSetState(AuthState.authenticated(voter));
         },
       );
@@ -244,7 +245,7 @@ class AuthNotifier extends StateNotifier<AuthState> {
   }
 
   Future<void> sendOtp(String phoneNumber) async {
-    debugPrint('[AuthNotifier] sendOtp called with: $phoneNumber');
+    debugPrint('[AuthNotifier] sendOtp called');
     state = AuthState.loading();
     _phoneNumber = phoneNumber;
 
@@ -283,7 +284,7 @@ class AuthNotifier extends StateNotifier<AuthState> {
 
     result.fold(
       (failure) => _safeSetState(AuthState.error(failure.message)),
-      (voter) => _safeSetState(AuthState.authenticated(voter)),
+      (authResult) => _safeSetState(AuthState.authenticated(authResult.voter)),
     );
   }
 
@@ -314,7 +315,7 @@ class AuthNotifier extends StateNotifier<AuthState> {
       debugPrint('[AuthNotifier] DEBUG: Impersonate already in progress or done, skipping');
       return;
     }
-    debugPrint('[AuthNotifier] DEBUG: Attempting impersonate login for $phone');
+    debugPrint('[AuthNotifier] DEBUG: Attempting impersonate login');
     _safeSetState(AuthState.loading());
 
     try {
@@ -324,7 +325,7 @@ class AuthNotifier extends StateNotifier<AuthState> {
       );
 
       final voter = authResponse.voter;
-      debugPrint('[AuthNotifier] DEBUG: Impersonate successful for: ${voter.phone}');
+      debugPrint('[AuthNotifier] DEBUG: Impersonate successful');
       _isImpersonated = true;
       _pendingImpersonation = false;
       _safeSetState(AuthState.authenticated(voter));
@@ -342,6 +343,34 @@ class AuthNotifier extends StateNotifier<AuthState> {
     _pendingImpersonation = false;
     // Use unauthenticated instead of initial to avoid redirect to splash
     _safeSetState(AuthState.unauthenticated());
+  }
+
+  /// Ping the server to verify authentication is still valid.
+  /// If ping fails with 401, signs out the user.
+  Future<void> ping() async {
+    if (state.status != AuthStatus.authenticated) {
+      debugPrint('[AuthNotifier] Ping skipped - not authenticated');
+      return;
+    }
+
+    debugPrint('[AuthNotifier] Pinging server to verify authentication...');
+    final result = await _repository.ping();
+    result.fold(
+      (failure) {
+        debugPrint('[AuthNotifier] Ping failed: ${failure.message}');
+        // Only sign out on authentication failures (e.g., 401 session expired)
+        // Network/server errors should not log out the user
+        if (failure is AuthFailure) {
+          debugPrint('[AuthNotifier] Auth failure detected - signing out');
+          signOut();
+        } else {
+          debugPrint('[AuthNotifier] Non-auth failure (${failure.runtimeType}) - keeping session');
+        }
+      },
+      (success) {
+        debugPrint('[AuthNotifier] Ping successful - user is still authenticated');
+      },
+    );
   }
 }
 

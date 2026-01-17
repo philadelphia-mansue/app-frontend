@@ -7,9 +7,16 @@ import 'package:philadelphia_mansue/l10n/app_localizations.dart';
 import '../../../../core/utils/error_localizer.dart';
 import '../../../../routing/routes.dart';
 import '../../../auth/presentation/providers/auth_providers.dart';
+import '../../../auth/presentation/providers/auth_state.dart';
 import '../../../elections/presentation/providers/election_providers.dart';
 import '../../../voting/presentation/providers/selection_notifier.dart';
 import '../widgets/candidates_grid.dart';
+
+/// Check if multi-election mode is active (more than one election available)
+final _isMultiElectionModeProvider = Provider<bool>((ref) {
+  final state = ref.watch(availableElectionsNotifierProvider);
+  return state.elections.length > 1;
+});
 
 class CandidatesScreen extends ConsumerStatefulWidget {
   const CandidatesScreen({super.key});
@@ -19,7 +26,39 @@ class CandidatesScreen extends ConsumerStatefulWidget {
 }
 
 class _CandidatesScreenState extends ConsumerState<CandidatesScreen> {
-  // Election is loaded by router when authenticated
+  ProviderSubscription<AuthState>? _authSubscription;
+
+  @override
+  void initState() {
+    super.initState();
+    // After page refresh, election state is initial - trigger load when auth is ready
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _tryLoadElection();
+      // Also listen for auth changes to trigger load when auth completes
+      _authSubscription = ref.listenManual(authNotifierProvider, (_, next) {
+        if (next.status == AuthStatus.authenticated) {
+          _tryLoadElection();
+        }
+      });
+    });
+  }
+
+  @override
+  void dispose() {
+    _authSubscription?.close();
+    super.dispose();
+  }
+
+  void _tryLoadElection() {
+    final authState = ref.read(authNotifierProvider);
+    final electionState = ref.read(electionNotifierProvider);
+
+    // Only load if authenticated and election not yet loaded
+    if (authState.status == AuthStatus.authenticated &&
+        electionState.status == ElectionLoadStatus.initial) {
+      ref.read(electionNotifierProvider.notifier).loadOngoingElection();
+    }
+  }
 
   void _onSubmit() {
     final l10n = AppLocalizations.of(context)!;
@@ -33,6 +72,14 @@ class _CandidatesScreenState extends ConsumerState<CandidatesScreen> {
         type: LuckyToastTypeEnum.warning,
       );
     }
+  }
+
+  void _onBackToElectionPicker() {
+    // Reset election state
+    ref.read(electionNotifierProvider.notifier).reset();
+    ref.read(selectionNotifierProvider.notifier).clearSelections();
+    // Return to election picker
+    context.go(Routes.startVoting);
   }
 
   void _onCandidateTap(String id) {
@@ -59,9 +106,24 @@ class _CandidatesScreenState extends ConsumerState<CandidatesScreen> {
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
     final electionState = ref.watch(electionNotifierProvider);
+
+    // Handle navigation on noElection status change (not on every rebuild)
+    ref.listen<ElectionState>(electionNotifierProvider, (previous, next) {
+      if (next.status == ElectionLoadStatus.noElection) {
+        context.go(Routes.voteEnded);
+      }
+    });
+
+    // Also check current state immediately (ref.listen doesn't fire for existing state)
+    if (electionState.status == ElectionLoadStatus.noElection) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (mounted) context.go(Routes.voteEnded);
+      });
+    }
     final selectedIds = ref.watch(selectionNotifierProvider);
     final requiredVotes = ref.watch(requiredVotesCountProvider);
     final canSubmit = selectedIds.length == requiredVotes;
+    final isMultiElectionMode = ref.watch(_isMultiElectionModeProvider);
 
     // hasVoted redirect is handled by router
     final electionName = electionState.election?.name ?? l10n.selectCandidates;
@@ -71,6 +133,13 @@ class _CandidatesScreenState extends ConsumerState<CandidatesScreen> {
       appBar: LuckyAppBar(
         title: electionName,
         automaticallyImplyLeading: false,
+        leading: isMultiElectionMode
+            ? IconButton(
+                icon: const Icon(Icons.arrow_back),
+                tooltip: l10n.goBack,
+                onPressed: _onBackToElectionPicker,
+              )
+            : null,
         actions: kDebugMode
             ? [
                 IconButton(
@@ -225,28 +294,19 @@ class _CandidatesScreenState extends ConsumerState<CandidatesScreen> {
         );
 
       case ElectionLoadStatus.noElection:
-        return Center(
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              const Icon(Icons.how_to_vote_outlined, size: 64, color: Colors.grey),
-              const SizedBox(height: 16),
-              Text(
-                l10n.noActiveElectionFound,
-                style: Theme.of(context).textTheme.titleMedium,
-              ),
-            ],
-          ),
-        );
+        // Navigation handled by ref.listen in build()
+        return const Center(child: CircularProgressIndicator());
 
       case ElectionLoadStatus.loaded:
         return Center(
           child: ConstrainedBox(
             constraints: const BoxConstraints(maxWidth: 1200),
-            child: CandidatesGrid(
-              candidates: state.election?.candidates ?? [],
-              selectedIds: selectedIds,
-              onCandidateTap: _onCandidateTap,
+            child: SizedBox.expand(
+              child: CandidatesGrid(
+                candidates: state.election?.candidates ?? [],
+                selectedIds: selectedIds,
+                onCandidateTap: _onCandidateTap,
+              ),
             ),
           ),
         );

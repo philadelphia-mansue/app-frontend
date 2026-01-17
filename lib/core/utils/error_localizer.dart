@@ -76,6 +76,9 @@ class ErrorLocalizer {
     }
 
     // Election errors
+    if (lowerMessage == 'not_prevalidated') {
+      return l10n.notPrevalidated;
+    }
     if (lowerMessage.contains('no active election')) {
       return l10n.noActiveElectionFound;
     }
@@ -86,6 +89,17 @@ class ErrorLocalizer {
     if (lowerMessage.contains('election id') &&
         lowerMessage.contains('required')) {
       return l10n.electionIdRequired;
+    }
+    if (lowerMessage.contains('failed to load election') &&
+        !lowerMessage.contains('elections')) {
+      return l10n.failedToLoadElection;
+    }
+    if (lowerMessage.contains('failed to load elections')) {
+      return l10n.failedToLoadElections;
+    }
+    if (lowerMessage.contains('failed to check') &&
+        lowerMessage.contains('election')) {
+      return l10n.failedToCheckElections;
     }
 
     // Candidate/voting errors

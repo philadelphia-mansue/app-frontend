@@ -27,17 +27,15 @@ class _PhoneAuthScreenState extends ConsumerState<PhoneAuthScreen> {
   final _otpController = TextEditingController();
 
   // Debug impersonate controllers (only used in kDebugMode)
+  // SECURITY: Do not hardcode test tokens - load from environment if needed
   final _debugPhoneController = TextEditingController();
-  final _debugTokenController = TextEditingController(
-    text: kDebugMode
-        ? '5a9130f80f3c5c6aca98feb8a8f4f97d3b67e1c71aff0a575d5f88662e936754d878bb2820af823c3211a8a2a8d21b83766c57aa2707d5dbb7fd588915630d08'
-        : '',
-  );
+  final _debugTokenController = TextEditingController();
 
   bool _showCodeSent = false;
   bool _isLoading = false;
   String? _errorText;
   String? _debugErrorText;
+  Country _selectedCountry = Country.italy;
 
   @override
   void initState() {
@@ -76,7 +74,13 @@ class _PhoneAuthScreenState extends ConsumerState<PhoneAuthScreen> {
       ),
       body: SafeArea(
         child: SingleChildScrollView(
-          padding: const EdgeInsets.all(24.0),
+          keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
+          padding: EdgeInsets.fromLTRB(
+            24.0,
+            24.0,
+            24.0,
+            24.0 + MediaQuery.of(context).viewInsets.bottom,
+          ),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
@@ -139,6 +143,10 @@ class _PhoneAuthScreenState extends ConsumerState<PhoneAuthScreen> {
                   controller: _phoneController,
                   errorText: _errorText,
                   onSubmit: _onSendCode,
+                  selectedCountry: _selectedCountry,
+                  onCountryChanged: (country) {
+                    setState(() => _selectedCountry = country);
+                  },
                 ),
                 const SizedBox(height: 24),
                 _isLoading
@@ -187,7 +195,7 @@ class _PhoneAuthScreenState extends ConsumerState<PhoneAuthScreen> {
                       ),
                       const SizedBox(height: 8),
                       Text(
-                        l10n.enterCodeSentTo('+39${_phoneController.text}'),
+                        l10n.enterCodeSentTo('${_selectedCountry.dialCode}${_phoneController.text}'),
                         style: TextStyle(
                           color: Colors.grey[600],
                           fontSize: 14,
@@ -294,9 +302,9 @@ class _PhoneAuthScreenState extends ConsumerState<PhoneAuthScreen> {
   Future<void> _onSendCode() async {
     final l10n = AppLocalizations.of(context)!;
     final rawPhone = _phoneController.text.trim();
-    // Prepend Italy country code
-    final phone = '+39$rawPhone';
-    debugPrint('[PhoneAuthScreen] _onSendCode called with: $phone');
+    // Prepend selected country code
+    final phone = '${_selectedCountry.dialCode}$rawPhone';
+    debugPrint('[PhoneAuthScreen] _onSendCode called');
 
     if (rawPhone.isEmpty) {
       setState(() => _errorText = l10n.pleaseEnterPhoneNumber);
@@ -314,6 +322,67 @@ class _PhoneAuthScreenState extends ConsumerState<PhoneAuthScreen> {
     });
 
     try {
+      // Step 1: Check if there are active elections
+      debugPrint('[PhoneAuthScreen] Checking for active elections...');
+      final electionRepo = ref.read(electionRepositoryProvider);
+      final activeResult = await electionRepo.hasActiveElection();
+
+      if (!mounted) return;
+
+      final hasActive = activeResult.fold(
+        (failure) {
+          debugPrint('[PhoneAuthScreen] Failed to check active elections: ${failure.message}');
+          setState(() {
+            _isLoading = false;
+            _errorText = l10n.serverErrorTryLater;
+          });
+          return null; // Signal to stop flow
+        },
+        (hasActiveElection) => hasActiveElection,
+      );
+
+      if (hasActive == null) return; // Stop if error occurred
+
+      if (!hasActive) {
+        debugPrint('[PhoneAuthScreen] No active elections found');
+        setState(() {
+          _isLoading = false;
+          _errorText = l10n.noActiveElections;
+        });
+        return;
+      }
+
+      // Step 2: Check if phone number is registered
+      debugPrint('[PhoneAuthScreen] Checking if phone number is registered...');
+      final authRepo = ref.read(authRepositoryProvider);
+      final checkPhoneResult = await authRepo.checkPhone(phone);
+
+      if (!mounted) return;
+
+      final phoneExists = checkPhoneResult.fold(
+        (failure) {
+          debugPrint('[PhoneAuthScreen] Failed to check phone: ${failure.message}');
+          setState(() {
+            _isLoading = false;
+            _errorText = l10n.serverErrorTryLater;
+          });
+          return null; // Signal to stop flow
+        },
+        (exists) => exists,
+      );
+
+      if (phoneExists == null) return; // Stop if error occurred
+
+      if (!phoneExists) {
+        debugPrint('[PhoneAuthScreen] Phone number not registered');
+        setState(() {
+          _isLoading = false;
+          _errorText = l10n.phoneNotRegistered;
+        });
+        return;
+      }
+
+      // Step 3: Send OTP
       debugPrint('[PhoneAuthScreen] Calling authNotifierProvider.sendOtp...');
       await ref.read(authNotifierProvider.notifier).sendOtp(phone);
 

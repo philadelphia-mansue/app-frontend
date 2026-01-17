@@ -294,4 +294,140 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get invalidOtp => 'Invalid verification code';
+
+  @override
+  String get appTitle => 'European Conference';
+
+  @override
+  String get logout => 'Logout';
+
+  @override
+  String welcomeUser(String name) {
+    return 'Welcome, $name';
+  }
+
+  @override
+  String get prevalidation => 'Prevalidation';
+
+  @override
+  String get scanToVote => 'Scan to Vote';
+
+  @override
+  String get prevalidationInstructions =>
+      'Show this QR code to staff for verification';
+
+  @override
+  String get scanInstructions => 'Point your camera at the election QR code';
+
+  @override
+  String get invalidQrCode =>
+      'Invalid QR code. Please scan a valid election link.';
+
+  @override
+  String get electionNotFound => 'Election not found';
+
+  @override
+  String get alreadyVotedTitle => 'Already Voted';
+
+  @override
+  String get alreadyVotedMessage =>
+      'You have already voted in this election. Please scan a different election QR code.';
+
+  @override
+  String get voteAnotherElection => 'Vote Another Election';
+
+  @override
+  String get voteNow => 'Vote Now';
+
+  @override
+  String get startVotingInstructions =>
+      'When you\'re ready, tap the button below to start voting';
+
+  @override
+  String get votingNotActive =>
+      'Voting is not currently active. Please try again later.';
+
+  @override
+  String get noOngoingElection => 'Please wait for the vote to begin.';
+
+  @override
+  String get continueToVoting => 'Continue';
+
+  @override
+  String get voteEndedTitle => 'Voting has ended';
+
+  @override
+  String get voteEndedMessage =>
+      'Thank you for your participation. Voting is no longer active.';
+
+  @override
+  String get notPrevalidated =>
+      'You must be prevalidated by staff before voting.';
+
+  @override
+  String get noActiveElections => 'No active elections at this time';
+
+  @override
+  String get phoneNotRegistered => 'This phone number is not registered';
+
+  @override
+  String get availableElections => 'Available Elections';
+
+  @override
+  String get completedElections => 'Completed Elections';
+
+  @override
+  String get voted => 'Voted';
+
+  @override
+  String get notYetOpen => 'Not yet open';
+
+  @override
+  String get ended => 'Ended';
+
+  @override
+  String moreElectionsAvailable(int count) {
+    return 'You have $count more election(s) to vote in';
+  }
+
+  @override
+  String get voteNextElection => 'Vote in Next Election';
+
+  @override
+  String get doneForNow => 'Done for now';
+
+  @override
+  String get done => 'Done';
+
+  @override
+  String get selectAnElection => 'Select an election to vote';
+
+  @override
+  String get backToElections => 'Back to Elections';
+
+  @override
+  String get failedToLoadElection => 'Failed to Load Election';
+
+  @override
+  String get electionLoadError =>
+      'An error occurred while loading the election data.';
+
+  @override
+  String get persistentErrorHelp =>
+      'If the problem persists, please check your internet connection or contact the election administrator.';
+
+  @override
+  String get loading => 'Loading...';
+
+  @override
+  String get failedToLoadElections => 'Failed to load elections';
+
+  @override
+  String get failedToCheckElections => 'Failed to check active elections';
+
+  @override
+  String get countryItaly => 'Italy';
+
+  @override
+  String get countryRomania => 'Romania';
 }

@@ -408,5 +408,181 @@
   "invalidOtp": "Invalid verification code",
   "@invalidOtp": {
     "description": "Error when OTP code is invalid"
+  },
+  "appTitle": "European Conference",
+  "@appTitle": {
+    "description": "Application title shown in app bar"
+  },
+  "logout": "Logout",
+  "@logout": {
+    "description": "Logout button tooltip"
+  },
+  "welcomeUser": "Welcome, {name}",
+  "@welcomeUser": {
+    "description": "Welcome message with user name",
+    "placeholders": {
+      "name": {
+        "type": "String",
+        "example": "John"
+      }
+    }
+  },
+  "prevalidation": "Prevalidation",
+  "@prevalidation": {
+    "description": "Button text for prevalidation feature"
+  },
+  "scanToVote": "Scan to Vote",
+  "@scanToVote": {
+    "description": "Button text for QR scanner to vote"
+  },
+  "prevalidationInstructions": "Show this QR code to staff for verification",
+  "@prevalidationInstructions": {
+    "description": "Instructions shown on prevalidation screen"
+  },
+  "scanInstructions": "Point your camera at the election QR code",
+  "@scanInstructions": {
+    "description": "Instructions shown on scanner screen"
+  },
+  "invalidQrCode": "Invalid QR code. Please scan a valid election link.",
+  "@invalidQrCode": {
+    "description": "Error message for invalid QR code"
+  },
+  "electionNotFound": "Election not found",
+  "@electionNotFound": {
+    "description": "Error when election is not found"
+  },
+  "alreadyVotedTitle": "Already Voted",
+  "@alreadyVotedTitle": {
+    "description": "Title for already voted dialog"
+  },
+  "alreadyVotedMessage": "You have already voted in this election. Please scan a different election QR code.",
+  "@alreadyVotedMessage": {
+    "description": "Message shown when user already voted in election"
+  },
+  "voteAnotherElection": "Vote Another Election",
+  "@voteAnotherElection": {
+    "description": "Button text to vote in another election"
+  },
+  "voteNow": "Vote Now",
+  "@voteNow": {
+    "description": "Button text to start voting"
+  },
+  "startVotingInstructions": "When you're ready, tap the button below to start voting",
+  "@startVotingInstructions": {
+    "description": "Instructions on the start voting screen"
+  },
+  "votingNotActive": "Voting is not currently active. Please try again later.",
+  "@votingNotActive": {
+    "description": "Message when voting is not active"
+  },
+  "noOngoingElection": "Please wait for the vote to begin.",
+  "@noOngoingElection": {
+    "description": "Message when voting hasn't started yet"
+  },
+  "continueToVoting": "Continue",
+  "@continueToVoting": {
+    "description": "Button text to continue from QR code to voting"
+  },
+  "voteEndedTitle": "Voting has ended",
+  "@voteEndedTitle": {
+    "description": "Title shown when voting period has ended"
+  },
+  "voteEndedMessage": "Thank you for your participation. Voting is no longer active.",
+  "@voteEndedMessage": {
+    "description": "Message shown when voting period has ended"
+  },
+  "notPrevalidated": "You must be prevalidated by staff before voting.",
+  "@notPrevalidated": {
+    "description": "Message shown when user tries to vote without being prevalidated"
+  },
+  "noActiveElections": "No active elections at this time",
+  "@noActiveElections": {
+    "description": "Error shown when trying to login but no elections are active"
+  },
+  "phoneNotRegistered": "This phone number is not registered",
+  "@phoneNotRegistered": {
+    "description": "Error shown when phone number is not in the voter registry"
+  },
+  "availableElections": "Available Elections",
+  "@availableElections": {
+    "description": "Section header for elections that can be voted in"
+  },
+  "completedElections": "Completed Elections",
+  "@completedElections": {
+    "description": "Section header for elections already voted in"
+  },
+  "voted": "Voted",
+  "@voted": {
+    "description": "Badge showing election has been voted in"
+  },
+  "notYetOpen": "Not yet open",
+  "@notYetOpen": {
+    "description": "Badge showing election hasn't started"
+  },
+  "ended": "Ended",
+  "@ended": {
+    "description": "Badge showing election has ended"
+  },
+  "moreElectionsAvailable": "You have {count} more election(s) to vote in",
+  "@moreElectionsAvailable": {
+    "description": "Message showing remaining elections after voting",
+    "placeholders": {
+      "count": {
+        "type": "int",
+        "example": "2"
+      }
+    }
+  },
+  "voteNextElection": "Vote in Next Election",
+  "@voteNextElection": {
+    "description": "Button to proceed to next election"
+  },
+  "doneForNow": "Done for now",
+  "@doneForNow": {
+    "description": "Button to finish voting session when more elections remain"
+  },
+  "done": "Done",
+  "@done": {
+    "description": "Button to finish voting session when no elections remain"
+  },
+  "selectAnElection": "Select an election to vote",
+  "@selectAnElection": {
+    "description": "Instruction on election picker screen"
+  },
+  "backToElections": "Back to Elections",
+  "@backToElections": {
+    "description": "Button to return to election list"
+  },
+  "failedToLoadElection": "Failed to Load Election",
+  "@failedToLoadElection": {
+    "description": "Error title when election fails to load"
+  },
+  "electionLoadError": "An error occurred while loading the election data.",
+  "@electionLoadError": {
+    "description": "Error message when election data fails to load"
+  },
+  "persistentErrorHelp": "If the problem persists, please check your internet connection or contact the election administrator.",
+  "@persistentErrorHelp": {
+    "description": "Help text shown after error with retry option"
+  },
+  "loading": "Loading...",
+  "@loading": {
+    "description": "Loading indicator text"
+  },
+  "failedToLoadElections": "Failed to load elections",
+  "@failedToLoadElections": {
+    "description": "Error when multiple elections fail to load"
+  },
+  "failedToCheckElections": "Failed to check active elections",
+  "@failedToCheckElections": {
+    "description": "Error when checking for active elections fails"
+  },
+  "countryItaly": "Italy",
+  "@countryItaly": {
+    "description": "Country name for Italy"
+  },
+  "countryRomania": "Romania",
+  "@countryRomania": {
+    "description": "Country name for Romania"
   }
 }

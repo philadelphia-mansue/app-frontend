@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:luckyui/luckyui.dart';
 import '../core/constants/app_constants.dart';
 import '../features/elections/presentation/providers/election_providers.dart';
+import '../l10n/app_localizations.dart';
 
 /// Splash screen shown while checking authentication and loading election data.
 /// Also displays error state with retry option if election loading fails.
@@ -11,15 +12,17 @@ class SplashScreen extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final l10n = AppLocalizations.of(context)!;
     final electionState = ref.watch(electionNotifierProvider);
     final storedElectionId = ref.watch(urlElectionIdProvider);
     final isError = electionState.status == ElectionLoadStatus.error;
 
     return Scaffold(
-      body: Center(
-        child: Padding(
-          padding: const EdgeInsets.all(24.0),
-          child: Column(
+      body: SafeArea(
+        child: Center(
+          child: Padding(
+            padding: const EdgeInsets.all(24.0),
+            child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               LuckyHeading(text: AppConstants.appName),
@@ -33,14 +36,13 @@ class SplashScreen extends ConsumerWidget {
                 ),
                 const SizedBox(height: 24),
                 Text(
-                  'Failed to Load Election',
+                  l10n.failedToLoadElection,
                   style: Theme.of(context).textTheme.titleLarge,
                   textAlign: TextAlign.center,
                 ),
                 const SizedBox(height: 16),
                 Text(
-                  electionState.errorMessage ??
-                      'An error occurred while loading the election data.',
+                  electionState.errorMessage ?? l10n.electionLoadError,
                   style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                         color: Colors.grey[600],
                       ),
@@ -56,11 +58,11 @@ class SplashScreen extends ConsumerWidget {
                         }
                       : null, // Disabled if no election_id in URL
                   icon: const Icon(Icons.refresh),
-                  label: const Text('Try Again'),
+                  label: Text(l10n.retry),
                 ),
                 const SizedBox(height: 16),
                 Text(
-                  'If the problem persists, please check your internet connection\nor contact the election administrator.',
+                  l10n.persistentErrorHelp,
                   style: Theme.of(context).textTheme.bodySmall?.copyWith(
                         color: Colors.grey[500],
                         fontStyle: FontStyle.italic,
@@ -72,13 +74,14 @@ class SplashScreen extends ConsumerWidget {
                 const CircularProgressIndicator(),
                 const SizedBox(height: 16),
                 Text(
-                  'Loading...',
+                  l10n.loading,
                   style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                         color: Colors.grey[600],
                       ),
                 ),
               ],
-            ],
+              ],
+            ),
           ),
         ),
       ),

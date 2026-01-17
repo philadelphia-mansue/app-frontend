@@ -110,8 +110,12 @@ void main() {
       );
       await tester.pumpAndSettle();
 
-      // Enter too short phone number
-      await tester.enterText(find.byType(TextField), '12345');
+      // Enter too short phone number - use PhoneInputField's TextField
+      final phoneInputField = find.byType(PhoneInputField);
+      await tester.enterText(
+        find.descendant(of: phoneInputField, matching: find.byType(TextField)),
+        '12345',
+      );
       await tester.tap(find.text('Send Code'));
       await tester.pumpAndSettle();
 
@@ -148,7 +152,10 @@ void main() {
       );
       await tester.pumpAndSettle();
 
-      expect(find.byType(LuckyButton), findsOneWidget);
+      // In debug mode, there's an additional DEBUG: Impersonate button
+      // So we check for at least one LuckyButton and verify Send Code exists
+      expect(find.byType(LuckyButton), findsWidgets);
+      expect(find.text('Send Code'), findsOneWidget);
     });
 
     testWidgets('uses LuckyHeading for welcome text', (tester) async {
@@ -226,4 +233,7 @@ class _MockAuthNotifier extends StateNotifier<AuthState>
 
   @override
   Future<void> tryRestoreSession(String userId) async {}
+
+  @override
+  Future<void> ping() async {}
 }

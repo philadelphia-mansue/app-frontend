@@ -303,4 +303,142 @@ class AppLocalizationsRo extends AppLocalizations {
 
   @override
   String get invalidOtp => 'Cod de verificare invalid';
+
+  @override
+  String get appTitle => 'Conferința Europeană';
+
+  @override
+  String get logout => 'Deconectare';
+
+  @override
+  String welcomeUser(String name) {
+    return 'Bine ați venit, $name';
+  }
+
+  @override
+  String get prevalidation => 'Prevalidare';
+
+  @override
+  String get scanToVote => 'Scanează pentru a Vota';
+
+  @override
+  String get prevalidationInstructions =>
+      'Arătați acest cod QR personalului pentru verificare';
+
+  @override
+  String get scanInstructions =>
+      'Îndreptați camera spre codul QR al alegerilor';
+
+  @override
+  String get invalidQrCode =>
+      'Cod QR invalid. Scanați un link electoral valid.';
+
+  @override
+  String get electionNotFound => 'Alegerile nu au fost găsite';
+
+  @override
+  String get alreadyVotedTitle => 'Ați votat deja';
+
+  @override
+  String get alreadyVotedMessage =>
+      'Ați votat deja în aceste alegeri. Scanați un alt cod QR electoral.';
+
+  @override
+  String get voteAnotherElection => 'Votează la alte alegeri';
+
+  @override
+  String get voteNow => 'Votează Acum';
+
+  @override
+  String get startVotingInstructions =>
+      'Când ești pregătit, apasă butonul de mai jos pentru a începe votarea';
+
+  @override
+  String get votingNotActive =>
+      'Votarea nu este activă în acest moment. Încearcă din nou mai târziu.';
+
+  @override
+  String get noOngoingElection => 'Trebuie să așteptați ca votul să înceapă.';
+
+  @override
+  String get continueToVoting => 'Continuă';
+
+  @override
+  String get voteEndedTitle => 'Votul s-a încheiat';
+
+  @override
+  String get voteEndedMessage =>
+      'Mulțumim pentru participare. Votul nu mai este activ.';
+
+  @override
+  String get notPrevalidated =>
+      'Trebuie să fii prevalidat de staff înainte de a vota.';
+
+  @override
+  String get noActiveElections => 'Așteptați ziua alegerilor.';
+
+  @override
+  String get phoneNotRegistered => 'Numărul de telefon nu este înregistrat';
+
+  @override
+  String get availableElections => 'Alegeri Disponibile';
+
+  @override
+  String get completedElections => 'Alegeri Finalizate';
+
+  @override
+  String get voted => 'Votat';
+
+  @override
+  String get notYetOpen => 'Nu a început încă';
+
+  @override
+  String get ended => 'Încheiat';
+
+  @override
+  String moreElectionsAvailable(int count) {
+    return 'Mai aveți $count alegere/i în care să votați';
+  }
+
+  @override
+  String get voteNextElection => 'Votează la Următoarele Alegeri';
+
+  @override
+  String get doneForNow => 'Am terminat deocamdată';
+
+  @override
+  String get done => 'Gata';
+
+  @override
+  String get selectAnElection => 'Selectați o alegere pentru a vota';
+
+  @override
+  String get backToElections => 'Înapoi la Alegeri';
+
+  @override
+  String get failedToLoadElection => 'Nu s-a putut încărca alegerea';
+
+  @override
+  String get electionLoadError =>
+      'A apărut o eroare la încărcarea datelor alegerilor.';
+
+  @override
+  String get persistentErrorHelp =>
+      'Dacă problema persistă, verificați conexiunea la internet sau contactați administratorul alegerilor.';
+
+  @override
+  String get loading => 'Se încarcă...';
+
+  @override
+  String get failedToLoadElections => 'Nu s-au putut încărca alegerile';
+
+  @override
+  String get failedToCheckElections =>
+      'Nu s-au putut verifica alegerile active';
+
+  @override
+  String get countryItaly => 'Italia';
+
+  @override
+  String get countryRomania => 'România';
 }

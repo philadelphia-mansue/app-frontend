@@ -182,4 +182,7 @@ class _MockVotingNotifier extends StateNotifier<VotingState>
 
   @override
   void reset() {}
+
+  @override
+  void resetToInitial() {}
 }

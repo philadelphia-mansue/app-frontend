@@ -166,6 +166,19 @@ class ElectionNotifier extends StateNotifier<ElectionState> {
     if (!mounted) return;
     state = const ElectionState();
   }
+
+  /// Mark the current election as voted in local state.
+  /// Called after successful vote submission to update the router's hasVoted check.
+  void markAsVoted() {
+    if (!mounted) return;
+    final election = state.election;
+    if (election == null) return;
+
+    debugPrint('[Election] Marking election as voted locally');
+    state = state.copyWith(
+      election: election.copyWith(hasVoted: true),
+    );
+  }
 }
 
 // Provider
@@ -205,4 +218,137 @@ final electionLoadingProvider = Provider<bool>((ref) {
 
 final hasVotedProvider = Provider<bool>((ref) {
   return ref.watch(electionNotifierProvider).election?.hasVoted ?? false;
+});
+
+// ============================================================================
+// Available Elections State (Multi-Election Support)
+// ============================================================================
+
+enum AvailableElectionsStatus { initial, loading, loaded, noElections, error }
+
+class AvailableElectionsState {
+  final AvailableElectionsStatus status;
+  final List<Election> elections;
+  final String? errorMessage;
+
+  const AvailableElectionsState({
+    this.status = AvailableElectionsStatus.initial,
+    this.elections = const [],
+    this.errorMessage,
+  });
+
+  /// Elections that can be voted in (active and not yet voted)
+  List<Election> get pendingElections =>
+      elections.where((e) => !e.hasVoted && e.isActive).toList();
+
+  /// Elections already voted in
+  List<Election> get completedElections =>
+      elections.where((e) => e.hasVoted).toList();
+
+  /// Elections not yet open
+  List<Election> get upcomingElections =>
+      elections.where((e) => e.status == ElectionStatus.upcoming).toList();
+
+  /// Elections that have ended (and not voted in)
+  List<Election> get endedElections =>
+      elections.where((e) => e.status == ElectionStatus.ended && !e.hasVoted).toList();
+
+  int get remainingCount => pendingElections.length;
+  bool get hasRemainingElections => remainingCount > 0;
+
+  AvailableElectionsState copyWith({
+    AvailableElectionsStatus? status,
+    List<Election>? elections,
+    String? errorMessage,
+  }) {
+    return AvailableElectionsState(
+      status: status ?? this.status,
+      elections: elections ?? this.elections,
+      errorMessage: errorMessage ?? this.errorMessage,
+    );
+  }
+}
+
+class AvailableElectionsNotifier extends StateNotifier<AvailableElectionsState> {
+  final ElectionRepository _repository;
+
+  AvailableElectionsNotifier({required ElectionRepository repository})
+      : _repository = repository,
+        super(const AvailableElectionsState());
+
+  Future<void> loadAll() async {
+    if (!mounted) return;
+    state = state.copyWith(status: AvailableElectionsStatus.loading);
+
+    final result = await _repository.getAllOngoingElections();
+
+    if (!mounted) return;
+    result.fold(
+      (failure) => state = state.copyWith(
+        status: AvailableElectionsStatus.error,
+        errorMessage: failure.message,
+      ),
+      (elections) {
+        if (elections.isEmpty) {
+          state = state.copyWith(
+            status: AvailableElectionsStatus.noElections,
+            elections: const [],
+          );
+        } else {
+          state = state.copyWith(
+            status: AvailableElectionsStatus.loaded,
+            elections: elections,
+          );
+        }
+      },
+    );
+  }
+
+  /// Refresh elections (e.g., after voting to update hasVoted flags)
+  Future<void> refresh() async {
+    await loadAll();
+  }
+
+  /// Mark an election as voted locally (optimistic update)
+  void markElectionAsVoted(String electionId) {
+    if (!mounted) return;
+    final updatedElections = state.elections.map((e) {
+      if (e.id == electionId) {
+        return e.copyWith(hasVoted: true);
+      }
+      return e;
+    }).toList();
+
+    state = state.copyWith(elections: updatedElections);
+  }
+
+  void reset() {
+    if (!mounted) return;
+    state = const AvailableElectionsState();
+  }
+}
+
+// Provider
+final availableElectionsNotifierProvider =
+    StateNotifierProvider<AvailableElectionsNotifier, AvailableElectionsState>((ref) {
+  return AvailableElectionsNotifier(
+    repository: ref.watch(electionRepositoryProvider),
+  );
+});
+
+// Convenience providers
+final hasRemainingElectionsProvider = Provider<bool>((ref) {
+  return ref.watch(availableElectionsNotifierProvider).hasRemainingElections;
+});
+
+final remainingElectionsCountProvider = Provider<int>((ref) {
+  return ref.watch(availableElectionsNotifierProvider).remainingCount;
+});
+
+final pendingElectionsProvider = Provider<List<Election>>((ref) {
+  return ref.watch(availableElectionsNotifierProvider).pendingElections;
+});
+
+final completedElectionsProvider = Provider<List<Election>>((ref) {
+  return ref.watch(availableElectionsNotifierProvider).completedElections;
 });

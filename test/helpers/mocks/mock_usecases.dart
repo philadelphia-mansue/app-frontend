@@ -2,6 +2,7 @@ import 'package:dartz/dartz.dart';
 import 'package:mockito/mockito.dart';
 import 'package:philadelphia_mansue/core/errors/failures.dart';
 import 'package:philadelphia_mansue/core/usecases/usecase.dart';
+import 'package:philadelphia_mansue/features/auth/domain/entities/auth_result.dart';
 import 'package:philadelphia_mansue/features/auth/domain/entities/voter.dart';
 import 'package:philadelphia_mansue/features/auth/domain/usecases/send_otp.dart';
 import 'package:philadelphia_mansue/features/auth/domain/usecases/verify_otp.dart';
@@ -27,11 +28,13 @@ class MockSendOtp extends Mock implements SendOtp {
 }
 
 class MockVerifyOtp extends Mock implements VerifyOtp {
-  Either<Failure, Voter>? result;
+  Either<Failure, AuthResult>? result;
 
   @override
-  Future<Either<Failure, Voter>> call(VerifyOtpParams params) async {
-    return result ?? Right(const Voter(id: 'id', firstName: 'First', lastName: 'Last', phone: '+1234567890'));
+  Future<Either<Failure, AuthResult>> call(VerifyOtpParams params) async {
+    return result ?? Right(const AuthResult(
+      voter: Voter(id: 'id', firstName: 'First', lastName: 'Last', phone: '+1234567890'),
+    ));
   }
 }
 
@@ -89,8 +92,8 @@ void mockSendOtpUseCaseFailure(MockSendOtp mock, Failure failure) {
 // VERIFY OTP MOCK HELPERS
 // =============================================================================
 
-void mockVerifyOtpUseCaseSuccess(MockVerifyOtp mock, Voter voter) {
-  mock.result = Right(voter);
+void mockVerifyOtpUseCaseSuccess(MockVerifyOtp mock, AuthResult authResult) {
+  mock.result = Right(authResult);
 }
 
 void mockVerifyOtpUseCaseFailure(MockVerifyOtp mock, Failure failure) {
