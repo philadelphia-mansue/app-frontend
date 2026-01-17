@@ -1,5 +1,3 @@
-import 'dart:math' show min;
-
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -35,8 +33,8 @@ class PrevalidationScreen extends ConsumerWidget {
       body: SafeArea(
         child: LayoutBuilder(
           builder: (context, constraints) {
-            // Responsive QR size: max 250, but leave room for padding
-            final qrSize = min(250.0, constraints.maxWidth - 100);
+            // Responsive QR size: min 50, max 250, leave room for padding
+            final qrSize = (constraints.maxWidth - 100).clamp(50.0, 250.0);
             return SingleChildScrollView(
               child: ConstrainedBox(
                 constraints: BoxConstraints(minHeight: constraints.maxHeight),

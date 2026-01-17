@@ -409,7 +409,7 @@
   "@invalidOtp": {
     "description": "Error when OTP code is invalid"
   },
-  "appTitle": "Conferinta Europeana",
+  "appTitle": "European Conference",
   "@appTitle": {
     "description": "Application title shown in app bar"
   },
@@ -539,7 +539,11 @@
   },
   "doneForNow": "Done for now",
   "@doneForNow": {
-    "description": "Button to finish voting session"
+    "description": "Button to finish voting session when more elections remain"
+  },
+  "done": "Done",
+  "@done": {
+    "description": "Button to finish voting session when no elections remain"
   },
   "selectAnElection": "Select an election to vote",
   "@selectAnElection": {
@@ -572,5 +576,13 @@
   "failedToCheckElections": "Failed to check active elections",
   "@failedToCheckElections": {
     "description": "Error when checking for active elections fails"
+  },
+  "countryItaly": "Italy",
+  "@countryItaly": {
+    "description": "Country name for Italy"
+  },
+  "countryRomania": "Romania",
+  "@countryRomania": {
+    "description": "Country name for Romania"
   }
 }

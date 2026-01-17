@@ -86,6 +86,18 @@ class _CountryPicker extends StatelessWidget {
     this.onCountryChanged,
   });
 
+  String _getLocalizedCountryName(BuildContext context, Country country) {
+    final l10n = AppLocalizations.of(context)!;
+    switch (country.code) {
+      case 'IT':
+        return l10n.countryItaly;
+      case 'RO':
+        return l10n.countryRomania;
+      default:
+        return country.name;
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return PopupMenuButton<Country>(
@@ -100,7 +112,7 @@ class _CountryPicker extends StatelessWidget {
             children: [
               Text(country.flag, style: const TextStyle(fontSize: 20)),
               const SizedBox(width: 8),
-              Text(country.name),
+              Text(_getLocalizedCountryName(context, country)),
               const SizedBox(width: 8),
               Text(
                 country.dialCode,

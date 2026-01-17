@@ -301,7 +301,7 @@ class AppLocalizationsIt extends AppLocalizations {
   String get invalidOtp => 'Codice di verifica non valido';
 
   @override
-  String get appTitle => 'Conferinta Europeana';
+  String get appTitle => 'Conferenza Europea';
 
   @override
   String get logout => 'Esci';
@@ -403,6 +403,9 @@ class AppLocalizationsIt extends AppLocalizations {
   String get doneForNow => 'Ho finito per ora';
 
   @override
+  String get done => 'Fatto';
+
+  @override
   String get selectAnElection => 'Seleziona un\'elezione per votare';
 
   @override
@@ -428,4 +431,10 @@ class AppLocalizationsIt extends AppLocalizations {
   @override
   String get failedToCheckElections =>
       'Impossibile verificare le elezioni attive';
+
+  @override
+  String get countryItaly => 'Italia';
+
+  @override
+  String get countryRomania => 'Romania';
 }

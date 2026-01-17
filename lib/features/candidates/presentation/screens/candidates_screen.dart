@@ -26,6 +26,8 @@ class CandidatesScreen extends ConsumerStatefulWidget {
 }
 
 class _CandidatesScreenState extends ConsumerState<CandidatesScreen> {
+  ProviderSubscription<AuthState>? _authSubscription;
+
   @override
   void initState() {
     super.initState();
@@ -33,12 +35,18 @@ class _CandidatesScreenState extends ConsumerState<CandidatesScreen> {
     WidgetsBinding.instance.addPostFrameCallback((_) {
       _tryLoadElection();
       // Also listen for auth changes to trigger load when auth completes
-      ref.listenManual(authNotifierProvider, (_, next) {
+      _authSubscription = ref.listenManual(authNotifierProvider, (_, next) {
         if (next.status == AuthStatus.authenticated) {
           _tryLoadElection();
         }
       });
     });
+  }
+
+  @override
+  void dispose() {
+    _authSubscription?.close();
+    super.dispose();
   }
 
   void _tryLoadElection() {
@@ -98,6 +106,13 @@ class _CandidatesScreenState extends ConsumerState<CandidatesScreen> {
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
     final electionState = ref.watch(electionNotifierProvider);
+
+    // Handle navigation on noElection status change (not on every rebuild)
+    ref.listen<ElectionState>(electionNotifierProvider, (previous, next) {
+      if (next.status == ElectionLoadStatus.noElection) {
+        context.go(Routes.voteEnded);
+      }
+    });
     final selectedIds = ref.watch(selectionNotifierProvider);
     final requiredVotes = ref.watch(requiredVotesCountProvider);
     final canSubmit = selectedIds.length == requiredVotes;
@@ -272,12 +287,7 @@ class _CandidatesScreenState extends ConsumerState<CandidatesScreen> {
         );
 
       case ElectionLoadStatus.noElection:
-        // Router will redirect to vote-ended, show loading briefly
-        WidgetsBinding.instance.addPostFrameCallback((_) {
-          if (mounted) {
-            context.go(Routes.voteEnded);
-          }
-        });
+        // Navigation handled by ref.listen in build()
         return const Center(child: CircularProgressIndicator());
 
       case ElectionLoadStatus.loaded:

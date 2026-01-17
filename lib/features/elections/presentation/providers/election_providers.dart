@@ -290,7 +290,10 @@ class AvailableElectionsNotifier extends StateNotifier<AvailableElectionsState> 
       ),
       (elections) {
         if (elections.isEmpty) {
-          state = state.copyWith(status: AvailableElectionsStatus.noElections);
+          state = state.copyWith(
+            status: AvailableElectionsStatus.noElections,
+            elections: const [],
+          );
         } else {
           state = state.copyWith(
             status: AvailableElectionsStatus.loaded,

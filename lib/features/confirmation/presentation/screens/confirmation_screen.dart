@@ -26,7 +26,9 @@ class ConfirmationScreen extends ConsumerWidget {
     final electionState = ref.watch(electionNotifierProvider);
 
     // Clear stale error state on screen entry (Fix 8)
-    if (votingState.status == VotingStatus.error) {
+    // Preserve alreadyVoted errors to prevent repeated submission attempts
+    if (votingState.status == VotingStatus.error &&
+        votingState.errorType != VotingErrorType.alreadyVoted) {
       WidgetsBinding.instance.addPostFrameCallback((_) {
         if (context.mounted) {
           ref.read(votingNotifierProvider.notifier).resetToInitial();

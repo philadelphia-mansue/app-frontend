@@ -625,7 +625,7 @@ abstract class AppLocalizations {
   /// Application title shown in app bar
   ///
   /// In en, this message translates to:
-  /// **'Conferinta Europeana'**
+  /// **'European Conference'**
   String get appTitle;
 
   /// Logout button tooltip
@@ -796,11 +796,17 @@ abstract class AppLocalizations {
   /// **'Vote in Next Election'**
   String get voteNextElection;
 
-  /// Button to finish voting session
+  /// Button to finish voting session when more elections remain
   ///
   /// In en, this message translates to:
   /// **'Done for now'**
   String get doneForNow;
+
+  /// Button to finish voting session when no elections remain
+  ///
+  /// In en, this message translates to:
+  /// **'Done'**
+  String get done;
 
   /// Instruction on election picker screen
   ///
@@ -849,6 +855,18 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Failed to check active elections'**
   String get failedToCheckElections;
+
+  /// Country name for Italy
+  ///
+  /// In en, this message translates to:
+  /// **'Italy'**
+  String get countryItaly;
+
+  /// Country name for Romania
+  ///
+  /// In en, this message translates to:
+  /// **'Romania'**
+  String get countryRomania;
 }
 
 class _AppLocalizationsDelegate

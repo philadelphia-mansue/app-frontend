@@ -1,3 +1,4 @@
+import 'package:dio/dio.dart';
 import 'package:firebase_auth/firebase_auth.dart' as firebase;
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/annotations.dart';
@@ -143,31 +144,33 @@ void main() {
       );
     });
 
-    test('throws AuthException on network timeout', () async {
+    test('rethrows DioException on network timeout (not AuthException)', () async {
       // Arrange
       mockApiClient.stubGetError(
         ApiConstants.ping,
         createTimeoutException(),
       );
 
-      // Act & Assert
+      // Act & Assert - network errors should NOT be AuthException
+      // so the repository can convert them to ServerFailure, not AuthFailure
       expect(
         () => dataSource.ping(),
-        throwsA(isA<AuthException>()),
+        throwsA(isA<DioException>()),
       );
     });
 
-    test('throws AuthException on connection error', () async {
+    test('rethrows DioException on connection error (not AuthException)', () async {
       // Arrange
       mockApiClient.stubGetError(
         ApiConstants.ping,
         createConnectionException(),
       );
 
-      // Act & Assert
+      // Act & Assert - network errors should NOT be AuthException
+      // so the repository can convert them to ServerFailure, not AuthFailure
       expect(
         () => dataSource.ping(),
-        throwsA(isA<AuthException>()),
+        throwsA(isA<DioException>()),
       );
     });
   });

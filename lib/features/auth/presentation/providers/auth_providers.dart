@@ -1,6 +1,7 @@
 import 'package:flutter/foundation.dart' show debugPrint;
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../../core/di/providers.dart';
+import '../../../../core/errors/failures.dart';
 import '../../../../core/services/vote_cache_service.dart';
 import '../../../../core/utils/selection_storage.dart';
 import '../../data/datasources/auth_remote_datasource.dart';
@@ -357,8 +358,14 @@ class AuthNotifier extends StateNotifier<AuthState> {
     result.fold(
       (failure) {
         debugPrint('[AuthNotifier] Ping failed: ${failure.message}');
-        // If ping fails, sign out the user
-        signOut();
+        // Only sign out on authentication failures (e.g., 401 session expired)
+        // Network/server errors should not log out the user
+        if (failure is AuthFailure) {
+          debugPrint('[AuthNotifier] Auth failure detected - signing out');
+          signOut();
+        } else {
+          debugPrint('[AuthNotifier] Non-auth failure (${failure.runtimeType}) - keeping session');
+        }
       },
       (success) {
         debugPrint('[AuthNotifier] Ping successful - user is still authenticated');

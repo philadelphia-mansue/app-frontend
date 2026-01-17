@@ -194,7 +194,7 @@ void main() {
       );
     });
 
-    test('throws ServerException on generic 403 without specific message', () async {
+    test('throws AuthException on generic 403 without specific message', () async {
       // Arrange
       final testVote = createTestVote();
       mockApiClient.stubPostError(
@@ -342,12 +342,18 @@ void main() {
         candidateIds: ['c1', 'c2', 'c3'],
       );
 
-      // Create a custom mock to capture the request data
-      dynamic capturedData;
-      mockApiClient = MockApiClient();
+      mockApiClient.stubPost(
+        ApiConstants.voteEndpoint,
+        {'id': 'vote-123', 'status': 'created'},
+        statusCode: 201,
+      );
 
-      // We'll verify the data structure by checking the VoteModel's toApiRequest
-      expect(testVote.toApiRequest(), {
+      // Act
+      await dataSource.submitVote(testVote);
+
+      // Assert - verify the datasource sent the correct data to the API
+      expect(mockApiClient.lastPostPath, ApiConstants.voteEndpoint);
+      expect(mockApiClient.lastPostData, {
         'election_id': 'test-election-id',
         'candidates': ['c1', 'c2', 'c3'],
       });

@@ -87,7 +87,7 @@
   "unknownError": "Si è verificato un errore sconosciuto",
   "requestFailed": "Richiesta non riuscita",
   "invalidOtp": "Codice di verifica non valido",
-  "appTitle": "Conferinta Europeana",
+  "appTitle": "Conferenza Europea",
   "logout": "Esci",
   "welcomeUser": "Benvenuto, {name}",
   "prevalidation": "Prevalidazione",
@@ -117,6 +117,7 @@
   "moreElectionsAvailable": "Hai ancora {count} elezione/i in cui votare",
   "voteNextElection": "Vota nella Prossima Elezione",
   "doneForNow": "Ho finito per ora",
+  "done": "Fatto",
   "selectAnElection": "Seleziona un'elezione per votare",
   "backToElections": "Torna alle Elezioni",
   "failedToLoadElection": "Impossibile caricare l'elezione",
@@ -124,5 +125,7 @@
   "persistentErrorHelp": "Se il problema persiste, verifichi la connessione internet o contatti l'amministratore dell'elezione.",
   "loading": "Caricamento...",
   "failedToLoadElections": "Impossibile caricare le elezioni",
-  "failedToCheckElections": "Impossibile verificare le elezioni attive"
+  "failedToCheckElections": "Impossibile verificare le elezioni attive",
+  "countryItaly": "Italia",
+  "countryRomania": "Romania"
 }

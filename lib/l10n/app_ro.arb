@@ -87,7 +87,7 @@
   "unknownError": "A apărut o eroare necunoscută",
   "requestFailed": "Cererea a eșuat",
   "invalidOtp": "Cod de verificare invalid",
-  "appTitle": "Conferinta Europeana",
+  "appTitle": "Conferința Europeană",
   "logout": "Deconectare",
   "welcomeUser": "Bine ați venit, {name}",
   "prevalidation": "Prevalidare",
@@ -117,6 +117,7 @@
   "moreElectionsAvailable": "Mai aveți {count} alegere/i în care să votați",
   "voteNextElection": "Votează la Următoarele Alegeri",
   "doneForNow": "Am terminat deocamdată",
+  "done": "Gata",
   "selectAnElection": "Selectați o alegere pentru a vota",
   "backToElections": "Înapoi la Alegeri",
   "failedToLoadElection": "Nu s-a putut încărca alegerea",
@@ -124,5 +125,7 @@
   "persistentErrorHelp": "Dacă problema persistă, verificați conexiunea la internet sau contactați administratorul alegerilor.",
   "loading": "Se încarcă...",
   "failedToLoadElections": "Nu s-au putut încărca alegerile",
-  "failedToCheckElections": "Nu s-au putut verifica alegerile active"
+  "failedToCheckElections": "Nu s-au putut verifica alegerile active",
+  "countryItaly": "Italia",
+  "countryRomania": "România"
 }

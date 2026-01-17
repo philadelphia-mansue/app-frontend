@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:luckyui/luckyui.dart';
+import 'package:philadelphia_mansue/core/utils/error_localizer.dart';
 import 'package:philadelphia_mansue/l10n/app_localizations.dart';
 import 'package:philadelphia_mansue/routing/routes.dart';
 import '../../../auth/presentation/providers/auth_providers.dart';
@@ -62,8 +63,8 @@ class _StartVotingScreenState extends ConsumerState<StartVotingScreen> {
       context.go(Routes.candidates);
     } else if (electionState.status == ElectionLoadStatus.error) {
       LuckyToastMessenger.showToast(
-        electionState.errorMessage ?? l10n.electionNotFound,
-        type: LuckyToastTypeEnum.error,
+        ErrorLocalizer.localize(electionState.errorMessage, l10n),
+        type: LuckyToastTypeEnum.warning,
       );
     }
   }

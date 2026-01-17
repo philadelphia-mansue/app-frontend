@@ -168,20 +168,29 @@ final routerProvider = Provider<GoRouter>((ref) {
       final isCheckingPrevalidation =
           availableElectionsState.status == AvailableElectionsStatus.initial ||
           availableElectionsState.status == AvailableElectionsStatus.loading;
+      // User is prevalidated if:
+      // - API returned elections (loaded with non-empty list), OR
+      // - API confirmed prevalidation but no active elections exist (noElections)
       final hasPrevalidatedElections =
-          availableElectionsState.status == AvailableElectionsStatus.loaded &&
-          availableElectionsState.elections.isNotEmpty;
+          (availableElectionsState.status == AvailableElectionsStatus.loaded &&
+              availableElectionsState.elections.isNotEmpty) ||
+          availableElectionsState.status == AvailableElectionsStatus.noElections;
 
       debugPrint('[Router] availableElections: status=${availableElectionsState.status}, count=${availableElectionsState.elections.length}, hasPrevalidated=$hasPrevalidatedElections');
 
       // If no election (vote ended) - redirect to vote-ended page
+      // This takes precedence for authenticated users when election has ended
       if (electionState.status == ElectionLoadStatus.noElection) {
         if (currentPath == Routes.voteEnded) {
           return null;
         }
-        // Only redirect from voting flow pages, not from pre-election flow
+        // Redirect from voting flow and pre-election flow pages
+        // Users can navigate back to elections from voteEnded if needed
         if (currentPath == Routes.candidates ||
-            currentPath == Routes.confirmation) {
+            currentPath == Routes.confirmation ||
+            currentPath == Routes.startVoting ||
+            currentPath == Routes.prevalidation ||
+            currentPath == Routes.splash) {
           return Routes.voteEnded;
         }
       }

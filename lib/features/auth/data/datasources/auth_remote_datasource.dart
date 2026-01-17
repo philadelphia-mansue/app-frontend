@@ -333,7 +333,8 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
       if (e.response?.statusCode == 401) {
         throw const AuthException(message: 'Session expired');
       }
-      throw AuthException(message: e.message ?? 'Ping failed');
+      // Rethrow non-auth errors (network, server) so repository handles them as ServerFailure
+      rethrow;
     }
   }
 

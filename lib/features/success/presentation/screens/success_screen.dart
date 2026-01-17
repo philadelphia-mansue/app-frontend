@@ -141,6 +141,17 @@ class SuccessScreen extends ConsumerWidget {
                         ),
                       ),
                     ),
+                  ] else ...[
+                    // No remaining elections - show Done button
+                    const SizedBox(height: 48),
+                    SizedBox(
+                      width: double.infinity,
+                      child: LuckyButton(
+                        text: l10n.done,
+                        onTap: () => _onDone(context, ref),
+                        height: 56,
+                      ),
+                    ),
                   ],
                       ],
                     ),

@@ -10,7 +10,7 @@ AuthResult createTestAuthResult({
   String? qrCode,
 }) {
   return AuthResult(
-    voter: Voter(
+    voter: createTestVoter(
       id: id,
       firstName: firstName,
       lastName: lastName,

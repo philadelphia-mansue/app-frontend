@@ -12,6 +12,10 @@ class MockApiClient extends Mock implements ApiClient {
   final Map<String, Exception> _getExceptions = {};
   final Map<String, Exception> _postExceptions = {};
 
+  /// Captured data from the last POST request (for verification in tests)
+  dynamic lastPostData;
+  String? lastPostPath;
+
   /// Configure a successful GET response
   void stubGet(String path, dynamic data, {int statusCode = 200}) {
     _getResponses[path] = Response(
@@ -62,6 +66,10 @@ class MockApiClient extends Mock implements ApiClient {
     Map<String, dynamic>? queryParameters,
     Options? options,
   }) async {
+    // Capture the request data for verification in tests
+    lastPostPath = path;
+    lastPostData = data;
+
     if (_postExceptions.containsKey(path)) {
       throw _postExceptions[path]!;
     }
@@ -71,12 +79,14 @@ class MockApiClient extends Mock implements ApiClient {
     throw UnimplementedError('No stub for POST $path');
   }
 
-  /// Clear all stubs
+  /// Clear all stubs and captured data
   void reset() {
     _getResponses.clear();
     _postResponses.clear();
     _getExceptions.clear();
     _postExceptions.clear();
+    lastPostData = null;
+    lastPostPath = null;
   }
 }
 

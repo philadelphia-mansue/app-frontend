@@ -296,7 +296,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get invalidOtp => 'Invalid verification code';
 
   @override
-  String get appTitle => 'Conferinta Europeana';
+  String get appTitle => 'European Conference';
 
   @override
   String get logout => 'Logout';
@@ -397,6 +397,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get doneForNow => 'Done for now';
 
   @override
+  String get done => 'Done';
+
+  @override
   String get selectAnElection => 'Select an election to vote';
 
   @override
@@ -421,4 +424,10 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get failedToCheckElections => 'Failed to check active elections';
+
+  @override
+  String get countryItaly => 'Italy';
+
+  @override
+  String get countryRomania => 'Romania';
 }

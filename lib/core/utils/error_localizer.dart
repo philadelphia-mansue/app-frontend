@@ -76,6 +76,9 @@ class ErrorLocalizer {
     }
 
     // Election errors
+    if (lowerMessage == 'not_prevalidated') {
+      return l10n.notPrevalidated;
+    }
     if (lowerMessage.contains('no active election')) {
       return l10n.noActiveElectionFound;
     }

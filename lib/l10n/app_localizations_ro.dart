@@ -305,7 +305,7 @@ class AppLocalizationsRo extends AppLocalizations {
   String get invalidOtp => 'Cod de verificare invalid';
 
   @override
-  String get appTitle => 'Conferinta Europeana';
+  String get appTitle => 'Conferința Europeană';
 
   @override
   String get logout => 'Deconectare';
@@ -407,6 +407,9 @@ class AppLocalizationsRo extends AppLocalizations {
   String get doneForNow => 'Am terminat deocamdată';
 
   @override
+  String get done => 'Gata';
+
+  @override
   String get selectAnElection => 'Selectați o alegere pentru a vota';
 
   @override
@@ -432,4 +435,10 @@ class AppLocalizationsRo extends AppLocalizations {
   @override
   String get failedToCheckElections =>
       'Nu s-au putut verifica alegerile active';
+
+  @override
+  String get countryItaly => 'Italia';
+
+  @override
+  String get countryRomania => 'România';
 }

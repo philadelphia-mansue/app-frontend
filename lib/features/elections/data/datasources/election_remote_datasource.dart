@@ -133,9 +133,13 @@ class ElectionRemoteDataSourceImpl implements ElectionRemoteDataSource {
         try {
           final election = await getElectionById(electionId);
           elections.add(election);
-        } catch (_) {
-          // Skip elections that fail to load (e.g., not prevalidated)
-          continue;
+        } on ServerException catch (e) {
+          // Only skip elections where voter is not prevalidated
+          // Rethrow auth/network failures so they surface correctly
+          if (e.message == 'NOT_PREVALIDATED') {
+            continue;
+          }
+          rethrow;
         }
       }
 
