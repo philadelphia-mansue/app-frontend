@@ -369,4 +369,63 @@ class AppLocalizationsIt extends AppLocalizations {
   @override
   String get notPrevalidated =>
       'Devi essere prevalidato dallo staff prima di votare.';
+
+  @override
+  String get noActiveElections => 'Nessuna elezione attiva al momento';
+
+  @override
+  String get phoneNotRegistered => 'Questo numero di telefono non è registrato';
+
+  @override
+  String get availableElections => 'Elezioni Disponibili';
+
+  @override
+  String get completedElections => 'Elezioni Completate';
+
+  @override
+  String get voted => 'Votato';
+
+  @override
+  String get notYetOpen => 'Non ancora aperto';
+
+  @override
+  String get ended => 'Terminato';
+
+  @override
+  String moreElectionsAvailable(int count) {
+    return 'Hai ancora $count elezione/i in cui votare';
+  }
+
+  @override
+  String get voteNextElection => 'Vota nella Prossima Elezione';
+
+  @override
+  String get doneForNow => 'Ho finito per ora';
+
+  @override
+  String get selectAnElection => 'Seleziona un\'elezione per votare';
+
+  @override
+  String get backToElections => 'Torna alle Elezioni';
+
+  @override
+  String get failedToLoadElection => 'Impossibile caricare l\'elezione';
+
+  @override
+  String get electionLoadError =>
+      'Si è verificato un errore durante il caricamento dei dati dell\'elezione.';
+
+  @override
+  String get persistentErrorHelp =>
+      'Se il problema persiste, verifichi la connessione internet o contatti l\'amministratore dell\'elezione.';
+
+  @override
+  String get loading => 'Caricamento...';
+
+  @override
+  String get failedToLoadElections => 'Impossibile caricare le elezioni';
+
+  @override
+  String get failedToCheckElections =>
+      'Impossibile verificare le elezioni attive';
 }

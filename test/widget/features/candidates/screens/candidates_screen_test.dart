@@ -63,6 +63,7 @@ void main() {
             ),
             selectionNotifierProvider.overrideWith((ref) => SelectionNotifier(10, null, true)),
             requiredVotesCountProvider.overrideWith((ref) => 10),
+            availableElectionsNotifierProvider.overrideWith((ref) => _MockAvailableElectionsNotifier()),
           ],
         ),
       );
@@ -94,6 +95,7 @@ void main() {
             ),
             selectionNotifierProvider.overrideWith((ref) => SelectionNotifier(10, null, true)),
             requiredVotesCountProvider.overrideWith((ref) => 10),
+            availableElectionsNotifierProvider.overrideWith((ref) => _MockAvailableElectionsNotifier()),
           ],
         ),
       );
@@ -126,6 +128,7 @@ void main() {
             selectionNotifierProvider.overrideWith((ref) => SelectionNotifier(10, null, true)),
             requiredVotesCountProvider.overrideWith((ref) => 10),
             selectionCountProvider.overrideWith((ref) => 0),
+            availableElectionsNotifierProvider.overrideWith((ref) => _MockAvailableElectionsNotifier()),
           ],
         ),
       );
@@ -156,13 +159,14 @@ void main() {
             ),
             selectionNotifierProvider.overrideWith((ref) => SelectionNotifier(10, null, true)),
             requiredVotesCountProvider.overrideWith((ref) => 10),
+            availableElectionsNotifierProvider.overrideWith((ref) => _MockAvailableElectionsNotifier()),
           ],
         ),
       );
       await tester.pumpAndSettle();
       consumeOverflowErrors(tester);
 
-      expect(find.text('Failed to load election'), findsOneWidget);
+      expect(find.text('Failed to Load Election'), findsOneWidget);
     });
 
     testWidgets('shows retry button on error', (tester) async {
@@ -185,6 +189,7 @@ void main() {
             ),
             selectionNotifierProvider.overrideWith((ref) => SelectionNotifier(10, null, true)),
             requiredVotesCountProvider.overrideWith((ref) => 10),
+            availableElectionsNotifierProvider.overrideWith((ref) => _MockAvailableElectionsNotifier()),
           ],
         ),
       );
@@ -194,7 +199,7 @@ void main() {
       expect(find.text('Retry'), findsOneWidget);
     });
 
-    testWidgets('shows no election message when no election', (tester) async {
+    testWidgets('shows loading indicator when no election (before redirect)', (tester) async {
       tester.view.physicalSize = const Size(800, 1600);
       tester.view.devicePixelRatio = 1.0;
       addTearDown(() => tester.view.resetPhysicalSize());
@@ -211,39 +216,16 @@ void main() {
             ),
             selectionNotifierProvider.overrideWith((ref) => SelectionNotifier(10, null, true)),
             requiredVotesCountProvider.overrideWith((ref) => 10),
+            availableElectionsNotifierProvider.overrideWith((ref) => _MockAvailableElectionsNotifier()),
           ],
         ),
       );
-      await tester.pumpAndSettle();
+      // Don't pumpAndSettle - check initial state before redirect callback
+      await tester.pump();
       consumeOverflowErrors(tester);
 
-      expect(find.text('No active election found'), findsOneWidget);
-    });
-
-    testWidgets('shows vote icon when no election', (tester) async {
-      tester.view.physicalSize = const Size(800, 1600);
-      tester.view.devicePixelRatio = 1.0;
-      addTearDown(() => tester.view.resetPhysicalSize());
-
-      await tester.pumpWidget(
-        wrapScreen(
-          const CandidatesScreen(),
-          screenSize: _testScreenSize,
-          overrides: [
-            electionNotifierProvider.overrideWith(
-              (ref) => _MockElectionNotifier(
-                const ElectionState(status: ElectionLoadStatus.noElection),
-              ),
-            ),
-            selectionNotifierProvider.overrideWith((ref) => SelectionNotifier(10, null, true)),
-            requiredVotesCountProvider.overrideWith((ref) => 10),
-          ],
-        ),
-      );
-      await tester.pumpAndSettle();
-      consumeOverflowErrors(tester);
-
-      expect(find.byIcon(Icons.how_to_vote_outlined), findsOneWidget);
+      // Shows loading indicator while preparing to redirect to vote-ended
+      expect(find.byType(CircularProgressIndicator), findsOneWidget);
     });
 
     testWidgets('displays election name in app bar', (tester) async {
@@ -268,6 +250,7 @@ void main() {
             ),
             selectionNotifierProvider.overrideWith((ref) => SelectionNotifier(10, null, true)),
             requiredVotesCountProvider.overrideWith((ref) => 10),
+            availableElectionsNotifierProvider.overrideWith((ref) => _MockAvailableElectionsNotifier()),
           ],
         ),
       );
@@ -300,6 +283,7 @@ void main() {
             selectionNotifierProvider.overrideWith((ref) => SelectionNotifier(10, null, true)),
             requiredVotesCountProvider.overrideWith((ref) => 10),
             selectionCountProvider.overrideWith((ref) => 0),
+            availableElectionsNotifierProvider.overrideWith((ref) => _MockAvailableElectionsNotifier()),
           ],
         ),
       );
@@ -332,6 +316,7 @@ void main() {
             selectionNotifierProvider.overrideWith((ref) => SelectionNotifier(10, null, true)),
             requiredVotesCountProvider.overrideWith((ref) => 10),
             selectionCountProvider.overrideWith((ref) => 3),
+            availableElectionsNotifierProvider.overrideWith((ref) => _MockAvailableElectionsNotifier()),
           ],
         ),
       );
@@ -364,6 +349,7 @@ void main() {
             ),
             selectionNotifierProvider.overrideWith((ref) => SelectionNotifier(10, null, true)),
             requiredVotesCountProvider.overrideWith((ref) => 10),
+            availableElectionsNotifierProvider.overrideWith((ref) => _MockAvailableElectionsNotifier()),
           ],
         ),
       );
@@ -385,6 +371,28 @@ class _MockElectionNotifier extends StateNotifier<ElectionState>
 
   @override
   Future<void> loadElectionById(String id) async {}
+
+  @override
+  void reset() {}
+
+  @override
+  void markAsVoted() {}
+}
+
+// Mock available elections notifier for testing
+class _MockAvailableElectionsNotifier extends StateNotifier<AvailableElectionsState>
+    implements AvailableElectionsNotifier {
+  _MockAvailableElectionsNotifier([AvailableElectionsState? state])
+      : super(state ?? const AvailableElectionsState());
+
+  @override
+  Future<void> loadAll() async {}
+
+  @override
+  Future<void> refresh() async {}
+
+  @override
+  void markElectionAsVoted(String electionId) {}
 
   @override
   void reset() {}

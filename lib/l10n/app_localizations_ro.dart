@@ -373,4 +373,63 @@ class AppLocalizationsRo extends AppLocalizations {
   @override
   String get notPrevalidated =>
       'Trebuie să fii prevalidat de staff înainte de a vota.';
+
+  @override
+  String get noActiveElections => 'Așteptați ziua alegerilor.';
+
+  @override
+  String get phoneNotRegistered => 'Numărul de telefon nu este înregistrat';
+
+  @override
+  String get availableElections => 'Alegeri Disponibile';
+
+  @override
+  String get completedElections => 'Alegeri Finalizate';
+
+  @override
+  String get voted => 'Votat';
+
+  @override
+  String get notYetOpen => 'Nu a început încă';
+
+  @override
+  String get ended => 'Încheiat';
+
+  @override
+  String moreElectionsAvailable(int count) {
+    return 'Mai aveți $count alegere/i în care să votați';
+  }
+
+  @override
+  String get voteNextElection => 'Votează la Următoarele Alegeri';
+
+  @override
+  String get doneForNow => 'Am terminat deocamdată';
+
+  @override
+  String get selectAnElection => 'Selectați o alegere pentru a vota';
+
+  @override
+  String get backToElections => 'Înapoi la Alegeri';
+
+  @override
+  String get failedToLoadElection => 'Nu s-a putut încărca alegerea';
+
+  @override
+  String get electionLoadError =>
+      'A apărut o eroare la încărcarea datelor alegerilor.';
+
+  @override
+  String get persistentErrorHelp =>
+      'Dacă problema persistă, verificați conexiunea la internet sau contactați administratorul alegerilor.';
+
+  @override
+  String get loading => 'Se încarcă...';
+
+  @override
+  String get failedToLoadElections => 'Nu s-au putut încărca alegerile';
+
+  @override
+  String get failedToCheckElections =>
+      'Nu s-au putut verifica alegerile active';
 }

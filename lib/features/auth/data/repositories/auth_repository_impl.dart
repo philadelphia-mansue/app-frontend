@@ -93,4 +93,28 @@ class AuthRepositoryImpl implements AuthRepository {
 
   @override
   Stream<String?> authStateChanges() => remoteDataSource.authStateChanges();
+
+  @override
+  Future<Either<Failure, bool>> ping() async {
+    try {
+      final result = await remoteDataSource.ping();
+      return Right(result);
+    } on AuthException catch (e) {
+      return Left(AuthFailure(e.message));
+    } catch (e) {
+      return Left(ServerFailure(e.toString()));
+    }
+  }
+
+  @override
+  Future<Either<Failure, bool>> checkPhone(String phone) async {
+    try {
+      final exists = await remoteDataSource.checkPhone(phone);
+      return Right(exists);
+    } on AuthException catch (e) {
+      return Left(AuthFailure(e.message));
+    } catch (e) {
+      return Left(ServerFailure(e.toString()));
+    }
+  }
 }

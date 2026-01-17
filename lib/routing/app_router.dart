@@ -27,7 +27,15 @@ class RouterRefreshNotifier extends ChangeNotifier {
       if (previous?.status == AuthStatus.authenticated &&
           next.status == AuthStatus.unauthenticated) {
         ref.read(electionNotifierProvider.notifier).reset();
+        ref.read(availableElectionsNotifierProvider.notifier).reset();
         ref.read(urlElectionIdProvider.notifier).state = null;
+      }
+
+      // When user becomes authenticated, load available elections
+      // This determines if user needs prevalidation or can go directly to voting
+      if (previous?.status != AuthStatus.authenticated &&
+          next.status == AuthStatus.authenticated) {
+        ref.read(availableElectionsNotifierProvider.notifier).loadAll();
       }
 
       // Reset election if user just authenticated and election is in error state
@@ -41,6 +49,10 @@ class RouterRefreshNotifier extends ChangeNotifier {
     });
     // Listen to election changes
     ref.listen(electionNotifierProvider, (_, _) {
+      notifyListeners();
+    });
+    // Listen to available elections changes (for prevalidation skip logic)
+    ref.listen(availableElectionsNotifierProvider, (_, _) {
       notifyListeners();
     });
     // Watch voteDeletedDetectorProvider to detect vote deletion across page refresh
@@ -109,7 +121,7 @@ final routerProvider = Provider<GoRouter>((ref) {
           : getBrowserMagicToken();
 
       if (phone != null && magicToken != null && !isInAuthFlow && !isAuthenticated) {
-        debugPrint('[Router] Impersonate request: phone=$phone');
+        debugPrint('[Router] Impersonate request');
         // Mark pending impersonation (doesn't modify state, prevents Firebase signout)
         ref.read(authNotifierProvider.notifier).markPendingImpersonation();
         // Trigger impersonate (async) and redirect to splash while loading
@@ -149,7 +161,18 @@ final routerProvider = Provider<GoRouter>((ref) {
 
       // ===== AUTHENTICATED USER LOGIC =====
 
-      // Flow: prevalidation → start-voting → (load election) → candidates → confirmation → success
+      // Flow: (check prevalidation) → start-voting OR prevalidation → candidates → confirmation → success
+
+      // Read available elections state to determine if user is prevalidated
+      final availableElectionsState = ref.read(availableElectionsNotifierProvider);
+      final isCheckingPrevalidation =
+          availableElectionsState.status == AvailableElectionsStatus.initial ||
+          availableElectionsState.status == AvailableElectionsStatus.loading;
+      final hasPrevalidatedElections =
+          availableElectionsState.status == AvailableElectionsStatus.loaded &&
+          availableElectionsState.elections.isNotEmpty;
+
+      debugPrint('[Router] availableElections: status=${availableElectionsState.status}, count=${availableElectionsState.elections.length}, hasPrevalidated=$hasPrevalidatedElections');
 
       // If no election (vote ended) - redirect to vote-ended page
       if (electionState.status == ElectionLoadStatus.noElection) {
@@ -189,8 +212,21 @@ final routerProvider = Provider<GoRouter>((ref) {
         return null;
       }
 
-      // Default: authenticated user without election loaded goes to prevalidation
+      // Still checking if user has prevalidated elections - stay on splash
+      if (isCheckingPrevalidation) {
+        if (currentPath == Routes.splash) {
+          return null;
+        }
+        return Routes.splash;
+      }
+
+      // Default: authenticated user without election loaded
+      // - If prevalidated for elections → go to start-voting (skip prevalidation)
+      // - If not prevalidated → go to prevalidation screen
       if (currentPath == Routes.splash || currentPath == Routes.phoneInput) {
+        if (hasPrevalidatedElections) {
+          return Routes.startVoting;
+        }
         return Routes.prevalidation;
       }
 

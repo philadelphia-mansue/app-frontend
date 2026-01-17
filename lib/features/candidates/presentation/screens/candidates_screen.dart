@@ -12,6 +12,12 @@ import '../../../elections/presentation/providers/election_providers.dart';
 import '../../../voting/presentation/providers/selection_notifier.dart';
 import '../widgets/candidates_grid.dart';
 
+/// Check if multi-election mode is active (more than one election available)
+final _isMultiElectionModeProvider = Provider<bool>((ref) {
+  final state = ref.watch(availableElectionsNotifierProvider);
+  return state.elections.length > 1;
+});
+
 class CandidatesScreen extends ConsumerStatefulWidget {
   const CandidatesScreen({super.key});
 
@@ -60,6 +66,14 @@ class _CandidatesScreenState extends ConsumerState<CandidatesScreen> {
     }
   }
 
+  void _onBackToElectionPicker() {
+    // Reset election state
+    ref.read(electionNotifierProvider.notifier).reset();
+    ref.read(selectionNotifierProvider.notifier).clearSelections();
+    // Return to election picker
+    context.go(Routes.startVoting);
+  }
+
   void _onCandidateTap(String id) {
     final l10n = AppLocalizations.of(context)!;
     final requiredVotes = ref.read(requiredVotesCountProvider);
@@ -87,6 +101,7 @@ class _CandidatesScreenState extends ConsumerState<CandidatesScreen> {
     final selectedIds = ref.watch(selectionNotifierProvider);
     final requiredVotes = ref.watch(requiredVotesCountProvider);
     final canSubmit = selectedIds.length == requiredVotes;
+    final isMultiElectionMode = ref.watch(_isMultiElectionModeProvider);
 
     // hasVoted redirect is handled by router
     final electionName = electionState.election?.name ?? l10n.selectCandidates;
@@ -96,6 +111,13 @@ class _CandidatesScreenState extends ConsumerState<CandidatesScreen> {
       appBar: LuckyAppBar(
         title: electionName,
         automaticallyImplyLeading: false,
+        leading: isMultiElectionMode
+            ? IconButton(
+                icon: const Icon(Icons.arrow_back),
+                tooltip: l10n.goBack,
+                onPressed: _onBackToElectionPicker,
+              )
+            : null,
         actions: kDebugMode
             ? [
                 IconButton(
@@ -259,14 +281,15 @@ class _CandidatesScreenState extends ConsumerState<CandidatesScreen> {
         return const Center(child: CircularProgressIndicator());
 
       case ElectionLoadStatus.loaded:
-        return Align(
-          alignment: Alignment.topCenter,
+        return Center(
           child: ConstrainedBox(
             constraints: const BoxConstraints(maxWidth: 1200),
-            child: CandidatesGrid(
-              candidates: state.election?.candidates ?? [],
-              selectedIds: selectedIds,
-              onCandidateTap: _onCandidateTap,
+            child: SizedBox.expand(
+              child: CandidatesGrid(
+                candidates: state.election?.candidates ?? [],
+                selectedIds: selectedIds,
+                onCandidateTap: _onCandidateTap,
+              ),
             ),
           ),
         );

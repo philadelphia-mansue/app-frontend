@@ -23,6 +23,16 @@ class ConfirmationScreen extends ConsumerWidget {
     final allCandidates = ref.watch(electionCandidatesProvider);
     final votingState = ref.watch(votingNotifierProvider);
     final authState = ref.watch(authNotifierProvider);
+    final electionState = ref.watch(electionNotifierProvider);
+
+    // Clear stale error state on screen entry (Fix 8)
+    if (votingState.status == VotingStatus.error) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (context.mounted) {
+          ref.read(votingNotifierProvider.notifier).resetToInitial();
+        }
+      });
+    }
 
     // Filter selected candidates
     final selectedCandidates = allCandidates
@@ -32,11 +42,16 @@ class ConfirmationScreen extends ConsumerWidget {
     // Listen for voting success
     ref.listen<VotingState>(votingNotifierProvider, (previous, next) async {
       if (next.status == VotingStatus.success) {
-        // Save to local cache for faster UX on next app launch
+        // 1. Optimistic update - enables immediate navigation
+        ref.read(electionNotifierProvider.notifier).markAsVoted();
+
+        // 2. Save to local cache for faster UX on next app launch
         final electionId = ref.read(currentElectionIdProvider);
         if (electionId != null) {
           await ref.read(voteCacheServiceProvider).markAsVoted(electionId);
         }
+
+        // 3. Navigate immediately (user sees success)
         if (context.mounted) {
           // Include election_id in URL so it persists across page refresh
           final successPath = electionId != null
@@ -44,13 +59,38 @@ class ConfirmationScreen extends ConsumerWidget {
               : Routes.success;
           context.go(successPath);
         }
+
+        // 4. Re-fetch from backend in background (confirms state)
+        // This ensures hasVoted is verified from the authoritative backend
+        if (electionId != null) {
+          ref.read(electionNotifierProvider.notifier).loadElectionById(electionId);
+        }
       } else if (next.status == VotingStatus.error) {
+        // Fix 4: Clear selections if already voted
+        if (next.errorType == VotingErrorType.alreadyVoted) {
+          ref.read(selectionNotifierProvider.notifier).clearSelections();
+          // Force reload election to get updated hasVoted status
+          final electionId = ref.read(currentElectionIdProvider);
+          if (electionId != null) {
+            ref.read(electionNotifierProvider.notifier).loadElectionById(electionId);
+          }
+        }
+
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text(ErrorLocalizer.localize(next.errorMessage, l10n)),
             backgroundColor: Colors.red,
           ),
         );
+
+        // Fix 6: Reset voting state so user can retry (unless already voted)
+        if (next.errorType != VotingErrorType.alreadyVoted) {
+          Future.delayed(const Duration(milliseconds: 100), () {
+            if (context.mounted) {
+              ref.read(votingNotifierProvider.notifier).resetToInitial();
+            }
+          });
+        }
       }
     });
 
@@ -110,6 +150,29 @@ class ConfirmationScreen extends ConsumerWidget {
                       child: LuckyButton(
                         text: isSubmitting ? l10n.submitting : l10n.confirmVote,
                         onTap: () async {
+                          // Fix 2: Check election is still active
+                          final election = electionState.election;
+                          if (election == null || !election.isActive) {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              SnackBar(
+                                content: Text(l10n.votingNotActive),
+                                backgroundColor: Colors.red,
+                              ),
+                            );
+                            return;
+                          }
+
+                          // Fix 2: Check user is still authenticated
+                          if (authState.voter == null) {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              SnackBar(
+                                content: Text(l10n.sessionExpired),
+                                backgroundColor: Colors.red,
+                              ),
+                            );
+                            return;
+                          }
+
                           final materialL10n = MaterialLocalizations.of(context);
                           final confirmed = await showDialog<bool>(
                             context: context,
@@ -145,7 +208,11 @@ class ConfirmationScreen extends ConsumerWidget {
               TextButton(
                 onPressed: votingState.status == VotingStatus.submitting
                     ? null
-                    : () => context.pop(),
+                    : () {
+                        // Fix 7: Reset voting state before navigating back
+                        ref.read(votingNotifierProvider.notifier).resetToInitial();
+                        context.pop();
+                      },
                 child: Text(l10n.goBack),
               ),
             ],

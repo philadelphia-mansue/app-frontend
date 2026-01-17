@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart' show kDebugMode;
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:dio/dio.dart';
@@ -51,13 +52,17 @@ final dioProvider = Provider<Dio>((ref) {
     ),
   );
 
-  // Add logging interceptor
-  dio.interceptors.add(
-    LogInterceptor(
-      requestBody: true,
-      responseBody: true,
-    ),
-  );
+  // Add logging interceptor (DEBUG MODE ONLY)
+  // SECURITY: Disable in production to prevent Bearer tokens and voter data
+  // from being logged to console/crash reports
+  if (kDebugMode) {
+    dio.interceptors.add(
+      LogInterceptor(
+        requestBody: true,
+        responseBody: true,
+      ),
+    );
+  }
 
   return dio;
 });

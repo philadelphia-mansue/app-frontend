@@ -6,6 +6,7 @@ import 'l10n/app_localizations.dart';
 import 'package:luckyui/luckyui.dart';
 import 'routing/app_router.dart';
 import 'core/constants/app_constants.dart';
+import 'core/services/app_lifecycle_service.dart';
 
 class App extends ConsumerWidget {
   const App({super.key});
@@ -41,42 +42,44 @@ class App extends ConsumerWidget {
       ],
     );
 
-    return MaterialApp.router(
-      title: AppConstants.appName,
-      debugShowCheckedModeBanner: false,
-      theme: lightTheme,
-      darkTheme: darkTheme,
-      themeMode: ThemeMode.light,
-      routerConfig: router,
-      localizationsDelegates: const [
-        AppLocalizations.delegate,
-        GlobalMaterialLocalizations.delegate,
-        GlobalWidgetsLocalizations.delegate,
-        GlobalCupertinoLocalizations.delegate,
-      ],
-      supportedLocales: const [
-        Locale('ro'),
-        Locale('en'),
-        Locale('it'),
-      ],
-      locale: const Locale('ro'),
-      builder: (context, child) {
-        final mediaQuery = MediaQuery.of(context);
-        return Stack(
-          children: [
-            child!,
-            MediaQuery(
-              data: mediaQuery.copyWith(
-                padding: mediaQuery.padding.copyWith(
-                  bottom: mediaQuery.padding.bottom + 80,
+    return AppLifecycleObserver(
+      child: MaterialApp.router(
+        title: AppConstants.appName,
+        debugShowCheckedModeBanner: false,
+        theme: lightTheme,
+        darkTheme: darkTheme,
+        themeMode: ThemeMode.light,
+        routerConfig: router,
+        localizationsDelegates: const [
+          AppLocalizations.delegate,
+          GlobalMaterialLocalizations.delegate,
+          GlobalWidgetsLocalizations.delegate,
+          GlobalCupertinoLocalizations.delegate,
+        ],
+        supportedLocales: const [
+          Locale('ro'),
+          Locale('en'),
+          Locale('it'),
+        ],
+        locale: const Locale('ro'),
+        builder: (context, child) {
+          final mediaQuery = MediaQuery.of(context);
+          return Stack(
+            children: [
+              child!,
+              MediaQuery(
+                data: mediaQuery.copyWith(
+                  padding: mediaQuery.padding.copyWith(
+                    bottom: mediaQuery.padding.bottom + 80,
+                  ),
                 ),
+                child: const LuckyToastMessenger(),
               ),
-              child: const LuckyToastMessenger(),
-            ),
-            const LuckyToastMessenger(type: 'notification'),
-          ],
-        );
-      },
+              const LuckyToastMessenger(type: 'notification'),
+            ],
+          );
+        },
+      ),
     );
   }
 }

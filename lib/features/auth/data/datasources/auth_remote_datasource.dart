@@ -22,6 +22,14 @@ abstract class AuthRemoteDataSource {
   Future<AuthResponseModel> exchangeTokenWithBackend(String firebaseIdToken);
   Future<VoterModel> getCurrentVoter();
 
+  /// Ping the server to verify authentication is still valid.
+  /// Returns true if authenticated, throws if 401.
+  Future<bool> ping();
+
+  /// Check if a phone number is registered as a voter.
+  /// Returns true if the phone exists in the system.
+  Future<bool> checkPhone(String phone);
+
   // Debug impersonate (debug mode only)
   Future<AuthResponseModel> impersonateUser({
     required String phone,
@@ -52,7 +60,7 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
 
   @override
   Future<String> sendOtp(String phoneNumber) async {
-    debugPrint('[AuthDataSource] sendOtp called with: $phoneNumber');
+    debugPrint('[AuthDataSource] sendOtp called');
     debugPrint('[AuthDataSource] Platform is web: $kIsWeb');
 
     try {
@@ -173,8 +181,7 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
         throw const AuthException(message: 'Failed to sign in');
       }
 
-      debugPrint('[AuthDataSource] User UID: ${user.uid}');
-      debugPrint('[AuthDataSource] Phone: ${user.phoneNumber}');
+      debugPrint('[AuthDataSource] User authenticated successfully');
 
       return UserModel(
         id: user.uid,
@@ -277,7 +284,7 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
     try {
       // Clear any existing token to prevent race conditions
       await _tokenStorage.deleteToken();
-      debugPrint('[AuthDataSource] Impersonating user: $phone');
+      debugPrint('[AuthDataSource] Impersonating user');
 
       final response = await _apiClient.post(
         ApiConstants.votersImpersonate,
@@ -312,5 +319,38 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
   @override
   Stream<String?> authStateChanges() {
     return _firebaseAuth.authStateChanges().map((user) => user?.uid);
+  }
+
+  @override
+  Future<bool> ping() async {
+    try {
+      debugPrint('[AuthDataSource] Pinging server to verify authentication...');
+      await _apiClient.get(ApiConstants.ping);
+      debugPrint('[AuthDataSource] Ping successful - user is authenticated');
+      return true;
+    } on DioException catch (e) {
+      debugPrint('[AuthDataSource] Ping failed: ${e.response?.statusCode}');
+      if (e.response?.statusCode == 401) {
+        throw const AuthException(message: 'Session expired');
+      }
+      throw AuthException(message: e.message ?? 'Ping failed');
+    }
+  }
+
+  @override
+  Future<bool> checkPhone(String phone) async {
+    try {
+      debugPrint('[AuthDataSource] Checking if phone exists');
+      final response = await _apiClient.post(
+        ApiConstants.checkPhone,
+        data: {'phone': phone},
+      );
+      final exists = response.data['exists'] as bool? ?? false;
+      debugPrint('[AuthDataSource] Phone check result: $exists');
+      return exists;
+    } on DioException catch (e) {
+      debugPrint('[AuthDataSource] Check phone failed: ${e.message}');
+      throw AuthException(message: e.message ?? 'Failed to check phone number');
+    }
   }
 }

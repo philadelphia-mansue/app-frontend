@@ -63,6 +63,11 @@ class VoteRemoteDataSourceImpl implements VoteRemoteDataSource {
             }
           }
           return AuthException(message: message ?? 'Access denied');
+        case 409:
+          // Handle conflict (race condition duplicate vote)
+          return AlreadyVotedException(
+            message: message ?? 'Vote already recorded',
+          );
         case 422:
           // Handle validation errors
           if (message != null) {

@@ -33,4 +33,28 @@ class ElectionRepositoryImpl implements ElectionRepository {
       return Left(ServerFailure(e.toString()));
     }
   }
+
+  @override
+  Future<Either<Failure, bool>> hasActiveElection() async {
+    try {
+      final hasActive = await remoteDataSource.hasActiveElection();
+      return Right(hasActive);
+    } on ServerException catch (e) {
+      return Left(ServerFailure(e.message));
+    } catch (e) {
+      return Left(ServerFailure(e.toString()));
+    }
+  }
+
+  @override
+  Future<Either<Failure, List<Election>>> getAllOngoingElections() async {
+    try {
+      final elections = await remoteDataSource.getAllOngoingElections();
+      return Right(elections);
+    } on ServerException catch (e) {
+      return Left(ServerFailure(e.message));
+    } catch (e) {
+      return Left(ServerFailure(e.toString()));
+    }
+  }
 }

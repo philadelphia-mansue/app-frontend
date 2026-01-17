@@ -86,6 +86,7 @@ class VotingNotifier extends StateNotifier<VotingState> {
   final SubmitVote _submitVote;
   final VoteSubmissionBuilder _voteBuilder;
   final String? _electionId;
+  bool _isSubmitting = false; // Guard against duplicate submissions
 
   VotingNotifier({
     required ValidateSelection validateSelection,
@@ -122,7 +123,14 @@ class VotingNotifier extends StateNotifier<VotingState> {
   }
 
   Future<void> submitVote(List<String> candidateIds, String sessionId) async {
+    // Guard against duplicate submissions (rapid clicking)
+    if (_isSubmitting) {
+      return;
+    }
+    _isSubmitting = true;
+
     if (_electionId == null) {
+      _isSubmitting = false;
       state = state.copyWith(
         status: VotingStatus.error,
         errorMessage: 'No active election found',
@@ -165,8 +173,16 @@ class VotingNotifier extends StateNotifier<VotingState> {
         errorType: VotingErrorType.general,
       );
     } finally {
+      _isSubmitting = false; // Reset guard
       _voteBuilder.reset();
     }
+  }
+
+  /// Reset state to initial so user can retry after errors
+  void resetToInitial() {
+    if (!mounted) return;
+    _isSubmitting = false;
+    state = const VotingState();
   }
 
   VotingErrorType _mapFailureToErrorType(Failure failure) {

@@ -6,6 +6,7 @@ import 'package:philadelphia_mansue/features/confirmation/presentation/screens/c
 import 'package:philadelphia_mansue/features/confirmation/presentation/widgets/warning_banner.dart';
 import 'package:philadelphia_mansue/features/confirmation/presentation/widgets/selected_candidates_list.dart';
 import 'package:philadelphia_mansue/features/elections/presentation/providers/election_providers.dart';
+import 'package:philadelphia_mansue/features/elections/domain/entities/election.dart';
 import 'package:philadelphia_mansue/features/voting/presentation/providers/selection_notifier.dart';
 import 'package:philadelphia_mansue/features/voting/presentation/providers/voting_providers.dart';
 import 'package:philadelphia_mansue/features/auth/presentation/providers/auth_providers.dart';
@@ -13,6 +14,18 @@ import 'package:philadelphia_mansue/features/auth/presentation/providers/auth_st
 
 import '../../../../helpers/test_wrapper.dart';
 import '../../../../helpers/fixtures/candidate_fixture.dart';
+
+// Helper to create a mock active election
+Election _createActiveElection() => Election(
+      id: 'test-election-1',
+      name: 'Test Election',
+      description: 'Test Description',
+      status: ElectionStatus.ongoing,
+      startDate: DateTime.now().subtract(const Duration(days: 1)),
+      endDate: DateTime.now().add(const Duration(days: 1)),
+      requiredVotesCount: 10,
+      candidates: [],
+    );
 
 void main() {
   group('ConfirmationScreen', () {
@@ -32,6 +45,14 @@ void main() {
             ),
             authNotifierProvider.overrideWith(
               (ref) => _MockAuthNotifier(const AuthState()),
+            ),
+            electionNotifierProvider.overrideWith(
+              (ref) => _MockElectionNotifier(
+                ElectionState(
+                  status: ElectionLoadStatus.loaded,
+                  election: _createActiveElection(),
+                ),
+              ),
             ),
           ],
         ),
@@ -58,6 +79,14 @@ void main() {
             authNotifierProvider.overrideWith(
               (ref) => _MockAuthNotifier(const AuthState()),
             ),
+            electionNotifierProvider.overrideWith(
+              (ref) => _MockElectionNotifier(
+                ElectionState(
+                  status: ElectionLoadStatus.loaded,
+                  election: _createActiveElection(),
+                ),
+              ),
+            ),
           ],
         ),
       );
@@ -82,6 +111,14 @@ void main() {
             ),
             authNotifierProvider.overrideWith(
               (ref) => _MockAuthNotifier(const AuthState()),
+            ),
+            electionNotifierProvider.overrideWith(
+              (ref) => _MockElectionNotifier(
+                ElectionState(
+                  status: ElectionLoadStatus.loaded,
+                  election: _createActiveElection(),
+                ),
+              ),
             ),
           ],
         ),
@@ -108,6 +145,14 @@ void main() {
             authNotifierProvider.overrideWith(
               (ref) => _MockAuthNotifier(const AuthState()),
             ),
+            electionNotifierProvider.overrideWith(
+              (ref) => _MockElectionNotifier(
+                ElectionState(
+                  status: ElectionLoadStatus.loaded,
+                  election: _createActiveElection(),
+                ),
+              ),
+            ),
           ],
         ),
       );
@@ -133,6 +178,14 @@ void main() {
             authNotifierProvider.overrideWith(
               (ref) => _MockAuthNotifier(const AuthState()),
             ),
+            electionNotifierProvider.overrideWith(
+              (ref) => _MockElectionNotifier(
+                ElectionState(
+                  status: ElectionLoadStatus.loaded,
+                  election: _createActiveElection(),
+                ),
+              ),
+            ),
           ],
         ),
       );
@@ -157,6 +210,14 @@ void main() {
             ),
             authNotifierProvider.overrideWith(
               (ref) => _MockAuthNotifier(const AuthState()),
+            ),
+            electionNotifierProvider.overrideWith(
+              (ref) => _MockElectionNotifier(
+                ElectionState(
+                  status: ElectionLoadStatus.loaded,
+                  election: _createActiveElection(),
+                ),
+              ),
             ),
           ],
         ),
@@ -185,6 +246,14 @@ void main() {
             authNotifierProvider.overrideWith(
               (ref) => _MockAuthNotifier(const AuthState()),
             ),
+            electionNotifierProvider.overrideWith(
+              (ref) => _MockElectionNotifier(
+                ElectionState(
+                  status: ElectionLoadStatus.loaded,
+                  election: _createActiveElection(),
+                ),
+              ),
+            ),
           ],
         ),
       );
@@ -209,6 +278,14 @@ void main() {
             ),
             authNotifierProvider.overrideWith(
               (ref) => _MockAuthNotifier(const AuthState()),
+            ),
+            electionNotifierProvider.overrideWith(
+              (ref) => _MockElectionNotifier(
+                ElectionState(
+                  status: ElectionLoadStatus.loaded,
+                  election: _createActiveElection(),
+                ),
+              ),
             ),
           ],
         ),
@@ -236,6 +313,14 @@ void main() {
             ),
             authNotifierProvider.overrideWith(
               (ref) => _MockAuthNotifier(const AuthState()),
+            ),
+            electionNotifierProvider.overrideWith(
+              (ref) => _MockElectionNotifier(
+                ElectionState(
+                  status: ElectionLoadStatus.loaded,
+                  election: _createActiveElection(),
+                ),
+              ),
             ),
           ],
         ),
@@ -268,6 +353,14 @@ void main() {
             authNotifierProvider.overrideWith(
               (ref) => _MockAuthNotifier(const AuthState()),
             ),
+            electionNotifierProvider.overrideWith(
+              (ref) => _MockElectionNotifier(
+                ElectionState(
+                  status: ElectionLoadStatus.loaded,
+                  election: _createActiveElection(),
+                ),
+              ),
+            ),
           ],
         ),
       );
@@ -292,6 +385,14 @@ void main() {
             ),
             authNotifierProvider.overrideWith(
               (ref) => _MockAuthNotifier(const AuthState()),
+            ),
+            electionNotifierProvider.overrideWith(
+              (ref) => _MockElectionNotifier(
+                ElectionState(
+                  status: ElectionLoadStatus.loaded,
+                  election: _createActiveElection(),
+                ),
+              ),
             ),
           ],
         ),
@@ -319,6 +420,14 @@ void main() {
             ),
             authNotifierProvider.overrideWith(
               (ref) => _MockAuthNotifier(const AuthState()),
+            ),
+            electionNotifierProvider.overrideWith(
+              (ref) => _MockElectionNotifier(
+                ElectionState(
+                  status: ElectionLoadStatus.loaded,
+                  election: _createActiveElection(),
+                ),
+              ),
             ),
           ],
         ),
@@ -377,6 +486,9 @@ class _MockVotingNotifier extends StateNotifier<VotingState>
 
   @override
   void reset() {}
+
+  @override
+  void resetToInitial() {}
 }
 
 // Mock auth notifier
@@ -416,4 +528,25 @@ class _MockAuthNotifier extends StateNotifier<AuthState>
 
   @override
   Future<void> tryRestoreSession(String userId) async {}
+
+  @override
+  Future<void> ping() async {}
+}
+
+// Mock election notifier
+class _MockElectionNotifier extends StateNotifier<ElectionState>
+    implements ElectionNotifier {
+  _MockElectionNotifier(super.state);
+
+  @override
+  Future<void> loadOngoingElection() async {}
+
+  @override
+  Future<void> loadElectionById(String id) async {}
+
+  @override
+  void reset() {}
+
+  @override
+  void markAsVoted() {}
 }

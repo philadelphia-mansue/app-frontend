@@ -87,6 +87,17 @@ class ErrorLocalizer {
         lowerMessage.contains('required')) {
       return l10n.electionIdRequired;
     }
+    if (lowerMessage.contains('failed to load election') &&
+        !lowerMessage.contains('elections')) {
+      return l10n.failedToLoadElection;
+    }
+    if (lowerMessage.contains('failed to load elections')) {
+      return l10n.failedToLoadElections;
+    }
+    if (lowerMessage.contains('failed to check') &&
+        lowerMessage.contains('election')) {
+      return l10n.failedToCheckElections;
+    }
 
     // Candidate/voting errors
     if (lowerMessage.contains('no candidates selected')) {

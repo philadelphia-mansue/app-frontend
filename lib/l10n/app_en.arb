@@ -494,5 +494,83 @@
   "notPrevalidated": "You must be prevalidated by staff before voting.",
   "@notPrevalidated": {
     "description": "Message shown when user tries to vote without being prevalidated"
+  },
+  "noActiveElections": "No active elections at this time",
+  "@noActiveElections": {
+    "description": "Error shown when trying to login but no elections are active"
+  },
+  "phoneNotRegistered": "This phone number is not registered",
+  "@phoneNotRegistered": {
+    "description": "Error shown when phone number is not in the voter registry"
+  },
+  "availableElections": "Available Elections",
+  "@availableElections": {
+    "description": "Section header for elections that can be voted in"
+  },
+  "completedElections": "Completed Elections",
+  "@completedElections": {
+    "description": "Section header for elections already voted in"
+  },
+  "voted": "Voted",
+  "@voted": {
+    "description": "Badge showing election has been voted in"
+  },
+  "notYetOpen": "Not yet open",
+  "@notYetOpen": {
+    "description": "Badge showing election hasn't started"
+  },
+  "ended": "Ended",
+  "@ended": {
+    "description": "Badge showing election has ended"
+  },
+  "moreElectionsAvailable": "You have {count} more election(s) to vote in",
+  "@moreElectionsAvailable": {
+    "description": "Message showing remaining elections after voting",
+    "placeholders": {
+      "count": {
+        "type": "int",
+        "example": "2"
+      }
+    }
+  },
+  "voteNextElection": "Vote in Next Election",
+  "@voteNextElection": {
+    "description": "Button to proceed to next election"
+  },
+  "doneForNow": "Done for now",
+  "@doneForNow": {
+    "description": "Button to finish voting session"
+  },
+  "selectAnElection": "Select an election to vote",
+  "@selectAnElection": {
+    "description": "Instruction on election picker screen"
+  },
+  "backToElections": "Back to Elections",
+  "@backToElections": {
+    "description": "Button to return to election list"
+  },
+  "failedToLoadElection": "Failed to Load Election",
+  "@failedToLoadElection": {
+    "description": "Error title when election fails to load"
+  },
+  "electionLoadError": "An error occurred while loading the election data.",
+  "@electionLoadError": {
+    "description": "Error message when election data fails to load"
+  },
+  "persistentErrorHelp": "If the problem persists, please check your internet connection or contact the election administrator.",
+  "@persistentErrorHelp": {
+    "description": "Help text shown after error with retry option"
+  },
+  "loading": "Loading...",
+  "@loading": {
+    "description": "Loading indicator text"
+  },
+  "failedToLoadElections": "Failed to load elections",
+  "@failedToLoadElections": {
+    "description": "Error when multiple elections fail to load"
+  },
+  "failedToCheckElections": "Failed to check active elections",
+  "@failedToCheckElections": {
+    "description": "Error when checking for active elections fails"
   }
 }

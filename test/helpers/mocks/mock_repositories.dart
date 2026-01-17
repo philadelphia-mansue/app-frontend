@@ -24,6 +24,8 @@ class MockAuthRepository extends Mock implements AuthRepository {
   Either<Failure, void>? signOutResult;
   bool isAuthenticatedResult = false;
   String? authStateChangesResult;
+  Either<Failure, bool>? pingResult;
+  Either<Failure, bool>? checkPhoneResult;
 
   @override
   Future<Either<Failure, String>> sendOtp(String phoneNumber) async {
@@ -61,6 +63,16 @@ class MockAuthRepository extends Mock implements AuthRepository {
   Stream<String?> authStateChanges() {
     return Stream.value(authStateChangesResult);
   }
+
+  @override
+  Future<Either<Failure, bool>> ping() async {
+    return pingResult ?? const Right(true);
+  }
+
+  @override
+  Future<Either<Failure, bool>> checkPhone(String phone) async {
+    return checkPhoneResult ?? const Right(false);
+  }
 }
 
 class MockCandidateRepository extends Mock implements CandidateRepository {
@@ -75,6 +87,8 @@ class MockCandidateRepository extends Mock implements CandidateRepository {
 class MockElectionRepository extends Mock implements ElectionRepository {
   Either<Failure, Election?>? getOngoingElectionResult;
   Either<Failure, Election>? getElectionByIdResult;
+  Either<Failure, bool>? hasActiveElectionResult;
+  Either<Failure, List<Election>>? getAllOngoingElectionsResult;
 
   @override
   Future<Either<Failure, Election?>> getOngoingElection() async {
@@ -84,6 +98,16 @@ class MockElectionRepository extends Mock implements ElectionRepository {
   @override
   Future<Either<Failure, Election>> getElectionById(String id) async {
     return getElectionByIdResult ?? Left(const ServerFailure('Not found'));
+  }
+
+  @override
+  Future<Either<Failure, bool>> hasActiveElection() async {
+    return hasActiveElectionResult ?? const Right(false);
+  }
+
+  @override
+  Future<Either<Failure, List<Election>>> getAllOngoingElections() async {
+    return getAllOngoingElectionsResult ?? const Right([]);
   }
 }
 
@@ -144,6 +168,22 @@ void mockAuthStateChanges(MockAuthRepository mock, String? userId) {
   mock.authStateChangesResult = userId;
 }
 
+void mockPingSuccess(MockAuthRepository mock, bool value) {
+  mock.pingResult = Right(value);
+}
+
+void mockPingFailure(MockAuthRepository mock, Failure failure) {
+  mock.pingResult = Left(failure);
+}
+
+void mockCheckPhoneSuccess(MockAuthRepository mock, bool exists) {
+  mock.checkPhoneResult = Right(exists);
+}
+
+void mockCheckPhoneFailure(MockAuthRepository mock, Failure failure) {
+  mock.checkPhoneResult = Left(failure);
+}
+
 // =============================================================================
 // CANDIDATE REPOSITORY MOCK HELPERS
 // =============================================================================
@@ -174,6 +214,14 @@ void mockGetElectionByIdSuccess(MockElectionRepository mock, Election election) 
 
 void mockGetElectionByIdFailure(MockElectionRepository mock, Failure failure) {
   mock.getElectionByIdResult = Left(failure);
+}
+
+void mockHasActiveElectionSuccess(MockElectionRepository mock, bool hasActive) {
+  mock.hasActiveElectionResult = Right(hasActive);
+}
+
+void mockHasActiveElectionFailure(MockElectionRepository mock, Failure failure) {
+  mock.hasActiveElectionResult = Left(failure);
 }
 
 // =============================================================================

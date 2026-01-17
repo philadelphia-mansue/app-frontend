@@ -741,6 +741,114 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'You must be prevalidated by staff before voting.'**
   String get notPrevalidated;
+
+  /// Error shown when trying to login but no elections are active
+  ///
+  /// In en, this message translates to:
+  /// **'No active elections at this time'**
+  String get noActiveElections;
+
+  /// Error shown when phone number is not in the voter registry
+  ///
+  /// In en, this message translates to:
+  /// **'This phone number is not registered'**
+  String get phoneNotRegistered;
+
+  /// Section header for elections that can be voted in
+  ///
+  /// In en, this message translates to:
+  /// **'Available Elections'**
+  String get availableElections;
+
+  /// Section header for elections already voted in
+  ///
+  /// In en, this message translates to:
+  /// **'Completed Elections'**
+  String get completedElections;
+
+  /// Badge showing election has been voted in
+  ///
+  /// In en, this message translates to:
+  /// **'Voted'**
+  String get voted;
+
+  /// Badge showing election hasn't started
+  ///
+  /// In en, this message translates to:
+  /// **'Not yet open'**
+  String get notYetOpen;
+
+  /// Badge showing election has ended
+  ///
+  /// In en, this message translates to:
+  /// **'Ended'**
+  String get ended;
+
+  /// Message showing remaining elections after voting
+  ///
+  /// In en, this message translates to:
+  /// **'You have {count} more election(s) to vote in'**
+  String moreElectionsAvailable(int count);
+
+  /// Button to proceed to next election
+  ///
+  /// In en, this message translates to:
+  /// **'Vote in Next Election'**
+  String get voteNextElection;
+
+  /// Button to finish voting session
+  ///
+  /// In en, this message translates to:
+  /// **'Done for now'**
+  String get doneForNow;
+
+  /// Instruction on election picker screen
+  ///
+  /// In en, this message translates to:
+  /// **'Select an election to vote'**
+  String get selectAnElection;
+
+  /// Button to return to election list
+  ///
+  /// In en, this message translates to:
+  /// **'Back to Elections'**
+  String get backToElections;
+
+  /// Error title when election fails to load
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to Load Election'**
+  String get failedToLoadElection;
+
+  /// Error message when election data fails to load
+  ///
+  /// In en, this message translates to:
+  /// **'An error occurred while loading the election data.'**
+  String get electionLoadError;
+
+  /// Help text shown after error with retry option
+  ///
+  /// In en, this message translates to:
+  /// **'If the problem persists, please check your internet connection or contact the election administrator.'**
+  String get persistentErrorHelp;
+
+  /// Loading indicator text
+  ///
+  /// In en, this message translates to:
+  /// **'Loading...'**
+  String get loading;
+
+  /// Error when multiple elections fail to load
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to load elections'**
+  String get failedToLoadElections;
+
+  /// Error when checking for active elections fails
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to check active elections'**
+  String get failedToCheckElections;
 }
 
 class _AppLocalizationsDelegate
