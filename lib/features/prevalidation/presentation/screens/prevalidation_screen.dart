@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart' show kDebugMode;
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -119,15 +120,17 @@ class _PrevalidationScreenState extends ConsumerState<PrevalidationScreen> {
     return Scaffold(
       appBar: AppBar(
         title: Text(l10n.prevalidation),
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.logout),
-            onPressed: () {
-              ref.read(authNotifierProvider.notifier).signOut();
-            },
-            tooltip: l10n.logout,
-          ),
-        ],
+        actions: kDebugMode
+            ? [
+                IconButton(
+                  icon: const Icon(Icons.logout),
+                  onPressed: () {
+                    ref.read(authNotifierProvider.notifier).signOut();
+                  },
+                  tooltip: l10n.logout,
+                ),
+              ]
+            : null,
       ),
       body: SafeArea(
         child: LayoutBuilder(

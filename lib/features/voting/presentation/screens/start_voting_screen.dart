@@ -5,7 +5,7 @@ import 'package:luckyui/luckyui.dart';
 import 'package:philadelphia_mansue/core/utils/error_localizer.dart';
 import 'package:philadelphia_mansue/l10n/app_localizations.dart';
 import 'package:philadelphia_mansue/routing/routes.dart';
-import 'package:flutter/foundation.dart' show debugPrint;
+import 'package:flutter/foundation.dart' show debugPrint, kDebugMode;
 import '../../../auth/presentation/providers/auth_providers.dart';
 import '../../../auth/presentation/providers/auth_state.dart';
 import '../../../elections/domain/entities/election.dart';
@@ -99,13 +99,14 @@ class _StartVotingScreenState extends ConsumerState<StartVotingScreen> {
                 : _loadElections,
             tooltip: l10n.retry,
           ),
-          IconButton(
-            icon: const Icon(Icons.logout),
-            onPressed: () {
-              ref.read(authNotifierProvider.notifier).signOut();
-            },
-            tooltip: l10n.logout,
-          ),
+          if (kDebugMode)
+            IconButton(
+              icon: const Icon(Icons.logout),
+              onPressed: () {
+                ref.read(authNotifierProvider.notifier).signOut();
+              },
+              tooltip: l10n.logout,
+            ),
         ],
       ),
       body: SafeArea(
