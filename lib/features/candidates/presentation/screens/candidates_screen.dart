@@ -56,7 +56,12 @@ class _CandidatesScreenState extends ConsumerState<CandidatesScreen> {
     // Only load if authenticated and election not yet loaded
     if (authState.status == AuthStatus.authenticated &&
         electionState.status == ElectionLoadStatus.initial) {
-      ref.read(electionNotifierProvider.notifier).loadOngoingElection();
+      // Get election_id from URL (preserves context on page reload)
+      final urlElectionId = ref.read(urlElectionIdProvider);
+      if (urlElectionId != null && urlElectionId.isNotEmpty) {
+        ref.read(electionNotifierProvider.notifier).loadElectionById(urlElectionId);
+      }
+      // No fallback to loadOngoingElection - URL must have election_id
     }
   }
 

@@ -127,5 +127,7 @@
   "failedToLoadElections": "Impossibile caricare le elezioni",
   "failedToCheckElections": "Impossibile verificare le elezioni attive",
   "countryItaly": "Italia",
-  "countryRomania": "Romania"
+  "countryRomania": "Romania",
+  "connecting": "Connessione in corso...",
+  "waitingForValidation": "In attesa di convalida..."
 }

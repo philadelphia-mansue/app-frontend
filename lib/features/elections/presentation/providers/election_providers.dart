@@ -2,7 +2,6 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../../core/di/providers.dart';
 import '../../../../core/usecases/usecase.dart';
-import '../../../../core/utils/selection_storage.dart';
 import '../../../candidates/domain/entities/candidate.dart';
 import '../../data/datasources/election_remote_datasource.dart';
 import '../../data/repositories/election_repository_impl.dart';
@@ -90,14 +89,9 @@ class ElectionNotifier extends StateNotifier<ElectionState> {
         if (election == null) {
           state = state.copyWith(status: ElectionLoadStatus.noElection);
         } else {
-          // Use stored order if available, otherwise shuffle and save
-          final orderedCandidates = _getOrderedCandidates(
-            election.id,
-            election.candidates,
-          );
           state = state.copyWith(
             status: ElectionLoadStatus.loaded,
-            election: election.copyWith(candidates: orderedCandidates),
+            election: election,
           );
         }
       },
@@ -118,48 +112,12 @@ class ElectionNotifier extends StateNotifier<ElectionState> {
       ),
       (election) {
         debugPrint('[Election] Loaded election: id=${election.id}, hasVoted=${election.hasVoted}');
-        // Use stored order if available, otherwise shuffle and save
-        final orderedCandidates = _getOrderedCandidates(
-          election.id,
-          election.candidates,
-        );
         state = state.copyWith(
           status: ElectionLoadStatus.loaded,
-          election: election.copyWith(candidates: orderedCandidates),
+          election: election,
         );
       },
     );
-  }
-
-  /// Gets candidates in stored order, or shuffles and saves order if none exists.
-  /// This ensures consistent order across page refreshes on web.
-  List<Candidate> _getOrderedCandidates(
-    String electionId,
-    List<Candidate> candidates,
-  ) {
-    // Check for stored order
-    final storedOrder = getStoredCandidateOrder(electionId);
-
-    if (storedOrder != null && storedOrder.length == candidates.length) {
-      // Reorder candidates based on stored order
-      final candidateMap = {for (var c in candidates) c.id: c};
-      final ordered = <Candidate>[];
-      for (final id in storedOrder) {
-        final candidate = candidateMap[id];
-        if (candidate != null) {
-          ordered.add(candidate);
-        }
-      }
-      // Only use stored order if all candidates were found
-      if (ordered.length == candidates.length) {
-        return ordered;
-      }
-    }
-
-    // Shuffle and save the order
-    final shuffled = List.of(candidates)..shuffle();
-    saveStoredCandidateOrder(electionId, shuffled.map((c) => c.id).toList());
-    return shuffled;
   }
 
   void reset() {

@@ -188,8 +188,25 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
         phoneNumber: user.phoneNumber ?? '',
       );
     } on firebase.FirebaseAuthException catch (e) {
-      throw AuthException(message: e.message ?? 'Invalid OTP');
+      debugPrint('[AuthDataSource] FirebaseAuthException during OTP verify: ${e.code} - ${e.message}');
+      String message;
+      switch (e.code) {
+        case 'invalid-verification-code':
+          message = 'Invalid OTP code. Please check and try again.';
+          break;
+        case 'session-expired':
+        case 'code-expired':
+          message = 'Verification session expired. Please request a new code.';
+          break;
+        case 'missing-verification-id':
+          message = 'Verification ID not found. Please request a new code.';
+          break;
+        default:
+          message = e.message ?? 'Invalid OTP';
+      }
+      throw AuthException(message: message);
     } catch (e) {
+      debugPrint('[AuthDataSource] Unexpected error during OTP verify: $e');
       if (e is AuthException) rethrow;
       throw AuthException(message: e.toString());
     }
@@ -247,18 +264,34 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
       return authResponse;
     } on DioException catch (e) {
       debugPrint('[AuthDataSource] Backend auth failed: ${e.message}');
-      if (e.response?.statusCode == 401) {
-        throw const AuthException(message: 'Invalid Firebase token');
+
+      // Check if we have a response (server responded with error status)
+      if (e.response != null) {
+        final statusCode = e.response!.statusCode;
+        if (statusCode == 401) {
+          throw const AuthException(message: 'Invalid Firebase token');
+        }
+        if (statusCode == 404) {
+          throw const AuthException(message: 'Phone number not registered as voter');
+        }
+        if (statusCode == 422) {
+          throw const AuthException(message: 'Validation failed');
+        }
+        // 5xx server errors - not an auth failure, keep session
+        if (statusCode != null && statusCode >= 500) {
+          throw ServerException(message: 'Server error: $statusCode');
+        }
+        // Other 4xx errors - treat as auth failures
+        throw AuthException(message: 'Authentication failed: $statusCode');
       }
-      if (e.response?.statusCode == 404) {
-        throw const AuthException(message: 'Phone number not registered as voter');
-      }
-      if (e.response?.statusCode == 422) {
-        throw const AuthException(message: 'Validation failed');
-      }
-      throw AuthException(message: e.message ?? 'Backend authentication failed');
+
+      // No response = network error (timeout, connection error, etc.)
+      // Keep session alive - this is a transient error
+      throw NetworkException(message: e.message ?? 'Network error during authentication');
     } catch (e) {
       if (e is AuthException) rethrow;
+      if (e is ServerException) rethrow;
+      if (e is NetworkException) rethrow;
       throw AuthException(message: e.toString());
     }
   }

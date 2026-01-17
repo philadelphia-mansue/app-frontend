@@ -127,5 +127,7 @@
   "failedToLoadElections": "Nu s-au putut încărca alegerile",
   "failedToCheckElections": "Nu s-au putut verifica alegerile active",
   "countryItaly": "Italia",
-  "countryRomania": "România"
+  "countryRomania": "România",
+  "connecting": "Se conectează...",
+  "waitingForValidation": "Se așteaptă validarea..."
 }

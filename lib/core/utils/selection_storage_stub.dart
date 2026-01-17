@@ -8,11 +8,5 @@ void saveStoredSelections(String electionId, Set<String> selections) {}
 
 void clearStoredSelections(String electionId) {}
 
-/// Gets stored candidate order from sessionStorage.
-List<String>? getStoredCandidateOrder(String electionId) => null;
-
-/// Saves candidate order to sessionStorage.
-void saveStoredCandidateOrder(String electionId, List<String> order) {}
-
-/// Clears all stored selections and candidate order.
+/// Clears all stored selections.
 void clearAllStoredSelectionData() {}
