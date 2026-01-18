@@ -234,7 +234,7 @@ class _StartVotingScreenState extends ConsumerState<StartVotingScreen> {
         ),
         const SizedBox(height: 16),
         LuckyHeading(
-          text: l10n.welcomeUser(voterName),
+          text: l10n.welcome,
           textAlign: TextAlign.center,
         ),
         const SizedBox(height: 8),
